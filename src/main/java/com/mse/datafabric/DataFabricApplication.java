@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DatafabricApplication {
+public class DataFabricApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DatafabricApplication.class, args);
+		SpringApplication.run(DataFabricApplication.class, args);
 	}
 
 }
