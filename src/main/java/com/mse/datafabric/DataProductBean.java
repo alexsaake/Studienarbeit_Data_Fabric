@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 class DataProductBean implements Serializable, IDataProductBean {
-    private byte[] myImage;
-    public byte[] getImage(){
+    private String myImage;
+    public String getImage(){
         return  myImage;
     }
-    public void setImage(byte[] image){
+    public void setImage(String image){
         myImage = image;
     }
     private  String myTitle;

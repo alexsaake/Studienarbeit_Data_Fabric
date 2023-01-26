@@ -3,8 +3,8 @@ package com.mse.datafabric;
 import java.util.Date;
 
 interface IDataProductBean {
-    byte[] getImage();
-    void setImage(byte[] image);
+    String getImage();
+    void setImage(String image);
     String getTitle();
     void setTitle(String title);
     String getShortDescription();
