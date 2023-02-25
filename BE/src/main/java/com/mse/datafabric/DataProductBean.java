@@ -25,6 +25,7 @@ class DataProductBean implements Serializable, IDataProductBean {
     public void setShortDescription(String shortDescription){
         myShortDescription = shortDescription;
     }
+
     private Date myLastUpdated;
     public Date getLastUpdated(){
         return myLastUpdated;
@@ -40,11 +41,24 @@ class DataProductBean implements Serializable, IDataProductBean {
         myDataProductAccessRights = dataProductAccessRights;
     }
 
+    @Override
+    public String getDataProductKey() {
+        return myDataProductKey;
+    }
+
+    @Override
+    public void setDataProductKey(String dataProductKey) {
+myDataProductKey= dataProductKey;
+    }
+
+    private String myDataProductKey;
+
     public DataProductBean(){
         myImage = null;
         myTitle = null;
         myShortDescription = null;
         myLastUpdated = null;
         myDataProductAccessRights = null;
+        myDataProductKey = null;
     }
 }
