@@ -1,8 +1,8 @@
-package com.mse.datafabric;
+package com.mse.datafabric.einkommensentwicklung;
 
 import com.opencsv.bean.CsvBindByName;
 
-public class EinkommenBean {
+public class EinkommenCsvBean {
 
     //Jahr;Insgesamt;Maenner;Frauen;
     @CsvBindByName(column = "Jahr", required = false)

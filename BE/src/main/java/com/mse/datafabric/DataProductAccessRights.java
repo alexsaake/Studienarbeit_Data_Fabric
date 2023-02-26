@@ -1,5 +1,10 @@
 package com.mse.datafabric;
 
 enum DataProductAccessRights {
-    gratis
+    GRATIS("GRATIS");
+
+    public String value;
+    DataProductAccessRights(String value) {
+        this.value = value;
+    }
 }
