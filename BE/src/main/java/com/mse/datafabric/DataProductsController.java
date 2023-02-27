@@ -5,10 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 
 @ShellComponent
@@ -43,15 +50,15 @@ public class DataProductsController {
             value = "/DataProducts/image/{dataproduct_key}",
             produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public @ResponseBody byte[] getDataProductImage(@PathVariable String dataproduct_key){
-        byte[] image = null;
+    public @ResponseBody byte[] getDataProductImage(@PathVariable String dataproduct_key) throws IOException {
+        byte[]  file = null;
         try {
-            image = myDataProductsProvider.getDataProductImage(dataproduct_key);
+            file = (new ClassPathResource(dataproduct_key+".jpg")).getInputStream().readAllBytes();
         }
         catch (Exception e) {
             log.error("Could not load Image: " + e);
         }
-        return image;
+        return file;
     }
 }
 
