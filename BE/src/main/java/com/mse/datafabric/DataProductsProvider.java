@@ -81,10 +81,10 @@ class DataProductsProvider implements IDataProductsProvider {
         return image;
     }
 
-    private byte[] loadImage() {
+    private byte[] loadImage(String filename) {
         byte[] image = null;
         try {
-            File imageResource = new ClassPathResource("BruttomonatsverdiensteDeutschland.jpg").getFile();
+            File imageResource = new ClassPathResource(filename + ".jpg").getFile();
             image = Files.readAllBytes(imageResource.toPath());
         }
         catch (IOException e){
@@ -94,7 +94,7 @@ class DataProductsProvider implements IDataProductsProvider {
     }
 
     @ShellMethod( "saveImageToDbForId" ) //save-image-to-db-for-id --dataproductKey einkommensentwicklung
-    private void saveImageToDbForId(String dataproductKey) {
+    void saveImageToDbForId(String dataproductKey) {
 
         String sql = "UPDATE Dataproducts SET image= ? where dataproduct_key=?;";
 
@@ -105,7 +105,7 @@ class DataProductsProvider implements IDataProductsProvider {
                     throws SQLException {
                 PreparedStatement ps = connection.prepareStatement(sql.toString(),
                         Statement.RETURN_GENERATED_KEYS);
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(loadImage());
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(loadImage(dataproductKey));
                 ps.setBlob(1, inputStream);
                 ps.setString(2, dataproductKey);
 
