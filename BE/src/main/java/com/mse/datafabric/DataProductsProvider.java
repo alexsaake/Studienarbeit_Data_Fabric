@@ -39,7 +39,7 @@ class DataProductsProvider implements IDataProductsProvider {
         for (Map row : rows) {
             DataProductBean obj = new DataProductBean();
 
-            obj.setImage(Base64.getEncoder().encodeToString((byte[]) row.get("image")));
+            //obj.setImage(Base64.getEncoder().encodeToString((byte[]) row.get("image")));
             obj.setTitle((String) row.get("title"));
             obj.setShortDescription(((String) row.get("shortDescription")));
             obj.setLastUpdated(new Date(((Timestamp) row.get("lastUpdated")).getTime()));
@@ -59,6 +59,26 @@ class DataProductsProvider implements IDataProductsProvider {
         dataProducts.add(dataProduct);*/
 
         return dataProductBeans;
+    }
+
+    public byte[] getDataProductImage(String dataproduct_key) {
+        List<IDataProductBean> dataProducts = new ArrayList<>();
+
+        String dataproducts_sql = "SELECT image FROM Dataproducts where dataproduct_key ='" + dataproduct_key + "';";
+
+        List<IDataProductBean> dataProductBeans = new ArrayList<>();
+
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(dataproducts_sql);
+
+        byte[] image = null;
+        for (Map row : rows) {
+            DataProductBean obj = new DataProductBean();
+
+            image = (byte[]) row.get("image");
+
+        }
+
+        return image;
     }
 
     private byte[] loadImage() {

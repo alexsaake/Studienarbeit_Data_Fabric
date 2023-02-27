@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @ShellComponent
@@ -37,6 +36,22 @@ public class DataProductsController {
         }
 
         return jsonString;
+    }
+
+    @ShellMethod( "getDataProducts/image" )
+    @GetMapping(
+            value = "/DataProducts/image/{dataproduct_key}",
+            produces = MediaType.IMAGE_JPEG_VALUE
+    )
+    public @ResponseBody byte[] getDataProductImage(@PathVariable String dataproduct_key){
+        byte[] image = null;
+        try {
+            image = myDataProductsProvider.getDataProductImage(dataproduct_key);
+        }
+        catch (Exception e) {
+            log.error("Could not load Image: " + e);
+        }
+        return image;
     }
 }
 
