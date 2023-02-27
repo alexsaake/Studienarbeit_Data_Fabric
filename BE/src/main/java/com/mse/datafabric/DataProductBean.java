@@ -4,13 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 class DataProductBean implements Serializable, IDataProductBean {
-    private String myImage;
-    public String getImage(){
-        return  myImage;
-    }
-    public void setImage(String image){
-        myImage = image;
-    }
     private  String myTitle;
     public String getTitle() {
         return  myTitle;
@@ -54,7 +47,6 @@ myDataProductKey= dataProductKey;
     private String myDataProductKey;
 
     public DataProductBean(){
-        myImage = null;
         myTitle = null;
         myShortDescription = null;
         myLastUpdated = null;
