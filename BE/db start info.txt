@@ -1,0 +1,12 @@
+
+
+cd ~/.m2/repository/com/h2database/h2/2.1.214/
+java -jar h2-2.1.214.jar
+
+spring.datasource.url=jdbc:h2:tcp://localhost/~/datafabric
+spring.datasource.username=mse_dp
+spring.datasource.password=MseDp.23
+
+dataproducts.sql -> inhalt ausführen
+
+spring shell: save-image-to-db-for-id --dataproductKey einkommensentwicklung

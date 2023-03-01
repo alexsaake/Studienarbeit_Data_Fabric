@@ -38,12 +38,34 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/proxy'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     baseURL: '/',
+    proxy: true
+  },
+
+  proxy: {
+    '/api': {
+      target: 'https://localhost:8443',
+      changeOrigin: true,
+      secure: false,
+      ws: true,
+      configure: (proxy, _options) => {
+        proxy.on('error', (err, _req, _res) => {
+          console.log('proxy error', err);
+        });
+        proxy.on('proxyReq', (proxyReq, req, _res) => {
+          console.log('Sending Request to the Target:', req.method, req.url);
+        });
+        proxy.on('proxyRes', (proxyRes, req, _res) => {
+          console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+        });
+      },
+    }
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
