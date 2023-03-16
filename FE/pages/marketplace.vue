@@ -9,98 +9,96 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-for="item in filteredItems" :key="item.id" cols="12" md="4">
-        <v-card>
-          <v-img :src="'data:image/jpeg;base64,' + item.image" height="100px" />
-          <v-card-title style="word-break: break-word">{{
-            item.name
-          }}</v-card-title>
-          <v-card-subtitle>
-            <div>{{ item.description }}</div>
-          </v-card-subtitle>
-          <v-card-text>
-            <div>Zuletzt aktualisiert: {{ item.lastUpdated }}</div>
-            <div>Preis: {{ item.accessRights }}</div>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-btn text @click="addToCart(item)">View Product</v-btn>
-          </v-card-actions>
+      <v-col v-if="dataProductsOverview.length > 0" cols="12" md="4">
+        <v-card v-for="dataProductOverview in filteredDataProductsOverview" :key="dataProductOverview.shortKey" @click="onClickDataProductDetail(dataProductOverview.shortKey)">
+          <data-product-overview-card :data-product-overview="dataProductOverview" />
         </v-card>
       </v-col>
     </v-row>
+    <v-overlay v-if="openedDetails !== ''">
+      <data-product-detail-card v-click-outside="onClickOutsideDataProductDetail" :short-key="openedDetails" />
+    </v-overlay>
   </v-container>
 </template>
+
 <script>
-import { mapState } from 'vuex'
-import { DateTime } from 'luxon'
-export default {
-  name: 'InspirePage',
-  async asyncData({ store }) {
-    await store.dispatch('fetchData')
-  },
-  data() {
-    return {
-      search: '',
-      filter: '',
-      filters: ['All', 'Category 1', 'Category 2'],
-      items: [],
-      cart: [],
-    }
-  },
-  computed: {
-    filteredItems() {
-      if (this.filter === '' || this.filter === 'All') {
-        return this.items.filter((item) =>
-          item.name.toLowerCase().includes(this.search.toLowerCase())
-        )
-      } else {
-        return this.items.filter(
-          (item) =>
-            item.name.toLowerCase().includes(this.search.toLowerCase()) &&
-            item.category === this.filter
-        )
+  import dataProductsOverviewProvider from "~/middleware/dataProductsOverviewProvider";
+  import dataProductImageProvider from "~/middleware/dataProductImageProvider";
+
+  export default
+  {
+    name: 'Marketplace',
+    data()
+    {
+      return {
+        search: '',
+        filter: '',
+        filters: ['All'],
+        dataProductsOverview:
+        [{
+          shortKey: String,
+          title: String,
+          shortDescription: String,
+          lastUpdated: Date,
+          category: String,
+          accessRight: String,
+          image: Uint8Array
+        }],
+        openedDetails: ''
       }
     },
-    ...mapState(['testData']),
-  },
-  created() {
-    this.items = [
-      {
-        id: 1,
-        name: this.testData[0].title,
-        description: this.testData[0].shortDescription,
-        image: this.testData[0].image,
-        accessRights: this.testData[0].accessRights,
-        lastUpdated: DateTime.fromMillis(this.testData[0].lastUpdated).toFormat(
-          'dd.LL.yyyy'
-        ),
-        category: 'Category 1',
-      },
-      {
-        id: 2,
-        name: 'Item 2',
-        description: 'Description for item 2',
-        category: 'Category 2',
-      },
-      {
-        id: 3,
-        name: 'Item 3',
-        description: 'Description for item 3',
-        category: 'Category 1',
-      },
-      {
-        id: 4,
-        name: 'Item 4',
-        description: 'Description for item 4',
-        category: 'Category 2',
-      },
-    ]
-  },
-  methods: {
-    addToCart(item) {
-      this.cart.push(item)
+    async fetch()
+    {
+      this.dataProductsOverview = await this.fetchDataProductsOverview()
+      this.filters = this.getDataProductCategories()
     },
-  },
-}
+    computed:
+    {
+      filteredDataProductsOverview()
+      {
+        if (this.filter === '' || this.filter === 'All')
+        {
+          return this.dataProductsOverview;
+        }
+        else
+        {
+          return this.dataProductsOverview.filter(dataProduct =>
+              dataProduct.title.toLowerCase().includes(this.search.toLowerCase()) &&
+              dataProduct.category === this.filter
+          )
+        }
+      }
+    },
+    methods: {
+      async fetchDataProductsOverview()
+      {
+        const rawDataProductsOverview = await dataProductsOverviewProvider(this.$axios);
+        const dataProductsOverview = [];
+        for (const dataProduct of rawDataProductsOverview)
+        {
+          dataProductsOverview.push({
+            shortKey: dataProduct.shortKey,
+            title: dataProduct.title,
+            shortDescription: dataProduct.shortDescription,
+            lastUpdated: new Date(dataProduct.lastUpdated).toLocaleDateString("ge-GE"),
+            category: dataProduct.category,
+            accessRight: dataProduct.accessRight,
+            image: await dataProductImageProvider(this.$axios, dataProduct.shortKey)
+          });
+        }
+        return dataProductsOverview;
+      },
+      getDataProductCategories()
+      {
+        const categories = this.dataProductsOverview.map(dataProduct => dataProduct.category);
+        return this.filters.concat(Array.from(new Set(categories.map(category => category))));
+      },
+      onClickDataProductDetail(shortKey) {
+        this.openedDetails = shortKey
+      },
+      onClickOutsideDataProductDetail() {
+        this.openedDetails = ''
+      }
+    }
+  };
 </script>

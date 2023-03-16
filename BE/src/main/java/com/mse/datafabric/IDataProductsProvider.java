@@ -2,7 +2,8 @@ package com.mse.datafabric;
 
 import java.util.List;
 
-interface IDataProductsProvider {
-    List<IDataProductBean> getDataProducts();
-    byte[] getDataProductImage(String dataproduct_key);
+interface IDataProductsProvider
+{
+    List<DataProductOverviewBean> getDataProductsOverview();
+    DataProductDetailBean getDataProductDetail(String shortKey);
 }

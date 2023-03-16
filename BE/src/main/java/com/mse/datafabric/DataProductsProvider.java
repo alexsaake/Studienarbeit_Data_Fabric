@@ -1,118 +1,57 @@
 package com.mse.datafabric;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.*;
 import java.util.Date;
 import java.util.*;
 
 @ShellComponent
 @Component
-class DataProductsProvider implements IDataProductsProvider {
-
-    private final Logger log = LoggerFactory.getLogger( getClass() );
+class DataProductsProvider implements IDataProductsProvider
+{
     @Autowired
     JdbcTemplate jdbcTemplate;
-    public List<IDataProductBean> getDataProducts() {
-        List<IDataProductBean> dataProducts = new ArrayList<>();
+    public List<DataProductOverviewBean> getDataProductsOverview()
+    {
+        String dataProductsSql = "SELECT dp.shortKey, dp.title, dp.shortDescription, dp.lastUpdated, dpc.category, dpar.accessRight FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id";
+        List<Map<String, Object>> databaseDataProducts = jdbcTemplate.queryForList(dataProductsSql);
 
-        String dataproducts_sql = "SELECT * FROM Dataproducts";
+        List<DataProductOverviewBean> dataProducts = new ArrayList<>();
 
-        List<IDataProductBean> dataProductBeans = new ArrayList<>();
-
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList(dataproducts_sql);
-
-        for (Map row : rows) {
-            DataProductBean obj = new DataProductBean();
-
-            //obj.setImage(Base64.getEncoder().encodeToString((byte[]) row.get("image")));
-            obj.setTitle((String) row.get("title"));
-            obj.setShortDescription(((String) row.get("shortDescription")));
-            obj.setLastUpdated(new Date(((Timestamp) row.get("lastUpdated")).getTime()));
-            obj.setAccessRights(DataProductAccessRights.valueOf((String) row.get("dataProductAccessRights")));
-            obj.setDataProductKey((String) row.get("dataproduct_key"));
-            dataProductBeans.add(obj);
+        for (Map databaseDataProduct : databaseDataProducts)
+        {
+            DataProductOverviewBean dataProduct = new DataProductOverviewBean(
+                (String)databaseDataProduct.get("shortKey"),
+                (String)databaseDataProduct.get("title"),
+                (String)databaseDataProduct.get("shortDescription"),
+                new Date(((Timestamp) databaseDataProduct.get("lastUpdated")).getTime()),
+                DataProductCategories.valueOf((String)databaseDataProduct.get("category")),
+                DataProductAccessRights.valueOf((String)databaseDataProduct.get("accessRight"))
+            );
+            dataProducts.add(dataProduct);
         }
 
-
-/*        IDataProductBean dataProduct = new DataProductBean();
-        //dataProduct.setImage(Base64.getEncoder().encodeToString(LoadImage()));
-        dataProduct.setTitle("Entwicklung der Bruttomonatsverdienste in Deutschland");
-        dataProduct.setShortDescription("Entwicklung der durchschnittlichen Bruttomonats-verdienste ab 1991 in Deutschland");
-        dataProduct.setLastUpdated(new GregorianCalendar(2022, Calendar.MARCH,24).getTime());
-        dataProduct.setAccessRights(DataProductAccessRights.GRATIS);
-
-        dataProducts.add(dataProduct);*/
-
-        return dataProductBeans;
+        return dataProducts;
     }
 
-    public byte[] getDataProductImage(String dataproduct_key) {
-        List<IDataProductBean> dataProducts = new ArrayList<>();
+    public DataProductDetailBean getDataProductDetail(String shortKey) {
+        String dataProductSql = "SELECT dp.title, dp.shortDescription, dp.description, dp.source, dp.sourceLink, dp.lastUpdated, dpc.category, dpar.accessRight FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id WHERE dp.shortKey = '%s'".formatted(shortKey);
+        Map<String, Object> databaseDataProduct = jdbcTemplate.queryForMap(dataProductSql);
 
-        String dataproducts_sql = "SELECT image FROM Dataproducts where dataproduct_key ='" + dataproduct_key + "';";
-
-        List<IDataProductBean> dataProductBeans = new ArrayList<>();
-
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList(dataproducts_sql);
-
-        byte[] image = null;
-        for (Map row : rows) {
-            DataProductBean obj = new DataProductBean();
-
-            image = (byte[]) row.get("image");
-
-        }
-
-        return image;
+        return new DataProductDetailBean(
+            shortKey,
+            (String)databaseDataProduct.get("title"),
+            (String)databaseDataProduct.get("shortDescription"),
+            (String)databaseDataProduct.get("description"),
+            (String)databaseDataProduct.get("source"),
+            (String)databaseDataProduct.get("sourceLink"),
+            new Date(((Timestamp) databaseDataProduct.get("lastUpdated")).getTime()),
+            DataProductCategories.valueOf((String)databaseDataProduct.get("category")),
+            DataProductAccessRights.valueOf((String)databaseDataProduct.get("accessRight"))
+        );
     }
-
-    private byte[] loadImage(String filename) {
-        byte[] image = null;
-        try {
-            File imageResource = new ClassPathResource(filename + ".jpg").getFile();
-            image = Files.readAllBytes(imageResource.toPath());
-        }
-        catch (IOException e){
-            System.out.println("Could not load image " + e);
-        }
-        return image;
-    }
-
-    @ShellMethod( "saveImageToDbForId" ) //save-image-to-db-for-id --dataproductKey einkommensentwicklung
-    void saveImageToDbForId(String dataproductKey) {
-
-        String sql = "UPDATE Dataproducts SET image= ? where dataproduct_key=?;";
-
-        KeyHolder holder = new GeneratedKeyHolder();
-        jdbcTemplate.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection)
-                    throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(sql.toString(),
-                        Statement.RETURN_GENERATED_KEYS);
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(loadImage(dataproductKey));
-                ps.setBlob(1, inputStream);
-                ps.setString(2, dataproductKey);
-
-
-                return ps;
-            }
-        }, holder);
-    }
-
 }

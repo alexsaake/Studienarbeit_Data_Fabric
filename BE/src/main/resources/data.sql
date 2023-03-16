@@ -31,7 +31,12 @@ INSERT INTO Einkommensentwicklung (jahr, insgesamt, maenner, frauen) VALUES
 ('1992','2 003', '2 188','1 602'),
 ('1991','1 832', '2 010','1 440');
 
-INSERT INTO Dataproducts (title, shortDescription, lastUpdated, dataProductAccessRights, dataproduct_key) VALUES
-                                                      ('Entwicklung der Bruttomonatsverdienste in Deutschland', 'Entwicklung der durchschnittlichen Bruttomonats-verdienste ab 1991 in Deutschland', TIMESTAMP '2022-12-24 06:57:57', 'GRATIS', 'einkommensentwicklung');
+INSERT INTO DataProduct_AccessRights (accessRight) VALUES ('gratis');
 
+INSERT INTO DataProduct_Categories (category) VALUES ('Wirtschaft');
 
+INSERT INTO Data_Formats (format) VALUES ('json');
+INSERT INTO Data_Formats (format) VALUES ('xlsx');
+
+INSERT INTO DataProducts (shortKey, title, shortDescription, description, source, sourceLink, lastUpdated, categoryId, accessRightId) VALUES
+    ('einkommensentwicklung', 'Entwicklung der Bruttomonatsverdienste in Deutschland', 'Entwicklung der durchschnittlichen Bruttomonatsverdienste ab 1991 in Deutschland', 'Der Datensatz enthält durchschnittliche Bruttoverdienste in Deutschland ab 1991. Der Datensatz enthält eine Untergliederung der Einkommen nach Geschlecht', 'Statistisches Bundesamt', 'https://www.destatis.de/DE/Themen/Arbeit/Verdienste/Verdienste-Verdienstunterschiede/Tabellen/liste-bruttomonatsverdienste.html#134694', TIMESTAMP '2022-12-24 06:57:57', (SELECT id FROM DataProduct_Categories WHERE category = 'Wirtschaft'), (SELECT id FROM DataProduct_AccessRights WHERE accessRight = 'gratis'));
