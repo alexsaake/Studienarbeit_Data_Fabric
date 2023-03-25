@@ -1,8 +1,12 @@
 package com.mse.datafabric;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
+@JsonPropertyOrder({"shortKey", "title", "shortDescription", "lastUpdated", "category", "accessRights"})
 class DataProductOverviewBean implements Serializable
 {
     protected String myShortKey;
@@ -25,7 +29,7 @@ class DataProductOverviewBean implements Serializable
     public DataProductAccessRights getAccessRight(){
         return myAccessRight;
     }
-    private final DataProductCategories myCategory;
+    private DataProductCategories myCategory;
     public DataProductCategories getCategory() {
         return  myCategory;
     }
@@ -38,5 +42,38 @@ class DataProductOverviewBean implements Serializable
         myLastUpdated = lastUpdated;
         myCategory = category;
         myAccessRight = accessRights;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final DataProductOverviewBean other = (DataProductOverviewBean) obj;
+        if (!Objects.equals(this.myShortKey, other.myShortKey)) {
+            return false;
+        }
+        if (!Objects.equals(this.myTitle, other.myTitle)) {
+            return false;
+        }
+        if (!Objects.equals(this.myShortDescription, other.myShortDescription)) {
+            return false;
+        }
+        if (!Objects.equals(this.myLastUpdated, other.myLastUpdated)) {
+            return false;
+        }
+        if (!Objects.equals(this.myCategory, other.myCategory)) {
+            return false;
+        }
+        if (!Objects.equals(this.myAccessRight, other.myAccessRight)) {
+            return false;
+        }
+
+        return true;
     }
 }

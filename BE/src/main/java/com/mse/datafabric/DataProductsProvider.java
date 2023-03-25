@@ -13,12 +13,17 @@ import java.util.*;
 @Component
 class DataProductsProvider implements IDataProductsProvider
 {
+    JdbcTemplate myJdbcTemplate;
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    public DataProductsProvider(JdbcTemplate jdbcTemplate)
+    {
+        myJdbcTemplate = jdbcTemplate;
+    }
+
     public List<DataProductOverviewBean> getDataProductsOverview()
     {
         String dataProductsSql = "SELECT dp.shortKey, dp.title, dp.shortDescription, dp.lastUpdated, dpc.category, dpar.accessRight FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id";
-        List<Map<String, Object>> databaseDataProducts = jdbcTemplate.queryForList(dataProductsSql);
+        List<Map<String, Object>> databaseDataProducts = myJdbcTemplate.queryForList(dataProductsSql);
 
         List<DataProductOverviewBean> dataProducts = new ArrayList<>();
 
@@ -40,7 +45,7 @@ class DataProductsProvider implements IDataProductsProvider
 
     public DataProductDetailBean getDataProductDetail(String shortKey) {
         String dataProductSql = "SELECT dp.title, dp.shortDescription, dp.description, dp.source, dp.sourceLink, dp.lastUpdated, dpc.category, dpar.accessRight FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id WHERE dp.shortKey = '%s'".formatted(shortKey);
-        Map<String, Object> databaseDataProduct = jdbcTemplate.queryForMap(dataProductSql);
+        Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
 
         return new DataProductDetailBean(
             shortKey,
