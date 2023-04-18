@@ -1,4 +1,4 @@
-package com.mse.datafabric.dtos.wgGesucht;
+package com.mse.datafabric.immobilien.dtos.wgGesucht;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;

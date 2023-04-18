@@ -1,4 +1,4 @@
-package com.mse.datafabric.dtos.wgGesucht;
+package com.mse.datafabric.immobilien.dtos.wgGesucht;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -13,15 +13,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class ResultDto {
+public class WgGesuchtResponseDto {
 
-    private List<WgGesuchtDto> result = new ArrayList<>();
+    public List<WgGesuchtDto> result = new ArrayList<>();
 
-    private LocalDateTime refreshDate;
+    public LocalDateTime refreshDate;
 
-    private int pageSize;
+    public int pageSize;
 
-    private int page;
+    public int page;
 
-    private int size;
+    public int size;
 }
