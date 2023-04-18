@@ -16,6 +16,6 @@ public class ImmobilienTimer {
     @ShellMethod( "getAndSaveFromWgGesucht" )
     @Scheduled(cron="0 */5 * * * *") //alle 5 Minuten
     public void getAndSaveFromWgGesucht() throws JsonProcessingException {
-        immobilienRepository.saveAllImmobilien(wgGesuchtAdapter.getAndMapWgResponseToImmobilienBeanList());
+        immobilienRepository.saveAllImmobilien(wgGesuchtAdapter.getAndMapWgResponseToImmobilienBeanList()); //wie mit doppelten umgehen? überschreiben?
     }
 }
