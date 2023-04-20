@@ -43,7 +43,8 @@
       </v-container>
     </v-main>
     <v-footer :absolute="!fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
+      <v-btn text href="/impressum">Impressum</v-btn>
+      <v-btn text href="/datenschutzerklaerung">Datenschutz</v-btn>
     </v-footer>
   </v-app>
 </template>
