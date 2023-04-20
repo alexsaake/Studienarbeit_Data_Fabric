@@ -34,9 +34,13 @@ INSERT INTO Einkommensentwicklung (jahr, insgesamt, maenner, frauen) VALUES
 INSERT INTO DataProduct_AccessRights (accessRight) VALUES ('gratis');
 
 INSERT INTO DataProduct_Categories (category) VALUES ('Wirtschaft');
+INSERT INTO DataProduct_Categories (category) VALUES ('Immobilien');
 
 INSERT INTO Data_Formats (format) VALUES ('json');
 INSERT INTO Data_Formats (format) VALUES ('xlsx');
 
 INSERT INTO DataProducts (shortKey, title, shortDescription, description, source, sourceLink, lastUpdated, categoryId, accessRightId) VALUES
     ('einkommensentwicklung', 'Entwicklung der Bruttomonatsverdienste in Deutschland', 'Entwicklung der durchschnittlichen Bruttomonatsverdienste ab 1991 in Deutschland', 'Der Datensatz enthält durchschnittliche Bruttoverdienste in Deutschland ab 1991. Der Datensatz enthält eine Untergliederung der Einkommen nach Geschlecht', 'Statistisches Bundesamt', 'https://www.destatis.de/DE/Themen/Arbeit/Verdienste/Verdienste-Verdienstunterschiede/Tabellen/liste-bruttomonatsverdienste.html#134694', TIMESTAMP '2022-12-24 06:57:57', (SELECT id FROM DataProduct_Categories WHERE category = 'Wirtschaft'), (SELECT id FROM DataProduct_AccessRights WHERE accessRight = 'gratis'));
+
+INSERT INTO DataProducts (shortKey, title, shortDescription, description, source, sourceLink, lastUpdated, categoryId, accessRightId) VALUES
+    ('immobilien', 'Immobilien Inserate', 'Immobilien Inserate (z.B. für Nürnberg von WG Gesucht seit April 2023)', 'Der Datensatz enthält grundlegende Daten von Immobilienanzeigen', 'Immobilienanzeigen WG-Gesucht, ...', 'https://api.wg-suche.de/v1_3/, ...', TIMESTAMP '2023-04-12 00:00:00', (SELECT id FROM DataProduct_Categories WHERE category = 'Immobilien'), (SELECT id FROM DataProduct_AccessRights WHERE accessRight = 'gratis'));
