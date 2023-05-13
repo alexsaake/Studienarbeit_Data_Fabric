@@ -33,7 +33,7 @@ public class ImmobilienRepository {
             });
         }
     }
-    public String getImmobilien() throws IOException {
+    public List <ImmobilienBean> getImmobilien() throws IOException {
         List<ImmobilienBean> immobilienBeanList = new ArrayList<>();
 
         String dataproducts_sql = "SELECT * FROM Immobilien";
@@ -53,7 +53,8 @@ public class ImmobilienRepository {
             immobilienBeanList.add(obj);
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(immobilienBeanList);
+        //ObjectMapper mapper = new ObjectMapper();
+        //return mapper.writeValueAsString(immobilienBeanList);
+        return immobilienBeanList;
     }
 }
