@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class ImmobilienRepository {
@@ -33,7 +34,6 @@ public class ImmobilienRepository {
             });
         }
     }
-    public List <ImmobilienBean> getImmobilien() throws IOException {
 
     public void saveAllNewImmobilien(List<ImmobilienBean> immobilienBeanList) {
 
@@ -70,7 +70,7 @@ public class ImmobilienRepository {
             }
         }
     }
-    public String getImmobilien() throws IOException {
+    public  List<ImmobilienBean> getImmobilien() throws IOException {
         List<ImmobilienBean> immobilienBeanList = new ArrayList<>();
 
         String dataproducts_sql = "SELECT * FROM Immobilien";
