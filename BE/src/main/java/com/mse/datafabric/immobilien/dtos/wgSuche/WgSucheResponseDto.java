@@ -1,4 +1,4 @@
-package com.mse.datafabric.immobilien.dtos.wgGesucht;
+package com.mse.datafabric.immobilien.dtos.wgSuche;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -13,9 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class WgGesuchtResponseDto {
+public class WgSucheResponseDto {
 
-    public List<WgGesuchtDto> result = new ArrayList<>();
+    public List<WgSucheDto> result = new ArrayList<>();
 
     public LocalDateTime refreshDate;
 

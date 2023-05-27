@@ -1,4 +1,4 @@
-package com.mse.datafabric.immobilien.dtos.wgGesucht;
+package com.mse.datafabric.immobilien.dtos.wgSuche;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class WgGesuchtDto {
+public class WgSucheDto {
 
     private int id;
     private String title;

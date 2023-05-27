@@ -1,5 +1,12 @@
-DROP
-ALL OBJECTS;
+DROP TABLE IF EXISTS Einkommensentwicklung;
+DROP TABLE IF EXISTS Data_To_Formats_Mappings;
+DROP TABLE IF EXISTS DataProducts;
+DROP TABLE IF EXISTS Data;
+DROP TABLE IF EXISTS Data_Formats;
+DROP TABLE IF EXISTS DataProduct_AccessRights;
+DROP TABLE IF EXISTS DataProduct_Categories;
+DROP TABLE IF EXISTS Immobilien;
+
 
 CREATE TABLE Data
 (
@@ -32,6 +39,7 @@ CREATE TABLE DataProduct_Categories
     id       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     category VARCHAR(128) NOT NULL
 );
+
 
 CREATE TABLE DataProducts
 (
@@ -68,4 +76,18 @@ CREATE TABLE Immobilien
     title    VARCHAR(4096),
     size     FLOAT,
     rent     FLOAT
+);
+
+/*DROP TABLE IF EXISTS IMMO_DATA;*/
+CREATE TABLE IF NOT EXISTS IMMO_DATA
+(
+    portalId VARCHAR(1024),
+    itemId   VARCHAR(1024),
+    date     DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    city     VARCHAR(1024),
+    title    VARCHAR(4096),
+    roomSize VARCHAR(1024),
+    flatSize VARCHAR(1024),
+    rent     VARCHAR(1024),
+    PRIMARY KEY (portalId,itemId,date)
 );
