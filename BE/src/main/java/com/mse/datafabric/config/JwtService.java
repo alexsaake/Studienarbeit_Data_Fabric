@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @Service
 public class JwtService {
 
-    @Value("security.jwtSecret")
-    private static String secretKey;
+    @Value("${security.jwtSecret}")
+    private String secretKey;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
