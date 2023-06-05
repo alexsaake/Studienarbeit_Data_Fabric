@@ -9,38 +9,30 @@ import org.springframework.shell.standard.ShellMethod;
 import java.util.Arrays;
 import java.util.List;
 
+
 @ShellComponent
 public class Scraper {
+
+    private ScrapingPage activeScraper;
+
     @ShellMethod( "runScraper" )
     public void runScraper() {
         wgGesuchtScrapeCity(Arrays.asList("Nürnberg"));
     }
-
-    public void wgSucheScrapeCity(List<String> cityName){
-        cityName.forEach(city->{
-            PageWgSucheDe scrape01 = new PageWgSucheDe("https://www.wg-suche.de/",
-                    "homeSearchLocation","HomeSelectionForm",null,
-                    "page");
-            scrape01.scrapeAllPages(city);
-            scrape01.quitBrowser();
-        });
+    public String getStatus(){
+        return activeScraper.getStatus();
     }
+    public int getPageCount(){
+        return activeScraper.getPageCount();
+    }
+
     public void wgGesuchtScrapeCity(List<String> cityName){
         cityName.forEach(city->{
-            PageWgGesuchtDe scrape01 = new PageWgGesuchtDe("https://www.wg-gesucht.de/",
+            activeScraper = new PageWgGesuchtDe("https://www.wg-gesucht.de/",
                     "autocompinp","formPortal","search_button",
                     "page");
-            scrape01.scrapeAllPages(city);
-            scrape01.quitBrowser();
+            activeScraper.scrapeAllPages(city);
+            activeScraper.quitBrowser();
         });
     }
-//    public void immoscout24DeScrapeCity(List<String> cityName){
-//        cityName.forEach(city->{
-//            PageImmoscout24De scrape01 = new PageImmoscout24De("https://www.immobilienscout24.de/",
-//                    "oss-location","oss-form",null,
-//                    "page");
-//            scrape01.scrapeAllPages(city);
-//            scrape01.quitBrowser();
-//        });
-//    }
 }

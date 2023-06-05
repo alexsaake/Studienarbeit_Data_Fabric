@@ -39,7 +39,10 @@ public abstract class ScrapingDom {
         dto.creationDate = getCreationDate();
         dto.title = getTitle();
 
-        LOGGER.info("DTO successfully created!");
+        if (dto.title == null)
+            LOGGER.info("Empty DTO created!");
+        else
+            LOGGER.info("DTO successfully created!");
 
         return dto;
     }

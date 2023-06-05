@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public abstract class ScrapingPage {
@@ -33,6 +34,10 @@ public abstract class ScrapingPage {
     public String cityWebsiteUrl;
     public List<String> cityItemsUrls;
 
+    private String status;
+
+    private int activePageCount;
+
     List<ScrapingContentDTO> cityItemDTOs;
 
 
@@ -47,6 +52,8 @@ public abstract class ScrapingPage {
         //
         cityItemDTOs = new ArrayList<>();
         //
+        status = "running";
+        //
         initBrowserFirefox();
     }
 
@@ -54,40 +61,60 @@ public abstract class ScrapingPage {
         driver.quit();
     }
     public void scrapeAllPages(String cityName){
-        int pageCount = 1;
+        activePageCount = 1;
 
         cityWebsiteUrl = getCityWebsiteUrl(cityName);
-        if (cityWebsiteUrl == null)
+        if (cityWebsiteUrl == null) {
+            status = "error";
             return;
-        while ((cityItemsUrls = getCityItemUrls(getNextPageUrl(pageCount)))!=null && cityItemsUrls.size()>0)
+        }
+        while ((cityItemsUrls = getCityItemUrls(getNextPageUrl(activePageCount)))!=null && cityItemsUrls.size()>0)
         {
             initBrowserFirefox();
             afterBrowserInit();
             scrapeItems(cityName);
-            quickSaveDTO();
-            pageCount++;
+            if(!quickSaveDTO())
+                return;
+            activePageCount++;
         }
+        status = "finished";
+    }
+    public String getStatus(){
+        return status;
+    }
+    public int getPageCount(){
+        return activePageCount;
     }
     public void scrapeItems(String cityName){
         cityItemsUrls.forEach(itemUrl -> {
+            if (itemUrl == null)
+                return;
             String itemContent = getItemDomContent(itemUrl);
             String itemId = getItemIdForUrl(itemUrl);
             if (itemContent == null)
                 return;
-            DomWgSucheDe domContent = new DomWgSucheDe(itemContent, itemId, cityName);
+            ScrapingDom domContent = initScrapingDom(itemContent, itemId, cityName);
             cityItemDTOs.add(domContent.getContentToDTO());
-            try {
-                Thread.sleep(1500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            waitRandomTime(8,12);
         });
     }
-    private void quickSaveDTO(){
+    public void waitRandomTime(int fromTimeInSec, int toTimeInSec){
+        Random rand = new Random();
+        long value = rand.nextInt((toTimeInSec - fromTimeInSec) + 1) + fromTimeInSec;
+        try {
+            Thread.sleep(value * 1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private boolean quickSaveDTO(){
         ScraperRepository repo = new ScraperRepository();
-        repo.saveDTOToDatabase(cityItemDTOs);
+        if (!repo.saveDTOToDatabase(cityItemDTOs)){
+            return false;
+        }
 
         cityItemDTOs = new ArrayList<>();
+        return true;
     }
     public WebElement getElementBy(By byElement){
         try {
@@ -134,7 +161,18 @@ public abstract class ScrapingPage {
         }
         return null;
     }
+    public void sendKeysAsHuman(WebElement we, String key){
+        String[] keys = key.split("");
+        for (int i = 0;i<keys.length;i++){
+            we.sendKeys(keys[i]);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
+    }
     public List<String> getElementsAttributes(By elementsBy, String attribute){
         List<String> itemUrls = new ArrayList<>();
         int currentAttempts = 0;
@@ -190,7 +228,9 @@ public abstract class ScrapingPage {
         profile.setPreference("permissions.default.image", 2);
         profile.setPreference("general.useragent.override", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) PC"+System.currentTimeMillis() +" Firefox/112.0");
 
+
         FirefoxOptions capabilities = new FirefoxOptions();
+        capabilities.addArguments("-private");
         capabilities.setProfile(profile);
 
         driver = new FirefoxDriver(capabilities);
@@ -208,4 +248,6 @@ public abstract class ScrapingPage {
     public abstract String getItemDomContent(String itemUrl);
     public abstract String getItemIdForUrl(String url);
     public abstract String getNextPageUrl(int pageCount);
+
+    public abstract ScrapingDom initScrapingDom(String itemContent, String itemId, String cityName);
 }

@@ -9,63 +9,44 @@ public class DomWgGesuchtDe extends ScrapingDom {
         super(domContent, itemId, city);
     }
 
-    public String parseContent(String content, boolean split)    {
-        String[] splitContent = content.split("\n");
-        if(!split){
-            String returnContent = "";
-            for(int sc = 0;sc < splitContent.length; sc++){
-                returnContent += splitContent[sc].trim();
-                if (splitContent[sc].trim() != "" && splitContent.length > (sc+1) && splitContent[sc+1].trim() != "")
-                    returnContent+=" ";
-            }
-            return returnContent;
-        }
-        if (splitContent.length > 2){
-            return splitContent[2].trim();
-        }
-        if (splitContent.length > 1){
-            return splitContent[1].trim();
-        }
-        return null;
-    }
-    public String getContentByPathX(String pathXContent, boolean split){
+    public String getContentByPathX(String pathXContent){
         Elements elementContent = domContentDocument.select(pathXContent);
         if(elementContent.size()==0)
            return null;
-        return parseContent(elementContent.get(0).wholeText(),split);
+        return elementContent.get(0).wholeText().trim();
     }
     @Override
     public String getPortalId(){
-        return "wgSuche";
+        return "wgGesucht";
     }
     @Override
-    public String getFlatSize() {return getContentByPathX("div[class='odp-dataset__content']>div[ng-if='offer.flatSize']",true);}
+    public String getFlatSize() {return null;}
     @Override
-    public String getRent(){return getContentByPathX("div[class='odp-dataset__content']>div[ng-if='offer.rent']",true);}
+    public String getRent(){return null;}
     @Override
-    public String getExtraCharges(){return getContentByPathX("div[class='odp-dataset__content']>div[ng-if='offer.extraCharges']",true);}
+    public String getExtraCharges(){return null;}
     @Override
-    public String getRoomSize(){return getContentByPathX("div[class='odp-dataset__content']>div[ng-if='offer.size']",true);}
+    public String getRoomSize(){return null;}
     @Override
-    public String getDeposit(){return getContentByPathX("div[class='odp-dataset__content']>div[ng-if='offer.deposit']",true);}
+    public String getDeposit(){return null;}
     @Override
-    public String getFrom(){
-        String from1 = getContentByPathX("div[class='odp-dataset__content']>div>span[ng-if='offer.from']",false);
-        String from2 = getContentByPathX("div[class='odp-dataset__content']>div>span[ng-if='!offer.from']",false);
-        if (from1 != null)
-            return from1;
-        else
-            return from2;
-    }
+    public String getFrom(){return null;}
     @Override
     public String getBorough(){return null;}
     @Override
-    public String getFurnished(){
-        return getContentByPathX("div[class='odp-dataset__content']>div>span[translate^='userinput.offer.room.furnishedtype']",false);}
+    public String getFurnished(){return null;}
     @Override
     public String getStatus(){return null;}
     @Override
     public String getCreationDate(){return null;}
     @Override
-    public String getTitle(){return getContentByPathX("div[class='odp-title']>h1",false);}
+    public String getTitle(){
+        String op1 =  getContentByPathX("span[class='headlineContent']");
+        if(op1 != null)
+            return op1;
+        String op2 =  getContentByPathX("h3[class='headline headline-detailed-view-title']");
+        if(op2 != null)
+            return op2;
+        return getContentByPathX("h1[id='sliderTopTitle']");
+    }
 }

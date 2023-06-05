@@ -27,9 +27,18 @@ public class ScraperRepository {
         jdbcTemplate = new JdbcTemplate(getDataSource());
     }
 
-    public void saveDTOToDatabase(List<ScrapingContentDTO> dtoList) {
-        try {
-            for (ScrapingContentDTO dto: dtoList) {
+    public boolean saveDTOToDatabase(List<ScrapingContentDTO> dtoList) {
+        int failCounter = 0;
+
+        for (ScrapingContentDTO dto: dtoList) {
+            if(dto.title == null) {
+                failCounter++;
+                continue;
+            }
+            if(dto.title.equals("")) {
+                continue;
+            }
+            try {
                 jdbcTemplate.update(connection -> {
                     PreparedStatement ps = connection.prepareStatement(INSERT_INTO_IMMO_DATA);
                     ps.setString(1, dto.portalId);
@@ -42,10 +51,15 @@ public class ScraperRepository {
                     return ps;
                 });
             }
-            LOGGER.info("DTO successfully saved!");
-        } catch (Exception e) {
-
+            catch (Exception e) {
+                //failCounter++;
+            }
         }
+        if (failCounter > 5 )
+            return false;
+
+        LOGGER.info("DTO successfully saved!");
+        return true;
     }
     public static DriverManagerDataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();

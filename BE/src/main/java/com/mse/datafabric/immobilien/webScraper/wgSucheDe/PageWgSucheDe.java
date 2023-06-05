@@ -1,5 +1,7 @@
 package com.mse.datafabric.immobilien.webScraper.wgSucheDe;
 
+import com.mse.datafabric.immobilien.webScraper.ScrapingDom;
+import com.mse.datafabric.immobilien.webScraper.wgGesuchtDE.DomWgGesuchtDe;
 import org.openqa.selenium.WebElement;
 import com.mse.datafabric.immobilien.webScraper.ScrapingPage;
 import org.openqa.selenium.By;
@@ -53,5 +55,9 @@ public class PageWgSucheDe extends ScrapingPage {
     @Override
     public String getNextPageUrl(int pageCount){
         return cityWebsiteUrl+"?"+pageGetParam+"="+pageCount;
+    }
+    @Override
+    public ScrapingDom initScrapingDom(String itemContent, String itemId, String cityName){
+        return new DomWgSucheDe(itemContent, itemId, cityName);
     }
 }
