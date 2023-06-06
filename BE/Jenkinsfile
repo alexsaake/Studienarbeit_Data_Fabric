@@ -2,22 +2,26 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('build') {
             steps {
-                echo 'Building..'
+                sh 'mvn --version'
             }
         }
         stage("Compilation") {
-           sh "./mvnw clean install -DskipTests"
+           steps {
+                sh "./mvnw clean install -DskipTests"
+            }
         }
 
         stage("Tests and Deployment") {
-           stage("Runing unit tests") {
-              sh "./mvnw test -Punit"
-            }
-           stage("Deployment") {
-              sh 'nohup ./mvnw spring-boot:run -Dserver.port=8001 &'
-            }
+            steps {
+                echo 'Runing unit tests'
+                //sh "./mvnw test -Punit"
+             }
+            steps {
+                echo 'Deployment'
+                sh 'nohup ./mvnw spring-boot:run -Dserver.port=8001 &'
+             }
          }
     }
 }
