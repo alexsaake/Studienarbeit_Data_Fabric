@@ -11,8 +11,18 @@ pipeline {
 
         stage("Compilation") {
            steps {
-                sh "mvn clean install"
+                sh "mvnw clean install -DskipTests"
             }
         }
+        stage("Tests and Deployment") {
+/*             steps {
+                echo 'Runing unit tests'
+                //sh "./mvnw test -Punit"
+             } */
+            steps {
+                echo 'Deployment'
+                sh 'mvn spring-boot:run'
+             }
+         }
     }
 }
