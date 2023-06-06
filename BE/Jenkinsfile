@@ -23,5 +23,6 @@ pipeline {
                 sh './mvnw spring-boot:run -Dserver.port=8001 &'
              }
          }
+
     }
 }
