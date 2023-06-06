@@ -14,10 +14,10 @@ pipeline {
         }
 
         stage("Tests and Deployment") {
-            steps {
+/*             steps {
                 echo 'Runing unit tests'
                 //sh "./mvnw test -Punit"
-             }
+             } */
             steps {
                 echo 'Deployment'
                 sh 'nohup ./mvnw spring-boot:run -Dserver.port=8001 &'
