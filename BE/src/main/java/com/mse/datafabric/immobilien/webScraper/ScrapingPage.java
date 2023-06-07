@@ -158,7 +158,7 @@ public abstract class ScrapingPage {
         return null;
     }
     private String getDriverPath(){
-        Resource resource = new ClassPathResource("geckodriver.exe");
+        Resource resource = new ClassPathResource("geckodriver");
         try {
             return new File(resource.getURI()).getAbsolutePath();
         } catch (IOException e) {

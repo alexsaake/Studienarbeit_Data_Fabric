@@ -30,7 +30,7 @@ public class TestRestClient {
     }
 
     private static WgSucheResponseDto getResponseForCityId(int cityId, boolean apartments, boolean flatshares, String furnished, String locale, boolean onlyVerified, int page, String rentalType, int size, boolean studentApartments) throws JsonProcessingException {
-        String response = RestClient.execute("https://api.wg-suche.de/v1_3/search/offer?apartments=" + apartments + "&cityId=" + cityId + "&flatshares=" + flatshares + "&furnished=" + furnished + "&locale=" + locale + "&onlyVerified=" + onlyVerified + "&page=" + page + "&rentalType=" + rentalType + "&size=" + size + "&studentApartments=" + studentApartments, "GET", 6000, "application/json; charset=utf-8", null, null, null);
+        String response = RestClient.execute("https://api.wg-suche.de/v1_3/search/offer?apartments=" + apartments + "&cityId=" + cityId + "&flatshares=" + flatshares + "&furnished=" + furnished + "&locale=" + locale + "&onlyVerified=" + onlyVerified + "&page=" + page + "&rentalType=" + rentalType + "&size=" + size + "&studentApartments=" + studentApartments, "GET", 6000, "application/json; charset=utf-8", null, null, null, false);
         System.out.println(response);
         ObjectMapper objectMapper = new ObjectMapper();
         JavaTimeModule javaTimeModule = new JavaTimeModule();
