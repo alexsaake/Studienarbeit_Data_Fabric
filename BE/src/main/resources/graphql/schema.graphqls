@@ -1,0 +1,11 @@
+type Query {
+    getImmobilien: [Immobilie]
+}
+type Immobilie {
+
+    id: String
+    portalId: String
+    title: String
+    size: String
+    rent: String
+}
