@@ -24,7 +24,7 @@
             <div>Gescrapte Seiten:</div>
         </v-col>
         <v-col cols="6" md="2">
-            <div>{{scraperData.pageCount}}</div>
+            <div v-if="scraperData.pageCount >= 0">{{scraperData.pageCount}}</div>
         </v-col>
     </v-row>
     <v-row>
@@ -32,7 +32,7 @@
             <div>Gescrapte Items:</div>
         </v-col>
         <v-col cols="6" md="2">
-            <div>{{scraperData.itemCount}}</div>
+            <div v-if="scraperData.itemCount >= 0">{{scraperData.itemCount}}</div>
         </v-col>
     </v-row>
     <v-row class="item-table-row" v-for="items in scraperData.items" :key="items.index">
