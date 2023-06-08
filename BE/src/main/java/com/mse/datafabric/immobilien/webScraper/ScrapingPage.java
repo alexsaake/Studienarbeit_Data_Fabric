@@ -115,7 +115,7 @@ public abstract class ScrapingPage {
             if (status.equals("stopping") || status.equals("error"))
                 return;
             //
-            if (itemUrl == null)
+            if (itemUrl == null || !itemUrl.contains(startWebsiteUrl))
                 return;
             String itemContent = getItemDomContent(itemUrl);
             String itemId = getItemIdForUrl(itemUrl);
