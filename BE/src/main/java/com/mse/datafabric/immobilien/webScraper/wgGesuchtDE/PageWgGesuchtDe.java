@@ -1,7 +1,9 @@
 package com.mse.datafabric.immobilien.webScraper.wgGesuchtDE;
 
+import com.mse.datafabric.immobilien.webScraper.ScrapingDom;
 import com.mse.datafabric.immobilien.webScraper.ScrapingPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
@@ -29,12 +31,16 @@ public class PageWgGesuchtDe extends ScrapingPage {
         WebElement searchBar = getElementBy(By.id(domQueryInputElement));
         if (searchBar == null)
             return null;
-        searchBar.sendKeys(city);
+        sendKeysAsHuman(searchBar,city);
 
         WebElement submitButton = getElementClickableBy(By.id(domSubmitBtnElement));
         if (submitButton == null)
             return null;
         submitButton.click();
+
+        submitButton = getElementClickableBy(By.id(domSubmitBtnElement));
+        if (submitButton != null)
+            submitButton.click();
 
         WebElement waitForPageElement = getElementClickableBy(By.xpath("//div[contains(@class, 'offer_list_item')]"));
         if (waitForPageElement == null)
@@ -61,32 +67,45 @@ public class PageWgGesuchtDe extends ScrapingPage {
         driver.get(itemUrl);
         getElementBy(By.className("panel-body"));
 
-        return getElementAttribute(By.cssSelector("body"),"innerHTML");
+        return getElementAttribute(By.cssSelector("head"),"innerHTML") + getElementAttribute(By.cssSelector("body"),"innerHTML");
     }
     @Override
     public String getItemIdForUrl(String url){
-        String[] splitUrl = url.split(".");
+        String[] splitUrl = url.split("\\.");
         if (splitUrl.length <= 1)
             return null;
         return splitUrl[splitUrl.length-2];
     }
     @Override
     public String getNextPageUrl(int pageCount){
-        if(pageCount == 1)
+        if(pageCount == 1) {
             return cityWebsiteUrl;
+        }
 
         driver.get(cityWebsiteUrl);
         acceptCookieBanner();
 
-        WebElement newPageButton = getElementBy(By.xpath("//a[@class='page-link' and @href='#page-"+pageCount+"']"));
+        WebElement newPageButton = getElementBy(By.xpath("//span[@class='ellipse clickable' and text() ='…']"));
         if (newPageButton == null)
             return null;
         newPageButton.click();
 
-        WebElement waitForPageElement = getElementClickableBy(By.xpath("//span[@class='current' and text() = '2']"));
+        WebElement newPageButtonInput = getElementBy(By.xpath("//span[@class='ellipse clickable']/input"));
+        if (newPageButtonInput == null)
+            return null;
+
+        newPageButtonInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        newPageButtonInput.sendKeys(String.valueOf(pageCount));
+        newPageButtonInput.sendKeys(Keys.ENTER);
+
+        WebElement waitForPageElement = getElementClickableBy(By.xpath("//span[@class='current' and text() = '"+pageCount+"']"));
         if (waitForPageElement == null)
             return null;
 
         return driver.getCurrentUrl();
+    }
+    @Override
+    public ScrapingDom initScrapingDom(String itemContent,int index, String itemId, String cityName){
+        return new DomWgGesuchtDe(itemContent,index, itemId, cityName);
     }
 }

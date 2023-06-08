@@ -16,7 +16,9 @@ public abstract class ScrapingDom {
 
     public String itemId;
     public String city;
-    public ScrapingDom(String domContent, String itemId, String city){
+    public int index;
+    public ScrapingDom(String domContent, int index, String itemId, String city){
+        this.index = index;
         this.itemId = itemId;
         this.city = city;
         parseStringToTHML(domContent);
@@ -24,6 +26,7 @@ public abstract class ScrapingDom {
 
     public ScrapingContentDTO getContentToDTO(){
         ScrapingContentDTO dto = new ScrapingContentDTO();
+        dto.index = this.index;
         dto.portalId = getPortalId();
         dto.itemId = itemId;
         dto.flatSize = getFlatSize();
@@ -38,8 +41,12 @@ public abstract class ScrapingDom {
         dto.status = getStatus();
         dto.creationDate = getCreationDate();
         dto.title = getTitle();
+        dto.dtoSaved = false;
 
-        LOGGER.info("DTO successfully created!");
+        if (dto.title == null)
+            LOGGER.info("Empty DTO created!");
+        else
+            LOGGER.info("DTO successfully created!");
 
         return dto;
     }
