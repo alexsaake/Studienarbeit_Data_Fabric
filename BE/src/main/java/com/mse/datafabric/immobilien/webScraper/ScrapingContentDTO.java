@@ -1,6 +1,7 @@
 package com.mse.datafabric.immobilien.webScraper;
 
 public class ScrapingContentDTO {
+    public int index;
     public String portalId;
     public String itemId;
     public String flatSize;
@@ -16,4 +17,5 @@ public class ScrapingContentDTO {
     public String creationDate;
 
     public String title;
+    public boolean dtoSaved;
 }

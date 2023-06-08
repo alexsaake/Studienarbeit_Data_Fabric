@@ -96,7 +96,7 @@ public class PageImmoscout24De extends ScrapingPage {
         return cityWebsiteUrl+"?"+pageGetParam+"="+pageCount;
     }
     @Override
-    public ScrapingDom initScrapingDom(String itemContent, String itemId, String cityName){
-        return new DomImmoscout24De(itemContent, itemId, cityName);
+    public ScrapingDom initScrapingDom(String itemContent,int index, String itemId, String cityName){
+        return new DomImmoscout24De(itemContent,index, itemId, cityName);
     }
 }

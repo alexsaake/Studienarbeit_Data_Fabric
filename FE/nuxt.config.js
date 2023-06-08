@@ -3,7 +3,7 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   server: {
-    host: '0' // default: localhost
+    host: '0.0.0.0' // default: localhost
   },
   head: {
     titleTemplate: '%s - DataFabricFE',

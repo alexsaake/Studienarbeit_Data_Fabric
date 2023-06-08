@@ -57,7 +57,7 @@ public class PageWgSucheDe extends ScrapingPage {
         return cityWebsiteUrl+"?"+pageGetParam+"="+pageCount;
     }
     @Override
-    public ScrapingDom initScrapingDom(String itemContent, String itemId, String cityName){
-        return new DomWgSucheDe(itemContent, itemId, cityName);
+    public ScrapingDom initScrapingDom(String itemContent,int index, String itemId, String cityName){
+        return new DomWgSucheDe(itemContent, index, itemId, cityName);
     }
 }

@@ -31,6 +31,10 @@ public class ScraperRepository {
         int failCounter = 0;
 
         for (ScrapingContentDTO dto: dtoList) {
+            if(dto.dtoSaved)
+                continue;
+            else
+                dto.dtoSaved = true;
             if(dto.title == null) {
                 failCounter++;
                 continue;

@@ -67,7 +67,7 @@ public class PageWgGesuchtDe extends ScrapingPage {
         driver.get(itemUrl);
         getElementBy(By.className("panel-body"));
 
-        return getElementAttribute(By.cssSelector("body"),"innerHTML");
+        return getElementAttribute(By.cssSelector("head"),"innerHTML") + getElementAttribute(By.cssSelector("body"),"innerHTML");
     }
     @Override
     public String getItemIdForUrl(String url){
@@ -105,7 +105,7 @@ public class PageWgGesuchtDe extends ScrapingPage {
         return driver.getCurrentUrl();
     }
     @Override
-    public ScrapingDom initScrapingDom(String itemContent, String itemId, String cityName){
-        return new DomWgGesuchtDe(itemContent, itemId, cityName);
+    public ScrapingDom initScrapingDom(String itemContent,int index, String itemId, String cityName){
+        return new DomWgGesuchtDe(itemContent,index, itemId, cityName);
     }
 }
