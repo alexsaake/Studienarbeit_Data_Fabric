@@ -21,8 +21,8 @@ pipeline {
         stage("Docker Build") {
            steps {
                 dir('BE/') {
-                    //sh "docker build -t immofabric-pipeline-image ."
-                    app = docker.build("immofabric-pipeline-image")
+                    sh "docker build -t immofabric-pipeline-image ."
+                    //app = docker.build("immofabric-pipeline-image")
                 }
             }
          }
