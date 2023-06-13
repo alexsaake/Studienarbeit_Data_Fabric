@@ -2,11 +2,12 @@ package com.mse.datafabric.immobilien.webScraper.immoscout24De;
 
 
 import com.mse.datafabric.immobilien.webScraper.ScrapingDom;
+import com.mse.datafabric.immobilien.webScraper.dtos.CityItemDTO;
 import org.jsoup.select.Elements;
 
 public class DomImmoscout24De extends ScrapingDom {
-    public DomImmoscout24De(String domContent, int index,String itemId, String city) {
-        super(domContent, index, itemId, city);
+    public DomImmoscout24De(CityItemDTO dto) {
+        super(dto);
     }
 
     public String parseContent(String content, boolean split)    {

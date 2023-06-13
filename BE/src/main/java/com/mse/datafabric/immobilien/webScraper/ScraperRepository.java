@@ -1,15 +1,11 @@
 package com.mse.datafabric.immobilien.webScraper;
 
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import com.mse.datafabric.immobilien.webScraper.dtos.ScrapingContentDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import javax.sql.DataSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;

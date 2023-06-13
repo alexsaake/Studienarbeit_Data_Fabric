@@ -1,4 +1,4 @@
-package com.mse.datafabric.immobilien.webScraper;
+package com.mse.datafabric.immobilien.webScraper.dtos;
 
 public class ScrapingContentDTO {
     public int index;

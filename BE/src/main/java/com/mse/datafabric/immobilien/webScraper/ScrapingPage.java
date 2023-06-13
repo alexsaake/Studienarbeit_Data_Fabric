@@ -1,6 +1,8 @@
 package com.mse.datafabric.immobilien.webScraper;
 
 
+import com.mse.datafabric.immobilien.webScraper.dtos.CityItemDTO;
+import com.mse.datafabric.immobilien.webScraper.dtos.ScrapingContentDTO;
 import org.openqa.selenium.*;
 
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -32,7 +34,7 @@ public abstract class ScrapingPage {
     public String domSubmitBtnElement;
     public String pageGetParam;
     public String cityWebsiteUrl;
-    public List<String> cityItemsUrls;
+    public List<CityItemDTO> cityItems;
 
     private String status;
 
@@ -73,10 +75,12 @@ public abstract class ScrapingPage {
             }
             if(status.equals("error"))
                 return;
-            while ((cityItemsUrls = getCityItemUrls(getNextPageUrl(activePageCount)))!=null && cityItemsUrls.size()>0)
+            while ((cityItems = getCityItemUrls(getNextPageUrl(activePageCount)))!=null && cityItems.size()>0)
             {
-                if(status.equals("stopping") || status.equals("error"))
+                if(status.equals("stopping") || status.equals("error")){
+                    quickSaveDTO();
                     return;
+                }
                 if(!initBrowserFirefox()){
                     status = "error";
                     return;
@@ -111,17 +115,19 @@ public abstract class ScrapingPage {
     }
     public void scrapeItems(String cityName){
 
-        cityItemsUrls.forEach(itemUrl -> {
+        cityItems.forEach(item-> {
             if (status.equals("stopping") || status.equals("error"))
                 return;
             //
-            if (itemUrl == null || !itemUrl.contains(startWebsiteUrl))
+            if (item.url == null || !item.url.contains(startWebsiteUrl))
                 return;
-            String itemContent = getItemDomContent(itemUrl);
-            String itemId = getItemIdForUrl(itemUrl);
-            if (itemContent == null)
+            item.itemContent = getItemDomContent(item.url);
+            item.itemId = getItemIdForUrl(item.url);
+            item.index = cityItemDTOs.size();
+            item.city = cityName;
+            if (item.itemContent == null)
                 return;
-            ScrapingDom domContent = initScrapingDom(itemContent,cityItemDTOs.size(), itemId, cityName);
+            ScrapingDom domContent = initScrapingDom(item);
             cityItemDTOs.add(domContent.getContentToDTO());
             waitRandomTime(8, 12);
             //
@@ -305,10 +311,10 @@ public abstract class ScrapingPage {
     }
     public abstract void afterBrowserInit();
     public abstract String getCityWebsiteUrl(String city);
-    public abstract List<String> getCityItemUrls(String cityWebsiteUrl);
+    public abstract List<CityItemDTO> getCityItemUrls(String cityWebsiteUrl);
     public abstract String getItemDomContent(String itemUrl);
     public abstract String getItemIdForUrl(String url);
     public abstract String getNextPageUrl(int pageCount);
 
-    public abstract ScrapingDom initScrapingDom(String itemContent,int index, String itemId, String cityName);
+    public abstract ScrapingDom initScrapingDom(CityItemDTO dto);
 }
