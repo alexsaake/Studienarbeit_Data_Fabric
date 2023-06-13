@@ -5,13 +5,13 @@ pipeline {
 
         stage('build') {
             steps {
-                sh './mvnw --version'
+                sh 'mvnw --version'
             }
         }
 
         stage("Compilation") {
            steps {
-                sh "./mvnw clean install -DskipTests"
+                sh "mvnw clean install -DskipTests"
             }
         }
         stage("Tests and Deployment") {
@@ -21,7 +21,7 @@ pipeline {
              } */
             steps {
                 echo 'Deployment'
-                sh './mvnw spring-boot:run'
+                sh 'mvnw spring-boot:run'
              }
          }
     }
