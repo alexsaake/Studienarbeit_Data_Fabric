@@ -29,7 +29,7 @@ pipeline {
         stage("Deployment") {
            steps {
                 dir('BE/') {
-                    sh "docker stop immofabric-pipeline-container"
+                    //sh "docker stop immofabric-pipeline-container"
                     sh "docker run  --name immofabric-pipeline-container -d -p 8443:8443 immofabric-pipeline-image"
                 }
             }
