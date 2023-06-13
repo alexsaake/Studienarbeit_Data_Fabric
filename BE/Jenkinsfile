@@ -23,7 +23,7 @@ pipeline {
              } */
             steps {
                 echo 'Deployment'
-                sh 'mvn spring-boot:run'
+                sh 'mvn -Dspring-boot.run.folders=BE/ spring-boot:run'
              }
          }
     }
