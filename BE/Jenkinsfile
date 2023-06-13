@@ -2,6 +2,7 @@ pipeline {
     agent any
     tools {
         maven 'autoinstalled maven'
+        //dockerTool 'docker'
     }
     stages {
 
@@ -21,12 +22,17 @@ pipeline {
         stage("Docker Build") {
            steps {
                 dir('BE/') {
-                    sh "docker build -t immofabric-pipeline-image ."
+                    //sh "docker build -t immofabric-pipeline-image ."
                     //app = docker.build("immofabric-pipeline-image")
+                                    echo 'Starting to build docker image'
+
+                                    script {
+                                        def customImage = docker.build("immofabric-pipeline-image")
+                                        customImage.push()
+                                    }
                 }
             }
          }
-         /*
         stage("Deployment") {
            steps {
                 dir('BE/') {
@@ -35,7 +41,6 @@ pipeline {
                 }
             }
          }
-         */
     }
 }
 
