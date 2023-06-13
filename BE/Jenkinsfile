@@ -1,6 +1,9 @@
 pipeline {
+  agent {
+    label 'docker'
+  }
     agent {
-      docker { image 'openjdk:17-jdk-alpine' }
+      docker { image 'maven:3.9.2-amazoncorretto-17-debian' }
     }
     tools {
         maven 'autoinstalled maven'
