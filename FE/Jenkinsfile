@@ -6,14 +6,18 @@ pipeline {
       stages {
         stage('Build') {
           steps {
-            sh './FE/npm install'
+            dir('FE/') {
+                sh 'npm install'
+            }
           }
         }
 
 
         stage('Run') {
           steps {
-            sh './FE/npm run dev'
+            dir('FE/') {
+                sh 'npm run dev'
+            }
           }
         }
       }

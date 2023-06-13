@@ -13,7 +13,9 @@ pipeline {
 
         stage("Compilation") {
            steps {
-                sh "mvn -f BE/pom.xml clean install -DskipTests"
+                dir('BE/') {
+                    sh "mvn clean install -DskipTests"
+                }
             }
         }
         stage("Tests and Deployment") {
