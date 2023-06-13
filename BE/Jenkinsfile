@@ -2,6 +2,7 @@ pipeline {
     agent any
     tools {
         maven 'autoinstalled maven'
+        docker 'docker'
     }
     stages {
 
