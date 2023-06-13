@@ -5,8 +5,8 @@ import com.mse.datafabric.immobilien.webScraper.ScrapingDom;
 import org.jsoup.select.Elements;
 
 public class DomWgSucheDe extends ScrapingDom {
-    public DomWgSucheDe(String domContent, String itemId, String city) {
-        super(domContent, itemId, city);
+    public DomWgSucheDe(String domContent,int index, String itemId, String city) {
+        super(domContent, index,itemId, city);
     }
 
     public String parseContent(String content, boolean split)    {
@@ -36,7 +36,7 @@ public class DomWgSucheDe extends ScrapingDom {
     }
     @Override
     public String getPortalId(){
-        return "wgGesucht";
+        return "wgSuche";
     }
     @Override
     public String getFlatSize() {return getContentByPathX("div[class='odp-dataset__content']>div[ng-if='offer.flatSize']",true);}
@@ -67,5 +67,5 @@ public class DomWgSucheDe extends ScrapingDom {
     @Override
     public String getCreationDate(){return null;}
     @Override
-    public String getTitle(){return getContentByPathX("div[class='odp-title']>h1",false);}
+    public String getTitle(){return getContentByPathX("h1[id='odp-sliderTopTitle']>h1",false);}
 }
