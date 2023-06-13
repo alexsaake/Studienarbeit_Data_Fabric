@@ -1,9 +1,9 @@
 package com.mse.datafabric.immobilien.webScraper;
 
+import com.mse.datafabric.immobilien.webScraper.dtos.CityItemDTO;
+import com.mse.datafabric.immobilien.webScraper.dtos.ScrapingContentDTO;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,15 +13,17 @@ import org.slf4j.LoggerFactory;
 public abstract class ScrapingDom {
     public static final Logger LOGGER= LoggerFactory.getLogger(ScrapingDom.class);
     public Document domContentDocument;
+    public Document domItemCardContentDocument;
 
     public String itemId;
     public String city;
     public int index;
-    public ScrapingDom(String domContent, int index, String itemId, String city){
-        this.index = index;
-        this.itemId = itemId;
-        this.city = city;
-        parseStringToTHML(domContent);
+    public ScrapingDom(CityItemDTO dto){
+        this.index = dto.index;
+        this.itemId = dto.itemId;
+        this.city = dto.city;
+        domContentDocument = parseStringToTHML(dto.itemContent);
+        domItemCardContentDocument = parseStringToTHML(dto.itemCardContent);
     }
 
     public ScrapingContentDTO getContentToDTO(){
@@ -51,9 +53,9 @@ public abstract class ScrapingDom {
         return dto;
     }
 
-    public void parseStringToTHML(String content){
+    public Document parseStringToTHML(String content){
         String html = content;
-        domContentDocument = Jsoup.parse(html);
+        return Jsoup.parse(html);
     }
 
     public String getCityName(){
