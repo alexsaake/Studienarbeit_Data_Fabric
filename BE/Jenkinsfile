@@ -18,15 +18,16 @@ pipeline {
                 }
             }
         }
-        stage("Tests and Deployment") {
-/*             steps {
-                echo 'Runing unit tests'
-                //sh "./mvnw test -Punit"
-             } */
-            steps {
-                echo 'Deployment'
-                sh 'mvn -f BE/ spring-boot:run'
-             }
+        stage("Deployment") {
+           steps {
+                dir('BE/') {
+                    sh "docker build -t immofabric-pipeline-image ."
+                    sh "docker stop immofabric-pipeline-container"
+                    sh "docker run  --name immofabric-pipeline-container -d -p 8443:8443 immofabric-pipeline-image"
+                }
+            }
          }
     }
 }
+
+
