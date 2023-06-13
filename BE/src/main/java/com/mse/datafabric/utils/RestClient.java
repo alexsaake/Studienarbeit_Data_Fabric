@@ -3,11 +3,14 @@ package com.mse.datafabric.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Map;
 
@@ -21,22 +24,22 @@ public class RestClient{
     }
 
     public static String execute(String targetURL) {
-        return execute(targetURL, "GET", 60000,null, null, null, null, null);
+        return execute(targetURL, "GET", 60000,null, null, null, null, false);
     }
 
     public static String execute(String targetURL,String user,String passwort) {
-        return execute(targetURL, "GET", 60000,null, null, user, passwort, null);
+        return execute(targetURL, "GET", 60000,null, null, user, passwort, false);
     }
 
-    public static String execute(String targetURL, String requestMethod, int timeoutInMs, String contentType, String body, String username, String password) {
-        return execute(targetURL, requestMethod, timeoutInMs, contentType, body, username, password, null);
+    public static String execute(String targetURL, String requestMethod, int timeoutInMs, String contentType, String body, String username, String password, Boolean ignoreSSL) {
+        return execute(targetURL, requestMethod, timeoutInMs, contentType, body, username, password, null, ignoreSSL);
     }
 
-    public static String execute(String targetURL, String requestMethod, int timeoutInMs, String contentType, String body, String username, String password, final Map<String, String> cutomRequestHeaders) {
-        return new String(requestByte(targetURL, requestMethod, timeoutInMs, contentType, body, username, password, cutomRequestHeaders));
+    public static String execute(String targetURL, String requestMethod, int timeoutInMs, String contentType, String body, String username, String password, final Map<String, String> cutomRequestHeaders, Boolean ignoreSSL) {
+        return new String(requestByte(targetURL, requestMethod, timeoutInMs, contentType, body, username, password, cutomRequestHeaders, ignoreSSL));
     }
 
-    public static byte[] requestByte(String targetURL, String requestMethod, int timeoutInMs, String contentType, String body, String username, String password, final Map<String, String> cutomRequestHeaders) {
+    public static byte[] requestByte(String targetURL, String requestMethod, int timeoutInMs, String contentType, String body, String username, String password, final Map<String, String> cutomRequestHeaders, Boolean ignoreSSL) {
         URL url;
         InputStream inputStream;
         BufferedWriter writer;
@@ -45,6 +48,27 @@ public class RestClient{
         try{
             url = new URL(targetURL);
             if (targetURL.contains("https")) {
+                if (ignoreSSL) {
+                    try {
+                        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
+                            public boolean verify(String hostname, SSLSession session) {
+                                return true;
+                            }
+                        });
+                        SSLContext context = SSLContext.getInstance("TLS");
+                        context.init(null, new X509TrustManager[]{new X509TrustManager(){
+                            public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+                            public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+                            public X509Certificate[] getAcceptedIssuers() {
+                                return new X509Certificate[0];
+                            }
+                        }}, new SecureRandom());
+                        HttpsURLConnection.setDefaultSSLSocketFactory(
+                                context.getSocketFactory());
+                    } catch (Exception e) { // should never happen
+                        e.printStackTrace();
+                    }
+                }
                 connection = (HttpsURLConnection) url.openConnection();
             } else {
                 connection = (HttpURLConnection) url.openConnection();
