@@ -1,6 +1,8 @@
 package com.mse.datafabric.immobilien.webScraper.immoscout24De;
 
+import com.mse.datafabric.immobilien.webScraper.ScrapingDom;
 import com.mse.datafabric.immobilien.webScraper.ScrapingPage;
+import com.mse.datafabric.immobilien.webScraper.wgSucheDe.DomWgSucheDe;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.SearchContext;
@@ -92,5 +94,9 @@ public class PageImmoscout24De extends ScrapingPage {
     @Override
     public String getNextPageUrl(int pageCount){
         return cityWebsiteUrl+"?"+pageGetParam+"="+pageCount;
+    }
+    @Override
+    public ScrapingDom initScrapingDom(String itemContent,int index, String itemId, String cityName){
+        return new DomImmoscout24De(itemContent,index, itemId, cityName);
     }
 }

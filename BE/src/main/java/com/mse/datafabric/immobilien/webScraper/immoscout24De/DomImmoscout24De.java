@@ -5,8 +5,8 @@ import com.mse.datafabric.immobilien.webScraper.ScrapingDom;
 import org.jsoup.select.Elements;
 
 public class DomImmoscout24De extends ScrapingDom {
-    public DomImmoscout24De(String domContent, String itemId, String city) {
-        super(domContent, itemId, city);
+    public DomImmoscout24De(String domContent, int index,String itemId, String city) {
+        super(domContent, index, itemId, city);
     }
 
     public String parseContent(String content, boolean split)    {
