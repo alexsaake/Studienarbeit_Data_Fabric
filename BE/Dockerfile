@@ -7,7 +7,7 @@ COPY src src
 RUN mvn install
 
 
-FROM maven:3.8.3-openjdk-17
+FROM openjdk:17-jdk-alpine AS build
 #VOLUME /tmp
 ARG JAR_FILE=/workspace/app/target/*.jar
 COPY --from=build /bin/cat /bin/cat
