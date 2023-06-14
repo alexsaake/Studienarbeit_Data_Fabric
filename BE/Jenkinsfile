@@ -1,9 +1,19 @@
 pipeline {
     agent {
+    /*
       docker {
             image 'maven:3.8.3-openjdk-17'
+            label 'datafabric-docker'
             args '-p 8443:8443'
       }
+      */
+          dockerfile {
+              filename 'Dockerfile'
+              dir 'BE'
+              label 'datafabric-docker'
+              //additionalBuildArgs  '--build-arg version=1.0.2'
+              args '-p 8443:8443'
+          }
     }
     stages {
 
