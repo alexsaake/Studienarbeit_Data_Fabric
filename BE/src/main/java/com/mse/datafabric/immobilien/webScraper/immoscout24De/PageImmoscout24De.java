@@ -2,7 +2,7 @@ package com.mse.datafabric.immobilien.webScraper.immoscout24De;
 
 import com.mse.datafabric.immobilien.webScraper.ScrapingDom;
 import com.mse.datafabric.immobilien.webScraper.ScrapingPage;
-import com.mse.datafabric.immobilien.webScraper.wgSucheDe.DomWgSucheDe;
+import com.mse.datafabric.immobilien.webScraper.dtos.CityItemDTO;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.SearchContext;
@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -70,10 +71,20 @@ public class PageImmoscout24De extends ScrapingPage {
     }
 
     @Override
-    public List<String> getCityItemUrls(String cityWebsiteUrl) {
+    public List<CityItemDTO> getCityItemUrls(String cityWebsiteUrl) {
         driver.get(cityWebsiteUrl);
-        
-        return getElementsAttributes(By.xpath("//wgs-search-offer-list-item/div/a"),"href");
+        if(cityWebsiteUrl == null)
+            return null;
+        driver.get(cityWebsiteUrl);
+
+        List<String> urls = getElementsAttributes(By.xpath("//wgs-search-offer-list-item/div/a"),"href");
+        List<CityItemDTO> dtos = new ArrayList<>();
+        urls.forEach(url-> {
+            CityItemDTO dto = new CityItemDTO();
+            dto.url = url;
+            dtos.add(dto);
+        });
+        return dtos;
     }
 
     @Override
@@ -96,7 +107,7 @@ public class PageImmoscout24De extends ScrapingPage {
         return cityWebsiteUrl+"?"+pageGetParam+"="+pageCount;
     }
     @Override
-    public ScrapingDom initScrapingDom(String itemContent,int index, String itemId, String cityName){
-        return new DomImmoscout24De(itemContent,index, itemId, cityName);
+    public ScrapingDom initScrapingDom(CityItemDTO dto){
+        return new DomImmoscout24De(dto);
     }
 }

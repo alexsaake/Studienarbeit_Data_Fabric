@@ -89,10 +89,7 @@ export default {
             }
         },
         async startScraper() {
-            return await startScraping(this.$axios, this.city).then(response => {
-                if (response.status === 200)
-                    alert(response.data);
-            })
+            return await startScraping(this.$axios, this.city);
         },
         async stopScraper() {
             await setScraperData(this.$axios, {status:'stop'});

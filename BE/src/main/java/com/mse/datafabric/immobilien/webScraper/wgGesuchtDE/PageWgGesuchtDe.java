@@ -2,10 +2,13 @@ package com.mse.datafabric.immobilien.webScraper.wgGesuchtDE;
 
 import com.mse.datafabric.immobilien.webScraper.ScrapingDom;
 import com.mse.datafabric.immobilien.webScraper.ScrapingPage;
+import com.mse.datafabric.immobilien.webScraper.dtos.CityItemDTO;
+import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -54,12 +57,20 @@ public class PageWgGesuchtDe extends ScrapingPage {
     }
 
     @Override
-    public List<String> getCityItemUrls(String cityWebsiteUrl) {
+    public List<CityItemDTO> getCityItemUrls(String cityWebsiteUrl) {
         if(cityWebsiteUrl == null)
             return null;
         driver.get(cityWebsiteUrl);
-        
-        return getElementsAttributes(By.xpath("//div[@class='row']/div/div/div/h3/a"),"href");
+
+        List<WebElement> elements = getElementsBy(By.xpath("//div[@class='row']/div/div/div/h3/a"));
+        List<CityItemDTO> dtos = new ArrayList<>();
+        elements.forEach(element-> {
+            CityItemDTO dto = new CityItemDTO();
+            dto.url = element.getAttribute("href");
+            dto.itemCardContent = element.findElement(By.xpath("./../../../..")).getAttribute("innerHTML");;
+            dtos.add(dto);
+        });
+        return dtos;
     }
 
     @Override
@@ -105,7 +116,7 @@ public class PageWgGesuchtDe extends ScrapingPage {
         return driver.getCurrentUrl();
     }
     @Override
-    public ScrapingDom initScrapingDom(String itemContent,int index, String itemId, String cityName){
-        return new DomWgGesuchtDe(itemContent,index, itemId, cityName);
+    public ScrapingDom initScrapingDom(CityItemDTO dto){
+        return new DomWgGesuchtDe(dto);
     }
 }
