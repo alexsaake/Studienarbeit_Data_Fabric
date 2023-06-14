@@ -10,6 +10,7 @@ RUN mvn install
 FROM maven:3.8.3-openjdk-17
 #VOLUME /tmp
 ARG JAR_FILE=/workspace/app/target/*.jar
+COPY --from=build /bin/cat /bin/cat
 COPY --from=build ${JAR_FILE} web-server.jar
 EXPOSE 8443
 ENTRYPOINT ["java", "-jar", "/web-server.jar"]
