@@ -10,7 +10,7 @@ pipeline {
           dockerfile {
               filename 'Dockerfile'
               dir 'BE'
-              label 'datafabric-docker'
+              //label 'datafabric-docker'
               //additionalBuildArgs  '--build-arg version=1.0.2'
               args '-p 8443:8443'
           }
