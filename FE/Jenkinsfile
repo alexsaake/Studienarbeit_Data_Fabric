@@ -1,8 +1,20 @@
 pipeline {
-      agent any
-
-      tools {nodejs "nodejs16"}
-
+    agent {
+      docker {
+            image 'node:16-alpine'
+            //label 'datafabric-docker'
+            args '-p 3000:3000'
+      }
+      /*
+          dockerfile {
+              filename 'Dockerfile'
+              dir 'BE'
+              //label 'datafabric-docker'
+              //additionalBuildArgs  '--build-arg version=1.0.2'
+              args '-p 8443:8443'
+          }
+          */
+    }
       stages {
         stage('Build') {
           steps {
