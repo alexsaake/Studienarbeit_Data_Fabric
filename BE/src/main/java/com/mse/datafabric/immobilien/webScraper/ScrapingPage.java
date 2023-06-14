@@ -224,7 +224,7 @@ public abstract class ScrapingPage {
         String applicationName;
         switch (getOperatingSystemType()){
             case "mac":
-                return null;
+                return "geckodriver";
             case "windows":
                 applicationName = "geckodriver.exe";
                 break;
@@ -256,16 +256,17 @@ public abstract class ScrapingPage {
     }
 
     private boolean initBrowserFirefox(){
-        String driverPtah = getDriverPath();
-        if (driverPtah == null){
-            System.console().printf("No selenium driver available on this OS!");
+        String driverPath = getDriverPath();
+        if (driverPath == null){
+            //System.console().printf("No selenium driver available on this OS!");
+            System.out.println("No selenium driver available on this OS!");
             return false;
         }
         try {
             if (driver != null) {
                 driver.quit();
             }
-            System.setProperty("webdriver.gecko.driver", getDriverPath());
+            System.setProperty("webdriver.gecko.driver", driverPath);
 
             FirefoxProfile profile = new FirefoxProfile();
             profile.setPreference("browser.download.folderList", 1);
