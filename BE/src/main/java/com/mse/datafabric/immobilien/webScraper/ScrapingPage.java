@@ -222,9 +222,11 @@ public abstract class ScrapingPage {
     }
     private String getDriverPath(){
         String applicationName;
+
         switch (getOperatingSystemType()){
             case "mac":
-                return "geckodriver";
+                applicationName = "geckodriver";
+                break;
             case "windows":
                 applicationName = "geckodriver.exe";
                 break;
