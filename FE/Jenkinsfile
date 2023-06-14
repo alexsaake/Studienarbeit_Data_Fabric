@@ -19,7 +19,7 @@ pipeline {
               stage('Clean Cache') {
                 steps {
                   dir('FE/') {
-                      sh 'sudo npm cache clean --force '
+                      sh 'npm cache clean --force '
                   }
                 }
               }
