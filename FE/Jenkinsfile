@@ -16,6 +16,13 @@ pipeline {
           */
     }
       stages {
+              stage('Clean Cache') {
+                steps {
+                  dir('FE/') {
+                      sh 'sudo npm cache clean --force '
+                  }
+                }
+              }
         stage('Build') {
           steps {
             dir('FE/') {
