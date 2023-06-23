@@ -73,7 +73,7 @@ export default {
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
-    customVariables: ['~/assets/variables.scss'],
+    css: ['~/assets/variables.scss'],
     theme: {
       dark: true,
       themes: {
