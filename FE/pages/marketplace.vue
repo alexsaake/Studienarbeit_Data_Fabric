@@ -57,66 +57,67 @@ export default {
       search: '',
       filter: '',
       filters: ['All'],
-      dataProductsOverview: [
-        {
-          shortKey: String,
-          title: String,
-          shortDescription: String,
-          lastUpdated: Date,
-          category: String,
-          accessRight: String,
-          image: Uint8Array,
-        },
-      ],
+      dataProductsOverview: [],
       openedDetails: '',
-      isLoading: false,
+      isLoading: true, // Initialize the loading state to true
     }
-  },
-  async fetch() {
-    this.isLoading = true
-    this.dataProductsOverview = await this.fetchDataProductsOverview()
-    this.filters = this.getDataProductCategories()
-    this.isLoading = false
   },
   computed: {
     filteredDataProductsOverview() {
-      if (this.filter === '' || this.filter === 'All') {
-        return this.dataProductsOverview
+      const search = this.search.toLowerCase()
+      const filter = this.filter
+
+      if (filter === '' || filter === 'All') {
+        return this.dataProductsOverview.filter((dataProduct) =>
+          dataProduct.title.toLowerCase().includes(search)
+        )
       } else {
         return this.dataProductsOverview.filter(
           (dataProduct) =>
-            dataProduct.title
-              .toLowerCase()
-              .includes(this.search.toLowerCase()) &&
-            dataProduct.category === this.filter
+            dataProduct.title.toLowerCase().includes(search) &&
+            dataProduct.category === filter
         )
       }
     },
   },
+
+  async created() {
+    await this.fetchData() // Call the fetchData method on component creation
+  },
+
   methods: {
-    async fetchDataProductsOverview() {
+    async fetchData() {
       const rawDataProductsOverview = await dataProductsOverviewProvider(
         this.$axios
       )
-      const dataProductsOverview = []
-      for (const dataProduct of rawDataProductsOverview) {
-        dataProductsOverview.push({
-          shortKey: dataProduct.shortKey,
-          title: dataProduct.title,
-          shortDescription: dataProduct.shortDescription,
-          lastUpdated: new Date(dataProduct.lastUpdated).toLocaleDateString(
-            'ge-GE'
-          ),
-          category: dataProduct.category,
-          accessRight: dataProduct.accessRight,
-          image: await dataProductImageProvider(
-            this.$axios,
-            dataProduct.shortKey
-          ),
-        })
+
+      if (Array.isArray(rawDataProductsOverview)) {
+        const dataProductsOverview = []
+        for (const dataProduct of rawDataProductsOverview) {
+          dataProductsOverview.push({
+            shortKey: dataProduct.shortKey,
+            title: dataProduct.title,
+            shortDescription: dataProduct.shortDescription,
+            lastUpdated: new Date(dataProduct.lastUpdated).toLocaleDateString(
+              'ge-GE'
+            ),
+            category: dataProduct.category,
+            accessRight: dataProduct.accessRight,
+            image: await dataProductImageProvider(
+              this.$axios,
+              dataProduct.shortKey
+            ),
+          })
+        }
+        this.dataProductsOverview = dataProductsOverview
+        this.filters = this.getDataProductCategories()
+      } else {
+        // markus: removed error because it always shows up if data is not instantly loaded
       }
-      return dataProductsOverview
+
+      this.isLoading = false // Set loading state to false after fetching data
     },
+
     getDataProductCategories() {
       const categories = this.dataProductsOverview.map(
         (dataProduct) => dataProduct.category
