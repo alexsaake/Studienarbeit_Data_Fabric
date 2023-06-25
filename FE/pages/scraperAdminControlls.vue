@@ -103,6 +103,10 @@ export default {
 }
 </script>
 <style lang="css">
+.item-table-row{
+    font-size: 14px;
+    line-height: 1.25;
+}
 .item-table-column {
     border-bottom: white 1px solid;
 }

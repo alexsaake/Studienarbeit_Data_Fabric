@@ -17,7 +17,7 @@ public class ScraperRepository {
     public static final Logger LOGGER= LoggerFactory.getLogger(ScraperRepository.class);
     public final JdbcTemplate jdbcTemplate;
 
-    private static final String INSERT_INTO_IMMO_DATA = "INSERT INTO IMMO_DATA (portalId, itemId, city, title, roomSize, flatSize, rent) values (?,?,?,?,?,?,?)";
+    private static final String INSERT_INTO_IMMO_DATA = "INSERT INTO IMMO_DATA (portalId, itemId, city, status, creationDate, title, roomSize, flatSize, rent, extraCharges, deposit, fromDate) values (?,?,?,?,?,?,?,?,?,?,?,?)";
 
     public ScraperRepository() {
         jdbcTemplate = new JdbcTemplate(getDataSource());
@@ -44,10 +44,15 @@ public class ScraperRepository {
                     ps.setString(1, dto.portalId);
                     ps.setString(2, dto.itemId);
                     ps.setString(3, dto.cityName);
-                    ps.setString(4, dto.title);
-                    ps.setString(5, dto.roomSize);
-                    ps.setString(6, dto.flatSize);
-                    ps.setString(7, dto.rent);
+                    ps.setString(4, dto.status);
+                    ps.setString(5, dto.creationDate);
+                    ps.setString(6, dto.title);
+                    ps.setString(7, dto.roomSize);
+                    ps.setString(8, dto.flatSize);
+                    ps.setString(9, dto.rent);
+                    ps.setString(10, dto.extraCharges);
+                    ps.setString(11, dto.deposit);
+                    ps.setString(12, dto.from);
                     return ps;
                 });
             }

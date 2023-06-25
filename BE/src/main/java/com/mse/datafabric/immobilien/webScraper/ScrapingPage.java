@@ -1,6 +1,7 @@
 package com.mse.datafabric.immobilien.webScraper;
 
 
+import com.mse.datafabric.DataProductRepository;
 import com.mse.datafabric.immobilien.webScraper.dtos.CityItemDTO;
 import com.mse.datafabric.immobilien.webScraper.dtos.ScrapingContentDTO;
 import org.openqa.selenium.*;
@@ -10,21 +11,24 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-
 public abstract class ScrapingPage {
 
+    DataProductRepository dataProductRepo;
     public final static int DRIVER_TIMEOUT = 10;
     public WebDriver driver;
     public WebDriverWait driverWaiter;
@@ -52,6 +56,7 @@ public abstract class ScrapingPage {
         this.domSubmitFormElement = domSubmitFormElement;
         this.domSubmitBtnElement = domSubmitBtnElement;
         this.pageGetParam = pageGetParam;
+        dataProductRepo = new DataProductRepository();
         //
         cityItemDTOs = new ArrayList<>();
         //
@@ -66,6 +71,7 @@ public abstract class ScrapingPage {
         driver.quit();
     }
     public void scrapeAllPages(String cityName){
+        dataProductRepo.updateDataProductDate("immobilien", new java.sql.Date(System.currentTimeMillis()));
         try {
             activePageCount = 1;
 
@@ -125,7 +131,7 @@ public abstract class ScrapingPage {
             item.itemId = getItemIdForUrl(item.url);
             item.index = cityItemDTOs.size();
             item.city = cityName;
-            if (item.itemContent == null)
+            if (item.itemContent == null || item.itemId.equals("0"))
                 return;
             ScrapingDom domContent = initScrapingDom(item);
             cityItemDTOs.add(domContent.getContentToDTO());
@@ -296,6 +302,7 @@ public abstract class ScrapingPage {
 
             FirefoxOptions capabilities = new FirefoxOptions();
             capabilities.addArguments("-private");
+            capabilities.addArguments("-allow-origins", "*");
             capabilities.setProfile(profile);
 
             driver = new FirefoxDriver(capabilities);

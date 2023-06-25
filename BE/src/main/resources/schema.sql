@@ -78,16 +78,21 @@ CREATE TABLE Immobilien
     rent     FLOAT
 );
 
-/*DROP TABLE IF EXISTS IMMO_DATA;*/
+DROP TABLE IF EXISTS IMMO_DATA;
 CREATE TABLE IF NOT EXISTS IMMO_DATA
 (
-    portalId VARCHAR(1024),
-    itemId   VARCHAR(1024),
-    date     DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    city     VARCHAR(1024),
-    title    VARCHAR(4096),
-    roomSize VARCHAR(1024),
-    flatSize VARCHAR(1024),
-    rent     VARCHAR(1024),
+    portalId        VARCHAR(1024),
+    itemId          VARCHAR(1024),
+    date            DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    city            VARCHAR(1024),
+    status          VARCHAR(1024),
+    creationDate    DATE,
+    title           VARCHAR(4096),
+    roomSize        VARCHAR(1024),
+    flatSize        VARCHAR(1024),
+    rent            VARCHAR(1024),
+    extraCharges    VARCHAR(1024),
+    deposit         VARCHAR(1024),
+    fromDate        DATE,
     PRIMARY KEY (portalId,itemId,date)
 );

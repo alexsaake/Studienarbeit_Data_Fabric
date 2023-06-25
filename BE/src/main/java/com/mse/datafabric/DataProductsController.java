@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.mse.datafabric.utils.TableJsonConverter;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.Base64;
 
 
@@ -24,6 +26,9 @@ public class DataProductsController {
 
     private final Logger myLogger;
     private final IDataProductsProvider myDataProductsProvider;
+
+    @Autowired
+    private TableJsonConverter tableJsonConverter;
 
     @Autowired
     public DataProductsController(IDataProductsProvider dataProductsProvider)
@@ -87,6 +92,23 @@ public class DataProductsController {
         }
 
         return jsonString;
+    }
+
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/{dataproduct_key}/Data",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getDataProductDetailData(@PathVariable String dataproduct_key){
+        switch (dataproduct_key){
+            case "immobilien":
+                try {
+                    return tableJsonConverter.getAllTableDataAsJsonString("IMMO_DATA");
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+        }
+        return "{}";
     }
 }
 

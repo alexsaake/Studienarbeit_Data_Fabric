@@ -18,17 +18,19 @@
           ></v-progress-circular>
         </div>
       </v-col>
-      <v-col
-        v-else-if="filteredDataProductsOverview.length > 0"
-        cols="12"
-        md="4"
-      >
+        <v-col
+                v-for="dataProductOverview in filteredDataProductsOverview"
+                v-else-if="filteredDataProductsOverview.length > 0"
+                :key="dataProductOverview.shortKey"
+                cols="12"
+                md="4"
+        >
         <v-card
-          v-for="dataProductOverview in filteredDataProductsOverview"
-          :key="dataProductOverview.shortKey"
+          style="height: 100%"
           @click="onClickDataProductDetail(dataProductOverview.shortKey)"
         >
           <data-product-overview-card
+            style="height: 100%"
             :data-product-overview="dataProductOverview"
           />
         </v-card>
@@ -37,7 +39,7 @@
         <p>No data products found.</p>
       </v-col>
     </v-row>
-    <v-overlay v-if="openedDetails !== ''">
+    <v-overlay v-if="openedDetails !== ''" class="my-overlay">
       <data-product-detail-card
         v-click-outside="onClickOutsideDataProductDetail"
         :short-key="openedDetails"
@@ -135,7 +137,11 @@ export default {
   },
 }
 </script>
-
+<style scoped>
+.my-overlay >>> .v-overlay__content {
+    width: 100%;
+}
+</style>
 <style>
 .circle {
   display: flex;
