@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import path from 'path'
 import fs from 'fs'
 
 export default {
@@ -6,8 +7,8 @@ export default {
   server: {
     host: '0.0.0.0', // default: localhost
     https: {
-      key: fs.readFileSync('/private/etc/letsencrypt/live/immofabric.de/privkey.pem'),
-      cert: fs.readFileSync('/private/etc/letsencrypt/live/immofabric.de/fullchain.pem')
+      key: fs.readFileSync(path.resolve(__dirname, 'privkey.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'fullchain.pem'))
     }
   },
   head: {
