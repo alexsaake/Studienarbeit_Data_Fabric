@@ -1,9 +1,15 @@
+import path from 'path'
+import fs from 'fs'
 import colors from 'vuetify/es5/util/colors'
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   server: {
-    host: '0.0.0.0' // default: localhost
+    host: '0.0.0.0', // default: localhost
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, 'privkey.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'fullchain.pem'))
+    }
   },
   head: {
     titleTemplate: '%s - DataFabricFE',
