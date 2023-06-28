@@ -3,7 +3,7 @@ pipeline {
       docker {
             image 'node:16.20-alpine3.17'
             //label 'datafabric-docker'
-            args '-p 3000:3000'
+            args '-p 80:3000'
       }
       /*
           dockerfile {
