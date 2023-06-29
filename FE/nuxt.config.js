@@ -53,7 +53,7 @@ export default {
 
   proxy: {
     '/api': {
-      target: 'http://192.168.178.11:8443',
+      target: 'http://localhost:8443',
       changeOrigin: true,
       secure: false,
       ws: true,
