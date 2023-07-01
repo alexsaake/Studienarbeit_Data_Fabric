@@ -17,7 +17,7 @@ public class ScraperRepository {
     public static final Logger LOGGER= LoggerFactory.getLogger(ScraperRepository.class);
     public final JdbcTemplate jdbcTemplate;
 
-    private static final String INSERT_INTO_IMMO_DATA = "INSERT INTO IMMO_DATA (portalId, itemId, city, status, creationDate, title, roomSize, flatSize, rent, extraCharges, deposit, fromDate) values (?,?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String INSERT_INTO_IMMO_DATA = "INSERT INTO IMMO_DATA (portalId, itemId, city, status, creationDate, title, roomSize, flatSize, rent, extraCharges, deposit, fromDate, addressCity, addressStreet, currencyUnit,sizeUnit) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     public ScraperRepository() {
         jdbcTemplate = new JdbcTemplate(getDataSource());
@@ -53,6 +53,10 @@ public class ScraperRepository {
                     ps.setString(10, dto.extraCharges);
                     ps.setString(11, dto.deposit);
                     ps.setString(12, dto.from);
+                    ps.setString(13, dto.addressCity);
+                    ps.setString(14, dto.addressStreet);
+                    ps.setString(15, dto.currencyUnit);
+                    ps.setString(16, dto.sizeUnit);
                     return ps;
                 });
             }
@@ -68,7 +72,7 @@ public class ScraperRepository {
     }
     public static DriverManagerDataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl("jdbc:h2:file:~/db/datafabric;AUTO_SERVER=true");
+        dataSource.setUrl("jdbc:h2:file:./db/datafabric;NON_KEYWORDS=USER;AUTO_SERVER=true");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
         return dataSource;

@@ -43,6 +43,11 @@ public abstract class ScrapingDom {
         dto.status = getStatus();
         dto.creationDate = getCreationDate();
         dto.title = getTitle();
+        dto.addressCity = getAddressCity();
+        dto.addressStreet = getAddressStreet();
+        dto.currencyUnit = getCurrencyUnit();
+        dto.sizeUnit = getSizeUnit();
+
         dto.dtoSaved = false;
 
         if (dto.title == null)
@@ -73,7 +78,12 @@ public abstract class ScrapingDom {
     public abstract String getFurnished();
     public abstract String getStatus();
     public abstract String getCreationDate();
+
     public abstract String getDeposit();
+    public abstract String getAddressCity();
+    public abstract String getAddressStreet();
+    public abstract String getCurrencyUnit();
+    public abstract String getSizeUnit();
 
 
 }

@@ -89,6 +89,9 @@ export default {
 }
 </script>
 <style lang="css">
+.container{
+    overflow-x: scroll;
+}
 v-container{
     overflow-x: auto;
     flex-wrap: nowrap;

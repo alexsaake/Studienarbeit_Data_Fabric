@@ -17,5 +17,9 @@ public class ScrapingContentDTO {
     public String creationDate;
 
     public String title;
+    public String addressCity;
+    public String addressStreet;
+    public String currencyUnit;
+    public String sizeUnit;
     public boolean dtoSaved;
 }

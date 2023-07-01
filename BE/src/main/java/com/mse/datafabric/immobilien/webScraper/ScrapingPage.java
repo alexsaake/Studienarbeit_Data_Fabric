@@ -303,6 +303,7 @@ public abstract class ScrapingPage {
             FirefoxOptions capabilities = new FirefoxOptions();
             capabilities.addArguments("-private");
             capabilities.addArguments("-allow-origins", "*");
+            capabilities.setBinary("C:\\Program Files\\Mozilla Firefox\\firefox.exe");
             capabilities.setProfile(profile);
 
             driver = new FirefoxDriver(capabilities);

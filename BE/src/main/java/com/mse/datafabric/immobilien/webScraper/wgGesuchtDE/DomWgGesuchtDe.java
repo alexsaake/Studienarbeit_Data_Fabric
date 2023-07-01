@@ -44,6 +44,11 @@ public class DomWgGesuchtDe extends ScrapingDom {
     public String allHeadingsContain(String text){
         return "h1:containsOwn("+text+"),h2:containsOwn("+text+"),h3:containsOwn("+text+"),h4:containsOwn("+text+")";
     }
+    public String removeUnit(String unitContent){
+        if (unitContent==null)
+            return null;
+        return unitContent.replace("€","").replace("m²","").trim();
+    }
     @Override
     public String getPortalId(){
         return "wgGesucht";
@@ -51,13 +56,13 @@ public class DomWgGesuchtDe extends ScrapingDom {
     @Override
     public String getFlatSize() {return null;}
     @Override
-    public String getRent(){return getContentNextSibling(domContentDocument,"td:containsOwn(Miete:)","td>b");}
+    public String getRent(){return removeUnit(getContentNextSibling(domContentDocument,"td:containsOwn(Miete:)","td>b"));}
     @Override
-    public String getExtraCharges(){return getContentNextSibling(domContentDocument,"td:containsOwn(Nebenkosten:)","td>b");}
+    public String getExtraCharges(){return removeUnit(getContentNextSibling(domContentDocument,"td:containsOwn(Nebenkosten:)","td>b"));}
     @Override
-    public String getRoomSize(){return getContentPreviousSibling(domContentDocument,allHeadingsContain("Größe"),"h1,h2,h3,h4");}
+    public String getRoomSize(){return removeUnit(getContentPreviousSibling(domContentDocument,allHeadingsContain("Größe"),"h1,h2,h3,h4"));}
     @Override
-    public String getDeposit(){return getContentNextSibling(domContentDocument,"td:containsOwn(Kaution:)","td>b");}
+    public String getDeposit(){return removeUnit(getContentNextSibling(domContentDocument,"td:containsOwn(Kaution:)","td>b"));}
     @Override
     public String getFrom(){
         String content = getContentNextSibling(domContentDocument,"h3:containsOwn(Verfügbarkeit)","p>b");
@@ -121,4 +126,29 @@ public class DomWgGesuchtDe extends ScrapingDom {
     public String getTitle(){
         return  getContentByPathX(domContentDocument,"title");
     }
+    @Override
+    public String getAddressCity(){
+        String content = getContentNextSibling(domContentDocument,"h3:matchesOwn(Adresse)","a");
+        String[] splitContent = content.split("\\n");
+        if(splitContent.length < 3)
+            return null;
+        return splitContent[3].trim();
+    }
+    @Override
+    public String getAddressStreet(){
+        String content = getContentNextSibling(domContentDocument,"h3:matchesOwn(Adresse)","a");
+        String[] splitContent = content.split("\\n");
+        if(splitContent.length < 3)
+            return null;
+        return splitContent[0].trim();
+    }
+    @Override
+    public String getCurrencyUnit(){
+        return "€";
+    }
+    @Override
+    public String getSizeUnit(){
+        return "m²";
+    }
+
 }

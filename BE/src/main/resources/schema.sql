@@ -94,5 +94,9 @@ CREATE TABLE IF NOT EXISTS IMMO_DATA
     extraCharges    VARCHAR(1024),
     deposit         VARCHAR(1024),
     fromDate        DATE,
+    addressCity     VARCHAR(1024),
+    addressStreet   VARCHAR(1024),
+    currencyUnit    VARCHAR(1024),
+    sizeUnit        VARCHAR(1024),
     PRIMARY KEY (portalId,itemId,date)
 );
