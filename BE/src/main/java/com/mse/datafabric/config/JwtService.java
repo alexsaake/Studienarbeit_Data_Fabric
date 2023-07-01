@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class JwtService {
 
     @Value("${security.jwtSecret}")
-    private String secretKey;
+    private String mySecretKey;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -70,7 +70,7 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(mySecretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
