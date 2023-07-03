@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import {getSecuredEndpoint} from "~/middleware/authService";
+
 export default {
   data(){
     return {
@@ -25,12 +27,10 @@ export default {
     async getSecuredEndpoint()
     {
       try {
-        await this.$axios.get("/api/Gateway/auth/secured")
-            .then(result => {
-                if (result.status === 200) {
-                  this.page = result.data;
-                }
-              });
+        await getSecuredEndpoint(this.$axios)
+          .then(result => {
+            this.page = result.data;
+          });
       }
       catch {
         this.page = "Access denied."

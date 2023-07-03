@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import registerUser from '~/middleware/registerUser'
+  import {registerUser} from "~/middleware/authService";
 
   export default {
     name: "Register",

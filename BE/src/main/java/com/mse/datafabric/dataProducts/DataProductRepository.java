@@ -1,17 +1,14 @@
-package com.mse.datafabric;
+package com.mse.datafabric.dataProducts;
 
-import com.mse.datafabric.immobilien.webScraper.dtos.ScrapingContentDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.util.List;
 
 @Repository
 public class DataProductRepository {

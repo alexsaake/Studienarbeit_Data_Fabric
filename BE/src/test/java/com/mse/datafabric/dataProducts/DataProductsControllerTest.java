@@ -1,5 +1,9 @@
-package com.mse.datafabric;
+package com.mse.datafabric.dataProducts;
 
+import com.mse.datafabric.dataProducts.models.DataProductAccessRights;
+import com.mse.datafabric.dataProducts.models.DataProductCategories;
+import com.mse.datafabric.dataProducts.models.DataProductDetailDto;
+import com.mse.datafabric.dataProducts.models.DataProductOverviewDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,13 +18,13 @@ class DataProductsControllerTest
 {
     private static final String ShortKey = "shortKey";
     private DataProductsController myDataProductsController;
-    private IDataProductsProvider myDataProductsProviderMock;
+    private IDataProductsService myDataProductsProviderMock;
     private Logger myLoggerMock;
 
     @BeforeEach
     void setUp()
     {
-        myDataProductsProviderMock = Mockito.mock(IDataProductsProvider.class);
+        myDataProductsProviderMock = Mockito.mock(IDataProductsService.class);
         myLoggerMock = Mockito.mock(Logger.class);
         myDataProductsController = new DataProductsController(myDataProductsProviderMock, myLoggerMock);
     }
@@ -28,25 +32,25 @@ class DataProductsControllerTest
     @Test
     void getDataProductsOverview_ValidDataProducts_ReturnValidJSON()
     {
-        List<DataProductOverviewBean> dataProductOverviewBeans = new ArrayList<>();
-        dataProductOverviewBeans.add(new DataProductOverviewBean(ShortKey, "title", "shortDescription", new Date(0), DataProductCategories.Wirtschaft, DataProductAccessRights.gratis));
+        List<DataProductOverviewDto> dataProductOverviewBeans = new ArrayList<>();
+        dataProductOverviewBeans.add(new DataProductOverviewDto(ShortKey, "title", "shortDescription", new Date(0), DataProductCategories.Wirtschaft, DataProductAccessRights.gratis));
         Mockito.when(myDataProductsProviderMock.getDataProductsOverview()).thenReturn(dataProductOverviewBeans);
         String expectedResponseJSON = "[{\"shortKey\":\"shortKey\",\"title\":\"title\",\"shortDescription\":\"shortDescription\",\"lastUpdated\":0,\"category\":\"Wirtschaft\",\"accessRight\":\"gratis\"}]";
 
         String actualResponseJSON = myDataProductsController.getDataProductsOverview();
 
-        Assert.isTrue(expectedResponseJSON.equals(actualResponseJSON));
+        Assert.isTrue(expectedResponseJSON.equals(actualResponseJSON), "");
     }
 
     @Test
     void getDataProductDetail_ValidDataProducts_ReturnValidJSON()
     {
-        DataProductDetailBean dataProductDetailBean = new DataProductDetailBean(ShortKey, "title", "shortDescription", "description", "source", "sourceLink", new Date(0), DataProductCategories.Wirtschaft, DataProductAccessRights.gratis);
+        DataProductDetailDto dataProductDetailBean = new DataProductDetailDto(ShortKey, "title", "shortDescription", "description", "source", "sourceLink", new Date(0), DataProductCategories.Wirtschaft, DataProductAccessRights.gratis);
         Mockito.when(myDataProductsProviderMock.getDataProductDetail(anyString())).thenReturn(dataProductDetailBean);
         String expectedResponseJSON = "{\"shortKey\":\"shortKey\",\"title\":\"title\",\"shortDescription\":\"shortDescription\",\"description\":\"description\",\"source\":\"source\",\"sourceLink\":\"sourceLink\",\"lastUpdated\":0,\"category\":\"Wirtschaft\",\"accessRight\":\"gratis\"}";
 
         String actualResponseJSON = myDataProductsController.getDataProductDetail(ShortKey);
 
-        Assert.isTrue(expectedResponseJSON.equals(actualResponseJSON));
+        Assert.isTrue(expectedResponseJSON.equals(actualResponseJSON), "");
     }
 }

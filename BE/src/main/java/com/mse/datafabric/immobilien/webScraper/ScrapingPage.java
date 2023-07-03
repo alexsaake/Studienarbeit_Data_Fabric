@@ -1,7 +1,7 @@
 package com.mse.datafabric.immobilien.webScraper;
 
 
-import com.mse.datafabric.DataProductRepository;
+import com.mse.datafabric.dataProducts.DataProductRepository;
 import com.mse.datafabric.immobilien.webScraper.dtos.CityItemDTO;
 import com.mse.datafabric.immobilien.webScraper.dtos.ScrapingContentDTO;
 import org.openqa.selenium.*;
@@ -11,15 +11,12 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Date;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS Einkommensentwicklung;
 DROP TABLE IF EXISTS Data_To_Formats_Mappings;
+DROP TABLE IF EXISTS DataProduct_Ratings;
 DROP TABLE IF EXISTS DataProducts;
 DROP TABLE IF EXISTS Data;
 DROP TABLE IF EXISTS Data_Formats;
@@ -58,6 +59,19 @@ CREATE TABLE DataProducts
     FOREIGN KEY (accessRightId) REFERENCES DataProduct_AccessRights (id),
     FOREIGN KEY (categoryId) REFERENCES DataProduct_Categories (id),
     FOREIGN KEY (dataId) REFERENCES Data (id)
+);
+
+CREATE TABLE DataProduct_Ratings
+(
+    id_users BIGINT NOT NULL,
+    id_dataProducts BIGINT NOT NULL,
+    title VARCHAR(128),
+    comment VARCHAR(128),
+    rating NUMERIC(1) NOT NULL CHECK (rating>=1 AND rating<=5),
+    submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_users, id_dataProducts),
+    FOREIGN KEY (id_users) REFERENCES User (id),
+    FOREIGN KEY (id_dataProducts) REFERENCES DataProducts (id)
 );
 
 CREATE TABLE Einkommensentwicklung

@@ -49,11 +49,13 @@
 </template>
 
 <script>
-import dataProductsOverviewProvider from '~/middleware/dataProductsOverviewProvider'
-import dataProductImageProvider from '~/middleware/dataProductImageProvider'
+import {getDataProductImage, getDataProducts} from "~/middleware/dataProductService";
+import DataProductOverviewCard from "~/components/DataProductOverviewCard.vue";
+import DataProductDetailCard from "~/components/DataProductDetailCard.vue";
 
 export default {
   name: 'Marketplace',
+  components: {DataProductDetailCard, DataProductOverviewCard},
   data() {
     return {
       search: '',
@@ -89,7 +91,7 @@ export default {
 
   methods: {
     async fetchData() {
-      const rawDataProductsOverview = await dataProductsOverviewProvider(
+      const rawDataProductsOverview = await getDataProducts(
         this.$axios
       )
 
@@ -105,7 +107,7 @@ export default {
             ),
             category: dataProduct.category,
             accessRight: dataProduct.accessRight,
-            image: await dataProductImageProvider(
+            image: await getDataProductImage(
               this.$axios,
               dataProduct.shortKey
             ),
@@ -138,15 +140,9 @@ export default {
 }
 </script>
 <style scoped>
-.my-overlay >>> .v-overlay__content {
+  .my-overlay >>> .v-overlay__content {
     width: 100%;
-}
-</style>
-<style>
-.circle {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 70vh;
-}
+    height: 100%;
+    overflow: scroll;
+  }
 </style>
