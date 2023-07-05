@@ -1,10 +1,12 @@
-package com.mse.datafabric;
+package com.mse.datafabric.dataProducts;
 
-import org.junit.jupiter.api.AfterEach;
+import com.mse.datafabric.dataProducts.models.DataProductAccessRights;
+import com.mse.datafabric.dataProducts.models.DataProductCategories;
+import com.mse.datafabric.dataProducts.models.DataProductDetailDto;
+import com.mse.datafabric.dataProducts.models.DataProductOverviewDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
@@ -14,19 +16,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 
-class DataProductsProviderTest
+class DataProductsServiceTest
 {
-    private DataProductsProvider myDataProductsProvider;
+    private DataProductsService myDataProductsService;
     private JdbcTemplate myJdbcTemplateMock;
 
     @BeforeEach
     void setUp()
     {
         myJdbcTemplateMock = Mockito.mock(JdbcTemplate.class);
-        myDataProductsProvider = new DataProductsProvider(myJdbcTemplateMock);
+        myDataProductsService = new DataProductsService(myJdbcTemplateMock);
     }
 
     @Test
@@ -36,13 +37,13 @@ class DataProductsProviderTest
         List<Map<String, Object>> databaseDataProducts = new ArrayList<>();
         databaseDataProducts.add(databaseDataProduct);
         Mockito.when(myJdbcTemplateMock.queryForList(anyString())).thenReturn(databaseDataProducts);
-        DataProductOverviewBean expectedDataProduct = new DataProductOverviewBean("shortKey", "title", "shortDescription", new Date(0), DataProductCategories.Wirtschaft, DataProductAccessRights.gratis);
-        List<DataProductOverviewBean> expectedDataProducts = new ArrayList<>();
+        DataProductOverviewDto expectedDataProduct = new DataProductOverviewDto("shortKey", "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft);
+        List<DataProductOverviewDto> expectedDataProducts = new ArrayList<>();
         expectedDataProducts.add(expectedDataProduct);
 
-        List<DataProductOverviewBean> actualDataProducts = myDataProductsProvider.getDataProductsOverview();
+        List<DataProductOverviewDto> actualDataProducts = myDataProductsService.getDataProductsOverview();
 
-        Assert.isTrue(expectedDataProducts.equals(actualDataProducts));
+        Assert.isTrue(expectedDataProducts.equals(actualDataProducts), "");
     }
 
     @Test
@@ -50,10 +51,10 @@ class DataProductsProviderTest
     {
         Map<String, Object> databaseDataProduct = Map.of("shortKey","shortKey","title", "title","shortDescription","shortDescription","description","description","source","source","sourceLink","sourceLink","lastUpdated", new Timestamp(0),"category","Wirtschaft","accessRight","gratis");
         Mockito.when(myJdbcTemplateMock.queryForMap(anyString())).thenReturn(databaseDataProduct);
-        DataProductOverviewBean expectedDataProduct = new DataProductDetailBean("shortKey", "title", "shortDescription", "description", "source", "sourceLink", new Date(0), DataProductCategories.Wirtschaft, DataProductAccessRights.gratis);
+        DataProductOverviewDto expectedDataProduct = new DataProductDetailDto("shortKey", "title", "shortDescription", "description", "source", "sourceLink", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft);
 
-        DataProductDetailBean actualDataProduct = myDataProductsProvider.getDataProductDetail("shortKey");
+        DataProductDetailDto actualDataProduct = myDataProductsService.getDataProductDetail("shortKey");
 
-        Assert.isTrue(expectedDataProduct.equals(actualDataProduct));
+        Assert.isTrue(expectedDataProduct.equals(actualDataProduct), "");
     }
 }

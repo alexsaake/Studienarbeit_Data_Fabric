@@ -34,3 +34,5 @@ build/
 
 ### Spring Shell ###
 spring-shell.log
+
+*.db

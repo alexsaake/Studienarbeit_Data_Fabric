@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS Einkommensentwicklung;
 DROP TABLE IF EXISTS Data_To_Formats_Mappings;
+DROP TABLE IF EXISTS DataProduct_Ratings;
 DROP TABLE IF EXISTS DataProducts;
 DROP TABLE IF EXISTS Data;
 DROP TABLE IF EXISTS Data_Formats;
@@ -60,6 +61,19 @@ CREATE TABLE DataProducts
     FOREIGN KEY (dataId) REFERENCES Data (id)
 );
 
+CREATE TABLE DataProduct_Ratings
+(
+    id_users BIGINT NOT NULL,
+    id_dataProducts BIGINT NOT NULL,
+    title VARCHAR(128),
+    comment VARCHAR(128),
+    rating NUMERIC(1) NOT NULL CHECK (rating>=1 AND rating<=5),
+    submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_users, id_dataProducts),
+    FOREIGN KEY (id_users) REFERENCES User (id),
+    FOREIGN KEY (id_dataProducts) REFERENCES DataProducts (id)
+);
+
 CREATE TABLE Einkommensentwicklung
 (
     id        BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -94,5 +108,9 @@ CREATE TABLE IF NOT EXISTS IMMO_DATA
     extraCharges    VARCHAR(1024),
     deposit         VARCHAR(1024),
     fromDate        DATE,
+    addressCity     VARCHAR(1024),
+    addressStreet   VARCHAR(1024),
+    currencyUnit    VARCHAR(1024),
+    sizeUnit        VARCHAR(1024),
     PRIMARY KEY (portalId,itemId,date)
 );

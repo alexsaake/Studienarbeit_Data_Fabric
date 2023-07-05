@@ -9,17 +9,17 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
+          v-for="(page, i) in pages"
           :key="i"
-          :to="item.to"
+          :to="page.to"
           router
           exact
         >
           <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>{{ page.icon }}</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title>{{ page.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -36,6 +36,14 @@
         <v-icon>mdi-minus</v-icon>
       </v-btn>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-card-actions v-if="!$auth.loggedIn">
+        <v-btn href="login">Login</v-btn>
+        <v-btn href="register">Register</v-btn>
+      </v-card-actions>
+      <v-card-actions v-else>
+        <v-btn @click="onLogout()">Logout</v-btn>
+      </v-card-actions>
     </v-app-bar>
     <v-main>
       <v-container>
@@ -50,30 +58,38 @@
 </template>
 
 <script>
-export default {
-  name: 'DefaultLayout',
-  data() {
-    return {
-      clipped: false,
-      drawer: false,
-      fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/',
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Marketplace',
-          to: '/marketplace',
-        },
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Data Fabric',
+  export default {
+    name: 'DefaultLayout',
+    data() {
+      return {
+        clipped: false,
+        drawer: false,
+        fixed: false,
+        pages: [
+          {
+            icon: 'mdi-apps',
+            title: 'Welcome',
+            to: '/',
+          },
+          {
+            icon: 'mdi-chart-bubble',
+            title: 'Marketplace',
+            to: '/marketplace',
+          }
+        ],
+        miniVariant: false,
+        right: true,
+        rightDrawer: false,
+        title: 'Data Fabric'
+      }
+    },
+    methods: {
+      async onLogout(){
+        await this.$auth.logout()
+          .then(() => {
+            window.location.reload();
+          });
+      }
     }
-  },
-}
+  }
 </script>

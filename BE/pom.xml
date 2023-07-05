@@ -140,6 +140,12 @@
             <artifactId>selenium-java</artifactId>
             <version>4.10.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-remote-driver</artifactId>
+            <version>4.10.0</version>
+        </dependency>
         <!--
                         <dependency>
                             <groupId>org.seleniumhq.selenium</groupId>
@@ -158,6 +164,11 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20230227</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.15.0</version>
         </dependency>
 
     </dependencies>

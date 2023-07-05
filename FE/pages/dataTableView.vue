@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import dataProductData from '~/middleware/dataProductDetailDataProvider'
+import {getDataProductData} from "~/middleware/dataProductService";
+
 export default {
     props: {
 
@@ -47,7 +48,7 @@ export default {
     fetchOnServer: false,
     methods: {
         async fetchData() {
-            const rawScraperData = await dataProductData(this.$axios,this.$route.query.shortKey)
+            const rawScraperData = await getDataProductData(this.$axios,this.$route.query.shortKey)
             return {
                 data: this.jsonMapTable(rawScraperData)
             }
@@ -89,6 +90,9 @@ export default {
 }
 </script>
 <style lang="css">
+.container{
+    overflow-x: scroll;
+}
 v-container{
     overflow-x: auto;
     flex-wrap: nowrap;

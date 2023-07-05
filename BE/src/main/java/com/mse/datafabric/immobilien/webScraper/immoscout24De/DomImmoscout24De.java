@@ -35,6 +35,7 @@ public class DomImmoscout24De extends ScrapingDom {
            return null;
         return parseContent(elementContent.get(0).wholeText(),split);
     }
+
     @Override
     public String getPortalId(){
         return "wgSuche";
@@ -69,4 +70,20 @@ public class DomImmoscout24De extends ScrapingDom {
     public String getCreationDate(){return null;}
     @Override
     public String getTitle(){return getContentByPathX("div[class='odp-title']>h1",false);}
+    @Override
+    public String getAddressCity(){
+        return null;
+    }
+    @Override
+    public String getAddressStreet(){return null;}
+    @Override
+    public String getCurrencyUnit(){
+        return "€";
+    }
+    @Override
+    public String getSizeUnit(){
+        return "m²";
+    }
+
+
 }

@@ -1,6 +1,6 @@
-package com.mse.datafabric;
+package com.mse.datafabric.dataProducts.models;
 
-enum DataProductCategories {
+public enum DataProductCategories {
     Wirtschaft("Wirtschaft"),
     Immobilien("Immobilien");
 

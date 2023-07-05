@@ -1,6 +1,6 @@
-package com.mse.datafabric;
+package com.mse.datafabric.dataProducts.models;
 
-enum DataProductAccessRights {
+public enum DataProductAccessRights {
     gratis("gratis");
 
     public String value;
