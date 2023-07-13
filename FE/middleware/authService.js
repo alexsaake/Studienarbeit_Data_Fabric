@@ -12,6 +12,6 @@ export async function registerUser(axios, firstName, lastName, userName, email, 
 
 export async function getSecuredEndpoint(axios)
 {
-    return await axios.get("/api/Gateway/auth/secured");
+    return await axios.get(`/api/Gateway/auth/secured`);
 }
 
