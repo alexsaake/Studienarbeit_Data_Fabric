@@ -3,6 +3,7 @@ package com.mse.datafabric.dataProducts;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.mse.datafabric.auth.AuthenticationService;
 import com.mse.datafabric.dataProducts.models.DataProductRatingDto;
 import com.mse.datafabric.utils.TableJsonConverter;
 import org.slf4j.Logger;
@@ -29,19 +30,21 @@ public class DataProductsController {
 
     private final Logger myLogger;
     private final IDataProductsService myDataProductsService;
+    private final AuthenticationService myAuthenticationService;
 
     @Autowired
     private TableJsonConverter tableJsonConverter;
 
     @Autowired
-    public DataProductsController(IDataProductsService dataProductsProvider)
+    public DataProductsController(IDataProductsService dataProductsProvider, AuthenticationService authenticationService)
     {
-        this(dataProductsProvider, LoggerFactory.getLogger("DataProductsController"));
+        this(dataProductsProvider, authenticationService, LoggerFactory.getLogger("DataProductsController"));
     }
 
-    public DataProductsController(IDataProductsService dataProductsProvider, Logger logger)
+    public DataProductsController(IDataProductsService dataProductsProvider, AuthenticationService authenticationService, Logger logger)
     {
         myDataProductsService = dataProductsProvider;
+        myAuthenticationService = authenticationService;
         myLogger = logger;
     }
 
@@ -148,15 +151,9 @@ public class DataProductsController {
         }
 
         dataProductRating.setShortKey(dataproduct_key);
-        dataProductRating.setUserName(getCurrentUserName());
+        dataProductRating.setUserName(myAuthenticationService.getCurrentUserName());
 
         myDataProductsService.setDataProductsRating(dataProductRating);
-    }
-
-    private String getCurrentUserName(){
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
-        return authentication.getName();
     }
 
     @PreAuthorize("hasAuthority('USER')")
@@ -169,7 +166,7 @@ public class DataProductsController {
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            jsonString = mapper.writeValueAsString(myDataProductsService.getHasAlreadyRatedDataProduct(dataproduct_key, getCurrentUserName()));
+            jsonString = mapper.writeValueAsString(myDataProductsService.getHasAlreadyRatedDataProduct(dataproduct_key, myAuthenticationService.getCurrentUserName()));
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);

@@ -37,13 +37,23 @@
       </v-btn>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-card-actions v-if="!$auth.loggedIn">
-        <v-btn href="login">Login</v-btn>
-        <v-btn href="register">Register</v-btn>
-      </v-card-actions>
-      <v-card-actions v-else>
-        <v-btn @click="onLogout()">Logout</v-btn>
-      </v-card-actions>
+      <v-card v-if="$auth.loggedIn">
+        <v-layout>
+          <v-col style="margin: auto">
+            <div style="white-space: nowrap">Hello {{$auth.user.firstName}}</div>
+          </v-col>
+          <v-col>
+            <v-btn text to="/account">Edit Account</v-btn>
+          </v-col>
+          <v-col>
+            <v-btn text @click="onLogout()">Logout</v-btn>
+          </v-col>
+        </v-layout>
+      </v-card>
+      <v-card v-else>
+        <v-btn text to="/login">Login</v-btn>
+        <v-btn text to="/register">Register</v-btn>
+      </v-card>
     </v-app-bar>
     <v-main>
       <v-container>
@@ -51,8 +61,8 @@
       </v-container>
     </v-main>
     <v-footer :absolute="!fixed" app>
-      <v-btn text href="/impressum">Impressum</v-btn>
-      <v-btn text href="/datenschutzerklaerung">Datenschutz</v-btn>
+      <v-btn text to="/impressum">Impressum</v-btn>
+      <v-btn text to="/datenschutzerklaerung">Datenschutz</v-btn>
     </v-footer>
   </v-app>
 </template>
@@ -86,9 +96,9 @@
     methods: {
       async onLogout(){
         await this.$auth.logout()
-          .then(() => {
-            window.location.reload();
-          });
+            .then(() => {
+              window.location.reload();
+            });
       }
     }
   }
