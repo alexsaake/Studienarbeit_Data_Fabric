@@ -1,0 +1,9 @@
+pipeline {
+    agent {
+      docker {
+            image 'mysql:oracle'
+            //label 'datafabric-docker'
+            args '-p 3306:3306'
+      }
+    }
+}
