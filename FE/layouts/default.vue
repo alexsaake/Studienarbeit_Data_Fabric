@@ -37,19 +37,9 @@
       </v-btn>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-card v-if="$auth.loggedIn">
-        <v-layout>
-          <v-col style="margin: auto">
-            <div style="white-space: nowrap">Hello {{$auth.user.firstName}}</div>
-          </v-col>
-          <v-col>
-            <v-btn text to="/account">Edit Account</v-btn>
-          </v-col>
-          <v-col>
-            <v-btn text @click="onLogout()">Logout</v-btn>
-          </v-col>
-        </v-layout>
-      </v-card>
+      <v-card-actions v-if="$auth.loggedIn">
+        <v-btn text to="/account">{{$auth.user.userName}}</v-btn>
+      </v-card-actions>
       <v-card v-else>
         <v-btn text to="/login">Login</v-btn>
         <v-btn text to="/register">Register</v-btn>
@@ -91,13 +81,6 @@
         right: true,
         rightDrawer: false,
         title: 'Data Fabric'
-      }
-    },
-    methods: {
-      async onLogout(){
-        await this.$auth.logout()
-            .then(() => {
-            });
       }
     }
   }
