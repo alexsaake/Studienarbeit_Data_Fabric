@@ -97,7 +97,6 @@
       async onLogout(){
         await this.$auth.logout()
             .then(() => {
-              window.location.reload();
             });
       }
     }
