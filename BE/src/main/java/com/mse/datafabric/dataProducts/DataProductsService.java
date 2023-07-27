@@ -3,6 +3,8 @@ package com.mse.datafabric.dataProducts;
 import com.mse.datafabric.dataProducts.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.stereotype.Component;
 
@@ -62,7 +64,7 @@ class DataProductsService implements IDataProductsService
         );
     }
 
-    public List<DataProductRatingDto> getDataProductsRating(String shortKey)
+    public List<DataProductRatingDto> getDataProductRatings(String shortKey)
     {
         String dataProductsSql = "SELECT dp.shortKey, usr.userName, rate.title, rate.comment, rate.rating, rate.submitted FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN User usr ON rate.id_users = usr.id WHERE dp.shortKey = '%s'".formatted(shortKey);
         List<Map<String, Object>> databaseDataProductsRating = myJdbcTemplate.queryForList(dataProductsSql);
@@ -85,15 +87,23 @@ class DataProductsService implements IDataProductsService
         return dataProductsRating;
     }
 
-    public boolean getHasAlreadyRatedDataProduct(String shortKey, String userName)
+    public int getDataProductRatingCommentMaxLength()
+    {
+        String dataProductsSql = "SELECT comment FROM DataProduct_Ratings";
+        SqlRowSet rowSet = myJdbcTemplate.queryForRowSet(dataProductsSql);
+        SqlRowSetMetaData metaData = rowSet.getMetaData();
+        return metaData.getPrecision(1);
+    }
+
+    public boolean getDataProductRatingCanSubmit(String shortKey, String userName)
     {
         String dataProductsSql = "SELECT * FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN User usr ON rate.id_users = usr.id WHERE dp.shortKey = '%s' AND usr.username = '%s'".formatted(shortKey, userName);
         List<Map<String, Object>> databaseDataProductsRating = myJdbcTemplate.queryForList(dataProductsSql);
 
         if(databaseDataProductsRating.size() > 0){
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     public void setDataProductsRating(DataProductRatingDto dataProductRating) {

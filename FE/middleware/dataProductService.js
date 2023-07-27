@@ -70,7 +70,12 @@ export async function setDataProductRating(axios, shortKey, title, comment, rati
   );
 }
 
-export async function getHasAlreadyRatedDataProduct(axios, shortKey)
+export async function getDataProductRatingCanSubmit(axios, shortKey)
 {
-  return await axios.$get(`api/Gateway/DataProduct/${shortKey}/HasAlreadyRated`);
+  return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Rating/CanSubmit`);
+}
+
+export async function getDataProductRatingCommentMaxLength(axios)
+{
+  return await axios.$get(`api/Gateway/DataProduct/Rating/Comment/MaxLength`);
 }

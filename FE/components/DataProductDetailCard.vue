@@ -31,7 +31,7 @@
         <v-btn class="mb-4 ml-4" outlined @click="showDataOverlay = true">
           Datenprodukt abrufen
         </v-btn>
-        <v-btn v-if="$auth.loggedIn && newRating.hasAlreadyRated === false" class="mb-4 ml-4" outlined @click="showRatingOverlay=true">
+        <v-btn v-if="$auth.loggedIn && newRating.canSubmit === true" class="mb-4 ml-4" outlined @click="showRatingOverlay=true">
           Datenprodukt bewerten
         </v-btn>
       </v-card-actions>
@@ -95,7 +95,7 @@
       <v-form v-model="newRating.form" @submit.prevent="onSubmit">
         <h1>Please rate the data product</h1>
         <v-text-field v-model="newRating.title" type="text" class="form-control" label="Title" clearable></v-text-field>
-        <v-text-field v-model="newRating.comment" type="text" class="form-control" label="Comment" clearable></v-text-field>
+        <v-textarea v-model="newRating.comment" type="text" class="form-control" label="Comment" clearable :counter="ratingCommentMaxLength" :maxlength="ratingCommentMaxLength"></v-textarea>
         <v-input :value="newRating.rating" :rules="[required]"><v-rating v-model="newRating.rating" class="form-control"></v-rating></v-input>
         <v-btn :disabled="!newRating.form" type="submit">Submit</v-btn>
       </v-form>
@@ -110,8 +110,8 @@
 <script>
 import {
   getDataProduct,
-  getDataProductImage,
-  getDataProductRatings, getHasAlreadyRatedDataProduct,
+  getDataProductImage, getDataProductRatingCanSubmit, getDataProductRatingCommentMaxLength,
+  getDataProductRatings,
   setDataProductRating
 } from "~/middleware/dataProductService";
 import DataProductRatingCard from "~/components/DataProductRatingCard.vue";
@@ -135,13 +135,15 @@ export default {
         comment: '',
         rating: 0,
         form: false,
-        hasAlreadyRated: false
-      }
+        canSubmit: true
+      },
+      ratingCommentMaxLength: 0
     }
   },
   async fetch() {
     this.dataProductDetail = await this.fetchDataProductDetail(this.shortKey);
-    this.newRating.hasAlreadyRated = await getHasAlreadyRatedDataProduct(this.$axios, this.shortKey);
+    this.newRating.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.shortKey);
+    this.ratingCommentMaxLength = await getDataProductRatingCommentMaxLength(this.$axios);
   },
   watch: {
     shortKey() {
@@ -183,7 +185,7 @@ export default {
           this.$axios,
           rawDataProductDetail.shortKey
         ),
-        ratings: rawDataProductRatings
+        ratings: rawDataProductRatings,
       };
     },
     async onSubmit() {

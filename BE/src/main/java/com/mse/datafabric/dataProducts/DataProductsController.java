@@ -12,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.web.bind.annotation.*;
@@ -126,7 +123,7 @@ public class DataProductsController {
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductsRating(dataproduct_key));
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatings(dataproduct_key));
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
@@ -159,14 +156,32 @@ public class DataProductsController {
     @PreAuthorize("hasAuthority('USER')")
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{dataproduct_key}/HasAlreadyRated"
+            value = "/DataProduct/{dataproduct_key}/Rating/CanSubmit"
     )
 
-    public String getHasAlreadyRatedDataProduct(@PathVariable String dataproduct_key){
+    public String getDataProductRatingCanSubmit(@PathVariable String dataproduct_key){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            jsonString = mapper.writeValueAsString(myDataProductsService.getHasAlreadyRatedDataProduct(dataproduct_key, myAuthenticationService.getCurrentUserName()));
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatingCanSubmit(dataproduct_key, myAuthenticationService.getCurrentUserName()));
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+
+        return jsonString;
+    }
+
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/Rating/Comment/MaxLength",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getDataProductRatingCommentMaxLength(){
+        String jsonString = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatingCommentMaxLength());
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
