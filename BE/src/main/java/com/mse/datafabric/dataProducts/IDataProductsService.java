@@ -12,6 +12,7 @@ public interface IDataProductsService
     DataProductDetailDto getDataProductDetail(String shortKey);
     List<DataProductRatingDto> getDataProductRatings(String shortKey);
     int getDataProductRatingCommentMaxLength();
-    void setDataProductsRating(DataProductRatingDto dataProductRating);
     boolean getDataProductRatingCanSubmit(String shortKey, String userName);
+    void setDataProductsRating(DataProductRatingDto dataProductRating);
+    void markAsDeletedDataProductRating(String shortKey, String userName);
 }

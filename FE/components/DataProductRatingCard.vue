@@ -7,23 +7,31 @@
       Verfasser: {{dataProductRating.userName}}<br>
       Datum: {{new Date(dataProductRating.submitted).toLocaleDateString('ge-GE')}}
     </v-card-text>
+    <v-btn v-if="$auth.user.userName === dataProductRating.userName" icon @click.stop="onDeleteRating()">
+      <v-icon>mdi-delete</v-icon>
+    </v-btn>
   </v-card>
 </template>
 
 <script>
-
   export default
   {
     props:
+    {
+      dataProductRating:
       {
-        dataProductRating:
-          {
-            title: String,
-            comment: String,
-            rating: Number,
-            userName: String,
-            submitted: Date
-          }
+        title: String,
+        comment: String,
+        rating: Number,
+        userName: String,
+        submitted: Date
+      },
+      shortKey: String
+    },
+    methods: {
+      onDeleteRating(){
+        this.$emit('on-delete-rating');
       }
+    }
   }
 </script>

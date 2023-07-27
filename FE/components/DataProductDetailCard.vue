@@ -31,13 +31,15 @@
         <v-btn class="mb-4 ml-4" outlined @click="showDataOverlay = true">
           Datenprodukt abrufen
         </v-btn>
-        <v-btn v-if="$auth.loggedIn && newRating.canSubmit === true" class="mb-4 ml-4" outlined @click="showRatingOverlay=true">
+        <v-btn v-if="$auth.loggedIn && canSubmit === true" class="mb-4 ml-4" outlined @click="showRatingOverlay=true">
           Datenprodukt bewerten
         </v-btn>
       </v-card-actions>
       <v-container v-for="(rating, index) in dataProductDetail.ratings" :key="index">
         <data-product-rating-card
             :data-product-rating="rating"
+            :short-key="dataProductDetail.shortKey"
+            @on-delete-rating="onDeleteRating()"
         />
       </v-container>
     </v-card>
@@ -92,7 +94,7 @@
       </v-layout>
     </v-overlay>
     <v-overlay :value="showRatingOverlay" :opacity="1">
-      <v-form v-model="newRating.form" @submit.prevent="onSubmit">
+      <v-form v-model="newRating.form" @submit.prevent="onSubmitRating">
         <h1>Please rate the data product</h1>
         <v-text-field v-model="newRating.title" type="text" class="form-control" label="Title" clearable></v-text-field>
         <v-textarea v-model="newRating.comment" type="text" class="form-control" label="Comment" clearable :counter="ratingCommentMaxLength" :maxlength="ratingCommentMaxLength"></v-textarea>
@@ -101,14 +103,24 @@
       </v-form>
 
       <v-layout justify-center>
-        <v-btn class="mt-2" @click="showRatingOverlay=false">Zurück</v-btn>
+        <v-btn class="mt-2" @click="cancelRating()">Zurück</v-btn>
       </v-layout>
+    </v-overlay>
+    <v-overlay :value="showDeleteRating" :opacity="1">
+      <v-card>
+        <v-card-title>Sicher löschen?</v-card-title>
+        <v-card-actions>
+          <v-btn @click="onConfirmDeleteRating()">Löschen</v-btn>
+          <v-btn @click="showDeleteRating = false">Abbrechen</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-overlay>
   </v-card>
 </template>
 
 <script>
 import {
+  deleteDataProductRating,
   getDataProduct,
   getDataProductImage, getDataProductRatingCanSubmit, getDataProductRatingCommentMaxLength,
   getDataProductRatings,
@@ -129,20 +141,21 @@ export default {
     return {
       showDataOverlay: false,
       showRatingOverlay: false,
+      showDeleteRating: false,
       dataProductDetail: null, // Initialize to null to indicate data is not yet loaded
       newRating: {
         title: '',
         comment: '',
         rating: 0,
-        form: false,
-        canSubmit: true
+        form: false
       },
+      canSubmit: true,
       ratingCommentMaxLength: 0
     }
   },
   async fetch() {
     this.dataProductDetail = await this.fetchDataProductDetail(this.shortKey);
-    this.newRating.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.shortKey);
+    this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.shortKey);
     this.ratingCommentMaxLength = await getDataProductRatingCommentMaxLength(this.$axios);
   },
   watch: {
@@ -166,8 +179,8 @@ export default {
         shortKey
       );
       const rawDataProductRatings = await getDataProductRatings(
-          this.$axios,
-          shortKey
+        this.$axios,
+        shortKey
       );
       return {
         shortKey: rawDataProductDetail.shortKey,
@@ -188,11 +201,35 @@ export default {
         ratings: rawDataProductRatings,
       };
     },
-    async onSubmit() {
+    async refreshRatings() {
+      this.dataProductDetail = await this.fetchDataProductDetail(this.shortKey);
+      this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.shortKey);
+    },
+    async onSubmitRating() {
       await setDataProductRating(this.$axios, this.shortKey, this.newRating.title, this.newRating.comment, this.newRating.rating)
           .then(() => {
-            window.location.reload();
-          })
+            this.refreshRatings();
+            this.cancelRating();
+          });
+    },
+    onDeleteRating() {
+      this.showDeleteRating = true;
+    },
+    async onConfirmDeleteRating() {
+      await deleteDataProductRating(this.$axios, this.shortKey)
+          .then(() => {
+            this.showDeleteRating = false;
+            this.refreshRatings();
+          });
+    },
+    cancelRating() {
+      this.showRatingOverlay = false;
+      this.newRating = {
+        title: '',
+        comment: '',
+        rating: 0,
+        form: false
+      };
     },
     required (v) {
       return !!v || 'Field is required'

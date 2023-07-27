@@ -51,7 +51,7 @@ export async function getDataProductRatings(axios, shortKey)
 {
   try
   {
-    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Rating`);
+    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Ratings`);
   }
   catch (error)
   {
@@ -68,6 +68,11 @@ export async function setDataProductRating(axios, shortKey, title, comment, rati
         rating
       }
   );
+}
+
+export async function deleteDataProductRating(axios, shortKey)
+{
+  return await axios.request(`api/Gateway/DataProduct/${shortKey}/Rating`, {data: null, method: 'delete'});
 }
 
 export async function getDataProductRatingCanSubmit(axios, shortKey)

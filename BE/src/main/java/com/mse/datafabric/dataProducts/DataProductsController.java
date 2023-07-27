@@ -116,7 +116,7 @@ public class DataProductsController {
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{dataproduct_key}/Rating",
+            value = "/DataProduct/{dataproduct_key}/Ratings",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public String getDataProductRatings(@PathVariable String dataproduct_key){
@@ -138,6 +138,9 @@ public class DataProductsController {
             value = "/DataProduct/{dataproduct_key}/Rating"
     )
     public void setDataProductRatings(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+        if(!myDataProductsService.getDataProductRatingCanSubmit(dataproduct_key, myAuthenticationService.getCurrentUserName())){
+            return;
+        }
         DataProductRatingDto dataProductRating = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -151,6 +154,18 @@ public class DataProductsController {
         dataProductRating.setUserName(myAuthenticationService.getCurrentUserName());
 
         myDataProductsService.setDataProductsRating(dataProductRating);
+    }
+
+    @PreAuthorize("hasAuthority('USER')")
+    @ShellMethod( "getDataProduct" )
+    @DeleteMapping(
+            value = "/DataProduct/{dataproduct_key}/Rating"
+    )
+    public void deleteDataProductRating(@PathVariable String dataproduct_key){
+        if(myDataProductsService.getDataProductRatingCanSubmit(dataproduct_key, myAuthenticationService.getCurrentUserName())){
+            return;
+        }
+        myDataProductsService.markAsDeletedDataProductRating(dataproduct_key, myAuthenticationService.getCurrentUserName());
     }
 
     @PreAuthorize("hasAuthority('USER')")
