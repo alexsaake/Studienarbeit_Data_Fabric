@@ -13,15 +13,14 @@
 </template>
 
 <script>
-
-export default {
-  name: 'Account',
-  methods: {
-    async onLogout(){
-      await this.$auth.logout()
-          .then(() => {
-          });
+  export default {
+    name: 'Account',
+    methods: {
+      async onLogout(){
+        await this.$auth.logout()
+            .then(() => {
+            });
+      }
     }
   }
-}
 </script>
