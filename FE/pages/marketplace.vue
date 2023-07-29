@@ -27,7 +27,7 @@
         >
         <v-card
           style="height: 100%"
-          @click="onSelectDataProduct(dataProductOverview.shortKey)"
+          @click="onShowDataProduct(dataProductOverview.shortKey)"
         >
           <data-product-overview-card
             style="height: 100%"
@@ -43,9 +43,7 @@
         <p>No data products found.</p>
       </v-col>
     </v-row>
-    <v-overlay v-if="openedDetails" class="overlay">
-      <data-product-detail-overlay :short-key="shortKey" @on-click-outside="onClickOutsideOverlay()" />
-    </v-overlay>
+    <data-product-detail-overlay :short-key="shortKey" @on-close-data-product="onCloseDataProduct()" />
   </v-container>
 </template>
 
@@ -63,7 +61,6 @@ export default {
       filter: '',
       filters: ['All'],
       dataProductsOverview: [],
-      openedDetails: false,
       isLoading: true, // Initialize the loading state to true
       shortKey: ''
     }
@@ -126,25 +123,14 @@ export default {
         Array.from(new Set(categories.map((category) => category)))
       )
     },
-    onSelectDataProduct(shortKey)
+    onShowDataProduct(shortKey)
     {
-      this.openedDetails = true;
       this.shortKey = shortKey;
     },
-    onClickOutsideOverlay()
+    onCloseDataProduct()
     {
-      this.openedDetails = false;
       this.shortKey = '';
     }
   },
 }
 </script>
-
-<style>
-  .overlay {
-    width: 50%;
-    height: 100%;
-    transform: translate(50%, 0);
-    overflow: scroll;
-  }
-</style>

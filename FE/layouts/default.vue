@@ -38,7 +38,7 @@
       <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-card-actions v-if="$auth.loggedIn">
-        <v-btn text to="/account">{{$auth.user.userName}}</v-btn>
+        <v-btn text to="/account">{{ getLoggedInUserName() }}</v-btn>
       </v-card-actions>
       <v-card v-else>
         <v-btn text to="/login">Login</v-btn>
@@ -58,10 +58,12 @@
 </template>
 
 <script>
-  export default {
+  export default
+  {
     name: 'DefaultLayout',
-    data() {
-      return {
+    data()
+    {
+      return{
         clipped: false,
         drawer: false,
         fixed: false,
@@ -81,6 +83,16 @@
         right: true,
         rightDrawer: false,
         title: 'Data Fabric'
+      }
+    },
+    methods: {
+      getLoggedInUserName()
+      {
+        if(this.$auth.loggedIn && this.$auth.user !== null)
+        {
+          return this.$auth.user.userName;
+        }
+        return '';
       }
     }
   }

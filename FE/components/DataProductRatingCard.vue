@@ -53,12 +53,16 @@
       }
     },
     methods: {
-      async onConfirmDeleteRating() {
-        await deleteDataProductRating(this.$axios, this.shortKey)
-            .then(() => {
-              this.showConfirmDeleteDialog = false;
-              this.$emit('on-rating-deleted');
-            });
+      async onConfirmDeleteRating()
+      {
+        if(this.$auth.loggedIn)
+        {
+          await deleteDataProductRating(this.$axios, this.shortKey)
+              .then(() => {
+                this.showConfirmDeleteDialog = false;
+                this.$emit('on-rating-deleted');
+              });
+        }
       }
     }
   }
