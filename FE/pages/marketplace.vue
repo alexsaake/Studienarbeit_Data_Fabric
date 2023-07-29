@@ -27,7 +27,7 @@
         >
         <v-card
           style="height: 100%"
-          @click="openedDetails = dataProductOverview.shortKey"
+          @click="onSelectDataProduct(dataProductOverview.shortKey)"
         >
           <data-product-overview-card
             style="height: 100%"
@@ -43,8 +43,8 @@
         <p>No data products found.</p>
       </v-col>
     </v-row>
-    <v-overlay v-if="openedDetails !== ''" class="overlay">
-      <data-product-detail-overlay :short-key="openedDetails" />
+    <v-overlay v-if="openedDetails" class="overlay">
+      <data-product-detail-overlay :short-key="shortKey" @on-click-outside="onClickOutsideOverlay()" />
     </v-overlay>
   </v-container>
 </template>
@@ -63,8 +63,9 @@ export default {
       filter: '',
       filters: ['All'],
       dataProductsOverview: [],
-      openedDetails: '',
+      openedDetails: false,
       isLoading: true, // Initialize the loading state to true
+      shortKey: ''
     }
   },
   computed: {
@@ -104,15 +105,10 @@ export default {
             shortKey: dataProduct.shortKey,
             title: dataProduct.title,
             shortDescription: dataProduct.shortDescription,
-            lastUpdated: new Date(dataProduct.lastUpdated).toLocaleDateString(
-              'ge-GE'
-            ),
+            lastUpdated: new Date(dataProduct.lastUpdated).toLocaleDateString('ge-GE'),
             category: dataProduct.category,
             accessRight: dataProduct.accessRight,
-            image: await getDataProductImage(
-              this.$axios,
-              dataProduct.shortKey
-            ),
+            image: await getDataProductImage(this.$axios, dataProduct.shortKey),
           });
         }
         this.dataProductsOverview = dataProductsOverview;
@@ -129,6 +125,16 @@ export default {
       return this.filters.concat(
         Array.from(new Set(categories.map((category) => category)))
       )
+    },
+    onSelectDataProduct(shortKey)
+    {
+      this.openedDetails = true;
+      this.shortKey = shortKey;
+    },
+    onClickOutsideOverlay()
+    {
+      this.openedDetails = false;
+      this.shortKey = '';
     }
   },
 }

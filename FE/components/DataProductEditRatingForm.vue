@@ -27,10 +27,15 @@ import {
         default: ''
       },
       isUpdate: {
+        type: Boolean,
+        required: true,
+        default: false
+      },
+      existingRating: {
         type: Object,
         required: false,
         default: null
-      },
+      }
     },
     data() {
       return {
@@ -47,12 +52,13 @@ import {
       }
     },
     watch: {
-      isUpdate() {
-        if(this.isUpdate !== null){
-          this.title = this.isUpdate.title;
-          this.comment = this.isUpdate.comment;
-          this.rating = this.isUpdate.rating;
-          this.isUpdate = null;
+      isUpdate()
+      {
+        if(this.isUpdate)
+        {
+          this.title = this.existingRating.title;
+          this.comment = this.existingRating.comment;
+          this.rating = this.existingRating.rating;
         }
       }
     },
@@ -61,7 +67,7 @@ import {
         return !!v || 'Field is required'
       },
       async onSubmitRating() {
-        if(this.isUpdate === null)
+        if(!this.isUpdate)
         {
           await setDataProductRating(this.$axios, this.shortKey, this.title, this.comment, this.rating)
               .then(() => {

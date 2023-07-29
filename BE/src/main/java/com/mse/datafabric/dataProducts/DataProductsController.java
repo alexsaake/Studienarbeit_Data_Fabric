@@ -162,7 +162,7 @@ public class DataProductsController {
             value = "/DataProduct/{dataproduct_key}/Rating"
     )
     public void updateDataProductRatings(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
-        if(!myDataProductsService.getDataProductRatingCanSubmit(dataproduct_key, myAuthenticationService.getCurrentUserName())){
+        if(myDataProductsService.getDataProductRatingCanSubmit(dataproduct_key, myAuthenticationService.getCurrentUserName())){
             return;
         }
         DataProductRatingDto dataProductRating = null;

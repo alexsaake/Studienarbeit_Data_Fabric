@@ -15,7 +15,7 @@
         <v-icon>mdi-delete</v-icon>
       </v-btn>
       <v-btn v-show="$auth.user.userName === userName" icon @click="$emit('on-edit-rating')">
-        <v-icon>mdi-edit</v-icon>
+        <v-icon>mdi-lead-pencil</v-icon>
       </v-btn>
     </v-card-actions>
     <v-dialog v-model="showConfirmDeleteDialog" persistent width="auto">

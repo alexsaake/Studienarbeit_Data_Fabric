@@ -22,13 +22,13 @@
       />
       <v-card-actions>
         <v-btn class="mb-4 ml-4" outlined @click="showDataDialog = true">Datenprodukt abrufen</v-btn>
-        <v-btn v-if="$auth.loggedIn && canSubmit === true" class="mb-4 ml-4" outlined @click="showRatingDialog = true">Datenprodukt bewerten</v-btn>
+        <v-btn v-if="$auth.loggedIn && canSubmit === true" class="mb-4 ml-4" outlined @click="onCreateRating()">Datenprodukt bewerten</v-btn>
       </v-card-actions>
       <v-dialog v-model="showDataDialog" persistent width="auto" max-width="400">
         <data-product-use-data-card :short-key="dataProductDetail.shortKey" @on-close-dialog="showDataDialog = false" />
       </v-dialog>
       <v-dialog v-model="showRatingDialog" persistent width="auto" max-width="400">
-        <data-product-edit-rating-form :short-key="dataProductDetail.shortKey" :is-update="isUpdate" @on-rating-added="refreshRatings(); isUpdate = null;" @on-close-dialog="showRatingDialog = false; isUpdate = null;" />
+        <data-product-edit-rating-form :short-key="dataProductDetail.shortKey" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded()" @on-close-dialog="onCloseRating()" />
       </v-dialog>
       <v-container v-for="(rating, index) in dataProductDetail.ratings" :key="index">
         <data-product-rating-card
@@ -40,7 +40,7 @@
             :is-edited="rating.isEdited"
             :short-key="dataProductDetail.shortKey"
             @on-rating-deleted="refreshRatings()"
-            @on-edit-rating="showRatingDialog = true; isUpdate = rating;"
+            @on-edit-rating="onUpdateRating(rating)"
         />
       </v-container>
     </v-card>
@@ -63,7 +63,7 @@
     props: {
       shortKey: {
         type: String,
-        required: false,
+        required: true,
         default: ''
       }
     },
@@ -74,7 +74,8 @@
         showDeleteRating: false,
         dataProductDetail: null, // Initialize to null to indicate data is not yet loaded
         canSubmit: true,
-        isUpdate: null
+        isUpdate: false,
+        existingRating: null
       }
     },
     async fetch() {
@@ -106,7 +107,8 @@
             comment: rawDataProductRating.comment,
             rating: rawDataProductRating.rating,
             userName: rawDataProductRating.userName,
-            submitted: new Date(rawDataProductRating.submitted).toLocaleDateString('ge-GE')
+            submitted: new Date(rawDataProductRating.submitted).toLocaleDateString('ge-GE'),
+            isEdited: rawDataProductRating.isEdited
           });
         }
         return {
@@ -126,6 +128,29 @@
       async refreshRatings() {
         this.dataProductDetail = await this.fetchDataProductDetail(this.shortKey);
         this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.shortKey);
+      },
+      onCreateRating()
+      {
+        this.isUpdate = false;
+        this.existingRating = null;
+        this.showRatingDialog = true
+      },
+      onUpdateRating(rating)
+      {
+        this.isUpdate = true;
+        this.existingRating = rating;
+        this.showRatingDialog = true;
+      },
+      onRatingAdded()
+      {
+        this.refreshRatings();
+        this.onCloseRating();
+      },
+      onCloseRating()
+      {
+        this.showRatingDialog = false;
+        this.isUpdate = false;
+        this.existingRating = null;
       }
     }
   }

@@ -113,7 +113,7 @@ class DataProductsService implements IDataProductsService
     }
 
     public void updateDataProductsRating(DataProductRatingDto dataProductRating) {
-        String dataProductsSql = "UPDATE DataProduct_Ratings SET id_dataProducts = (SELECT id FROM DataProducts WHERE shortKey = '%s'), id_users = (SELECT id FROM User WHERE username = '%s'), title = '%s', comment = '%s', rating = %s, submitted = CURRENT_TIMESTAMP, isEdited = TRUE WHERE id_dataProducts = (SELECT id FROM DataProducts WHERE shortKey = '%s') AND id_users = (SELECT id FROM User WHERE shortKey = '%s') AND isDeleted = FALSE".formatted(dataProductRating.getShortKey(), dataProductRating.getUserName(), dataProductRating.getTitle(), dataProductRating.getComment(), dataProductRating.getRating(), dataProductRating.getShortKey(), dataProductRating.getUserName());
+        String dataProductsSql = "UPDATE DataProduct_Ratings SET id_dataProducts = (SELECT id FROM DataProducts WHERE shortKey = '%s'), id_users = (SELECT id FROM User WHERE username = '%s'), title = '%s', comment = '%s', rating = %s, submitted = CURRENT_TIMESTAMP, isEdited = TRUE WHERE id_dataProducts = (SELECT id FROM DataProducts WHERE shortKey = '%s') AND id_users = (SELECT id FROM User WHERE username = '%s') AND isDeleted = FALSE".formatted(dataProductRating.getShortKey(), dataProductRating.getUserName(), dataProductRating.getTitle(), dataProductRating.getComment(), dataProductRating.getRating(), dataProductRating.getShortKey(), dataProductRating.getUserName());
         myJdbcTemplate.update(dataProductsSql);
     }
 
