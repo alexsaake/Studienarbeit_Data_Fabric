@@ -78,7 +78,7 @@
                 <a
                     style="color: white; text-decoration: unset"
                     target="_blank"
-                    :href="'dataTableView?shortKey=' + shortKey"
+                    :href="'/api/Gateway/DataProduct/' + shortKey + '/Insights'"
                 >Insights</a
                 >
               </v-btn>
