@@ -70,6 +70,7 @@ CREATE TABLE DataProduct_Ratings
     comment VARCHAR(128),
     rating NUMERIC(1) NOT NULL CHECK (rating>=1 AND rating<=5),
     submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    isEdited BOOLEAN DEFAULT FALSE,
     isDeleted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (id_users) REFERENCES User (id),
     FOREIGN KEY (id_dataProducts) REFERENCES DataProducts (id)

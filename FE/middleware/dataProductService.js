@@ -61,6 +61,17 @@ export async function getDataProductRatings(axios, shortKey)
 
 export async function setDataProductRating(axios, shortKey, title, comment, rating)
 {
+  return await axios.$post(`api/Gateway/DataProduct/${shortKey}/Rating`,
+      {
+        title,
+        comment,
+        rating
+      }
+  );
+}
+
+export async function updateDataProductRating(axios, shortKey, title, comment, rating)
+{
   return await axios.$put(`api/Gateway/DataProduct/${shortKey}/Rating`,
       {
         title,

@@ -66,7 +66,7 @@ class DataProductsService implements IDataProductsService
 
     public List<DataProductRatingDto> getDataProductRatings(String shortKey)
     {
-        String dataProductsSql = "SELECT dp.shortKey, usr.userName, rate.title, rate.comment, rate.rating, rate.submitted FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN User usr ON rate.id_users = usr.id WHERE dp.shortKey = '%s' AND rate.isDeleted = FALSE".formatted(shortKey);
+        String dataProductsSql = "SELECT dp.shortKey, usr.userName, rate.title, rate.comment, rate.rating, rate.submitted, rate.isEdited FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN User usr ON rate.id_users = usr.id WHERE dp.shortKey = '%s' AND rate.isDeleted = FALSE".formatted(shortKey);
         List<Map<String, Object>> databaseDataProductsRating = myJdbcTemplate.queryForList(dataProductsSql);
 
         List<DataProductRatingDto> dataProductsRating = new ArrayList<>();
@@ -79,7 +79,8 @@ class DataProductsService implements IDataProductsService
                     (String)databaseDataProductRating.get("title"),
                     (String)databaseDataProductRating.get("comment"),
                     ((BigDecimal)databaseDataProductRating.get("rating")).intValue(),
-                    new Date(((Timestamp) databaseDataProductRating.get("submitted")).getTime())
+                    new Date(((Timestamp) databaseDataProductRating.get("submitted")).getTime()),
+                    (Boolean)databaseDataProductRating.get("isEdited")
             );
             dataProductsRating.add(dataProductRating);
         }
@@ -108,6 +109,11 @@ class DataProductsService implements IDataProductsService
 
     public void setDataProductsRating(DataProductRatingDto dataProductRating) {
         String dataProductsSql = "INSERT INTO DataProduct_Ratings (id_users, id_dataProducts, title, comment, rating) VALUES (SELECT id FROM user WHERE username = '%s', SELECT id FROM DataProducts WHERE shortKey = '%s', '%s', '%s', %s)".formatted(dataProductRating.getUserName(), dataProductRating.getShortKey(), dataProductRating.getTitle(), dataProductRating.getComment(), dataProductRating.getRating());
+        myJdbcTemplate.update(dataProductsSql);
+    }
+
+    public void updateDataProductsRating(DataProductRatingDto dataProductRating) {
+        String dataProductsSql = "UPDATE DataProduct_Ratings SET id_dataProducts = (SELECT id FROM DataProducts WHERE shortKey = '%s'), id_users = (SELECT id FROM User WHERE username = '%s'), title = '%s', comment = '%s', rating = %s, submitted = CURRENT_TIMESTAMP, isEdited = TRUE WHERE id_dataProducts = (SELECT id FROM DataProducts WHERE shortKey = '%s') AND id_users = (SELECT id FROM User WHERE shortKey = '%s') AND isDeleted = FALSE".formatted(dataProductRating.getShortKey(), dataProductRating.getUserName(), dataProductRating.getTitle(), dataProductRating.getComment(), dataProductRating.getRating(), dataProductRating.getShortKey(), dataProductRating.getUserName());
         myJdbcTemplate.update(dataProductsSql);
     }
 

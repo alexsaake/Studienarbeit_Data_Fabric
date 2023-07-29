@@ -134,7 +134,7 @@ public class DataProductsController {
 
     @PreAuthorize("hasAuthority('USER')")
     @ShellMethod( "getDataProduct" )
-    @PutMapping(
+    @PostMapping(
             value = "/DataProduct/{dataproduct_key}/Rating"
     )
     public void setDataProductRatings(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
@@ -154,6 +154,30 @@ public class DataProductsController {
         dataProductRating.setUserName(myAuthenticationService.getCurrentUserName());
 
         myDataProductsService.setDataProductsRating(dataProductRating);
+    }
+
+    @PreAuthorize("hasAuthority('USER')")
+    @ShellMethod( "getDataProduct" )
+    @PutMapping(
+            value = "/DataProduct/{dataproduct_key}/Rating"
+    )
+    public void updateDataProductRatings(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+        if(!myDataProductsService.getDataProductRatingCanSubmit(dataproduct_key, myAuthenticationService.getCurrentUserName())){
+            return;
+        }
+        DataProductRatingDto dataProductRating = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            dataProductRating = mapper.readValue(requestBodyJson, DataProductRatingDto.class);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+
+        dataProductRating.setShortKey(dataproduct_key);
+        dataProductRating.setUserName(myAuthenticationService.getCurrentUserName());
+
+        myDataProductsService.updateDataProductsRating(dataProductRating);
     }
 
     @PreAuthorize("hasAuthority('USER')")

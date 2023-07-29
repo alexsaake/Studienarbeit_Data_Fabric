@@ -7,9 +7,17 @@
       Verfasser: {{userName}}<br>
       Datum: {{submitted}}
     </v-card-text>
-    <v-btn v-show="$auth.user.userName === userName" icon @click="showConfirmDeleteDialog = true">
-      <v-icon>mdi-delete</v-icon>
-    </v-btn>
+    <v-card-text v-show="isEdited">
+      bearbeitet
+    </v-card-text>
+    <v-card-actions>
+      <v-btn v-show="$auth.user.userName === userName" icon @click="showConfirmDeleteDialog = true">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+      <v-btn v-show="$auth.user.userName === userName" icon @click="$emit('on-edit-rating')">
+        <v-icon>mdi-edit</v-icon>
+      </v-btn>
+    </v-card-actions>
     <v-dialog v-model="showConfirmDeleteDialog" persistent width="auto">
       <v-card>
         <v-card-title>Sicher löschen?</v-card-title>
@@ -35,6 +43,7 @@
       rating: Number,
       userName: String,
       submitted: String,
+      isEdited: Boolean,
       shortKey: String
     },
     data()

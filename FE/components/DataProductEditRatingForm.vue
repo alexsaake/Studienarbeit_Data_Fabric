@@ -12,16 +12,25 @@
 </template>
 
 <script>
-  import {getDataProductRatingCommentMaxLength, setDataProductRating} from "~/middleware/dataProductService";
+import {
+  getDataProductRatingCommentMaxLength,
+  setDataProductRating,
+  updateDataProductRating
+} from "~/middleware/dataProductService";
 
   export default {
     name: 'DataProductEditRatingForm',
     props: {
       shortKey: {
         type: String,
-        required: false,
+        required: true,
         default: ''
-      }
+      },
+      isUpdate: {
+        type: Object,
+        required: false,
+        default: null
+      },
     },
     data() {
       return {
@@ -37,16 +46,37 @@
         this.ratingCommentMaxLength = await getDataProductRatingCommentMaxLength(this.$axios);
       }
     },
+    watch: {
+      isUpdate() {
+        if(this.isUpdate !== null){
+          this.title = this.isUpdate.title;
+          this.comment = this.isUpdate.comment;
+          this.rating = this.isUpdate.rating;
+          this.isUpdate = null;
+        }
+      }
+    },
     methods: {
       required (v) {
         return !!v || 'Field is required'
       },
       async onSubmitRating() {
-        await setDataProductRating(this.$axios, this.shortKey, this.title, this.comment, this.rating)
-          .then(() => {
-            this.cancelRating();
-            this.$emit('on-rating-added');
-          });
+        if(this.isUpdate === null)
+        {
+          await setDataProductRating(this.$axios, this.shortKey, this.title, this.comment, this.rating)
+              .then(() => {
+                this.cancelRating();
+                this.$emit('on-rating-added');
+              });
+        }
+        else
+        {
+          await updateDataProductRating(this.$axios, this.shortKey, this.title, this.comment, this.rating)
+              .then(() => {
+                this.cancelRating();
+                this.$emit('on-rating-added');
+              });
+        }
       },
       cancelRating() {
         this.title = '';

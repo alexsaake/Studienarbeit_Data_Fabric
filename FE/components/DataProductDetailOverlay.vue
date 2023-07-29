@@ -28,7 +28,7 @@
         <data-product-use-data-card :short-key="dataProductDetail.shortKey" @on-close-dialog="showDataDialog = false" />
       </v-dialog>
       <v-dialog v-model="showRatingDialog" persistent width="auto" max-width="400">
-        <data-product-edit-rating-form :short-key="dataProductDetail.shortKey" @on-rating-added="refreshRatings()" @on-close-dialog="showRatingDialog = false" />
+        <data-product-edit-rating-form :short-key="dataProductDetail.shortKey" :is-update="isUpdate" @on-rating-added="refreshRatings(); isUpdate = null;" @on-close-dialog="showRatingDialog = false; isUpdate = null;" />
       </v-dialog>
       <v-container v-for="(rating, index) in dataProductDetail.ratings" :key="index">
         <data-product-rating-card
@@ -37,8 +37,10 @@
             :rating="rating.rating"
             :user-name="rating.userName"
             :submitted="rating.submitted"
+            :is-edited="rating.isEdited"
             :short-key="dataProductDetail.shortKey"
             @on-rating-deleted="refreshRatings()"
+            @on-edit-rating="showRatingDialog = true; isUpdate = rating;"
         />
       </v-container>
     </v-card>
@@ -71,7 +73,8 @@
         showRatingDialog: false,
         showDeleteRating: false,
         dataProductDetail: null, // Initialize to null to indicate data is not yet loaded
-        canSubmit: true
+        canSubmit: true,
+        isUpdate: null
       }
     },
     async fetch() {
