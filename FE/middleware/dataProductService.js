@@ -46,6 +46,34 @@ export async function getDataProductData(axios, shortKey)
     console.log(error);
   }
 }
+export async function getDataProductInsights(axios, shortKey, param)
+{
+  try
+  {
+    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/Insights`,{
+      params: {
+        areaFilter: param.areaFilter,
+        dateFromFilter: param.dateFromFilter,
+        dateToFilter: param.dateToFilter
+      }
+    });
+  }
+  catch (error)
+  {
+    console.log(error);
+  }
+}
+export async function getDataProductInsightsCities(axios, shortKey)
+{
+  try
+  {
+    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/Cities`);
+  }
+  catch (error)
+  {
+    console.log(error);
+  }
+}
 
 export async function getDataProductRatings(axios, shortKey)
 {
