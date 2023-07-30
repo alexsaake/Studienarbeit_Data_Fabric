@@ -38,10 +38,10 @@
         </v-row>
       </v-container>
     </v-card>
-    <v-card v-if="showUseDataDialog" v-click-outside="onCloseUseData" class="my-dialog">
+    <v-card v-if="showUseDataDialog" class="my-dialog">
       <data-product-use-data-card :short-key="dataProductDetail.shortKey" @on-close-dialog="onCloseUseData" />
     </v-card>
-    <v-card v-if="showRatingDialog" v-click-outside="onCloseRating" class="my-dialog">
+    <v-card v-if="showRatingDialog" class="my-dialog">
       <data-product-edit-rating-card :short-key="dataProductDetail.shortKey" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
     </v-card>
   </v-card>

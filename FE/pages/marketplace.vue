@@ -122,8 +122,10 @@
       },
       onCloseDataProduct()
       {
-        if(document.activeElement.tagName === 'BODY'&&sessionStorage.getItem("datePickerOpen")==="false")
+        if(document.activeElement.tagName === 'BODY'&& sessionStorage.getItem("datePickerOpen") === "false")
+        {
           this.shortKey = '';
+        }
       }
     },
   }

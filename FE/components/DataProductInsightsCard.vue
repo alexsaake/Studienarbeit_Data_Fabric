@@ -48,9 +48,13 @@
       </v-card-text>
       <v-container>
         <v-row class="insights-row">
-            <v-combobox class="combobox" v-model="newEvent.city" @input="reloadData = true" style="height: 60px"
+            <v-combobox
+              v-model="newEvent.city"
+              class="combobox includedPopout"
+              style="height: 60px"
               label="Stadt"
               :items="dataProductInsightsCities.cities"
+              @input="reloadData = true"
             ></v-combobox>
         </v-row>
         <v-row class="insights-row">
@@ -63,10 +67,8 @@
               offset-y
               min-width="290px"
             >
-              <template v-slot:activator="{ on, attrs }">
+              <template #activator="{ on, attrs }">
                 <v-text-field
-                  @click:prepend="WhenStartedDate = true"
-                  @click:append="newEvent.whenStartedDate = null;reloadData = true"
                   v-model="newEvent.whenStartedDate"
                   style="height: 60px"
                   label="Datum VON"
@@ -74,10 +76,12 @@
                   :append-icon="(newEvent.whenStartedDate === null ? undefined : closeIcon)"
                   readonly
                   v-bind="attrs"
+                  @click:prepend="WhenStartedDate = true"
+                  @click:append="newEvent.whenStartedDate = null;reloadData = true"
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="newEvent.whenStartedDate" @input="WhenStartedDate = false;reloadData = true"></v-date-picker>
+              <v-date-picker v-model="newEvent.whenStartedDate" class="includedPopout" @input="WhenStartedDate = false;reloadData = true" />
             </v-menu>
           </v-col>
           <v-col cols="12" md="6">
@@ -89,11 +93,9 @@
               offset-y
               min-width="290px"
             >
-              <template v-slot:activator="{ on, attrs }">
+              <template #activator="{ on, attrs }">
 
                 <v-text-field
-                  @click:prepend="WhenEndedDate = true"
-                  @click:append="newEvent.whenEndedDate = null;reloadData = true"
                   v-model="newEvent.whenEndedDate"
                   style="height: 60px"
                   label="Datum BIS"
@@ -101,10 +103,12 @@
                   :append-icon="(newEvent.whenEndedDate === null ? undefined : closeIcon)"
                   readonly
                   v-bind="attrs"
+                  @click:prepend="WhenEndedDate = true"
+                  @click:append="newEvent.whenEndedDate = null;reloadData = true"
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="newEvent.whenEndedDate" @input="WhenEndedDate = false;reloadData = true"></v-date-picker>
+              <v-date-picker v-model="newEvent.whenEndedDate" class="includedPopout" @input="WhenEndedDate = false;reloadData = true" />
             </v-menu>
           </v-col>
         </v-row>
@@ -146,11 +150,6 @@ export default {
       reloadData: false
     }
   },
-  computed: {
-    computedDateFormatted () {
-      return this.formatDate(this.date)
-    },
-  },
   async fetch() {
     this.dataProductInsights = await this.fetchDataProductInsights(this.shortKey);
     const array = await this.fetchDataProductInsightsCities(
@@ -158,6 +157,11 @@ export default {
     )
     array.cities.unshift('Alle');
     this.dataProductInsightsCities = array;
+  },
+  computed: {
+    computedDateFormatted () {
+      return this.formatDate(this.date)
+    },
   },
   watch: {
     shortKey() {
