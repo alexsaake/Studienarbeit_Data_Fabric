@@ -18,15 +18,13 @@
         <v-icon>mdi-lead-pencil</v-icon>
       </v-btn>
     </v-card-actions>
-    <v-dialog v-model="showConfirmDeleteDialog" persistent width="auto">
-      <v-card>
-        <v-card-title>Sicher löschen?</v-card-title>
-        <v-card-actions>
-          <v-btn @click="onConfirmDeleteRating()">Löschen</v-btn>
-          <v-btn @click="showConfirmDeleteDialog = false">Abbrechen</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <v-card v-show="showConfirmDeleteDialog" class="my-dialog">
+      <v-card-title>Sicher löschen?</v-card-title>
+      <v-card-actions>
+        <v-btn @click="onConfirmDeleteRating">Löschen</v-btn>
+        <v-btn @click="onCancelDeleteRating">Abbrechen</v-btn>
+      </v-card-actions>
+    </v-card>
   </v-card>
 </template>
 
@@ -52,7 +50,8 @@
         showConfirmDeleteDialog: false
       }
     },
-    methods: {
+    methods:
+    {
       async onConfirmDeleteRating()
       {
         if(this.$auth.loggedIn)
@@ -63,7 +62,21 @@
                 this.$emit('on-rating-deleted');
               });
         }
+      },
+      onCancelDeleteRating()
+      {
+        this.showConfirmDeleteDialog = false;
       }
     }
   }
 </script>
+
+<style scoped>
+  .my-dialog
+  {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
