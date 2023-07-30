@@ -132,8 +132,6 @@
       {
         this.shortKey = '';
       }
-
-      this.isLoading = false // Set loading state to false after fetching data
     },
   }
 </script>
