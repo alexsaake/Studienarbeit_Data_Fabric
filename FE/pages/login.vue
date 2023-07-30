@@ -24,7 +24,6 @@
       async onSubmit() {
         await this.$auth.loginWith("local", {data: {userName: this.userName, password: this.password}})
           .then(() => {
-            window.location.reload();
           })
           .catch(() => {
             this.error = 'Username or password invalid.';

@@ -79,7 +79,7 @@ export async function getDataProductRatings(axios, shortKey)
 {
   try
   {
-    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Rating`);
+    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Ratings`);
   }
   catch (error)
   {
@@ -88,6 +88,17 @@ export async function getDataProductRatings(axios, shortKey)
 }
 
 export async function setDataProductRating(axios, shortKey, title, comment, rating)
+{
+  return await axios.$post(`api/Gateway/DataProduct/${shortKey}/Rating`,
+      {
+        title,
+        comment,
+        rating
+      }
+  );
+}
+
+export async function updateDataProductRating(axios, shortKey, title, comment, rating)
 {
   return await axios.$put(`api/Gateway/DataProduct/${shortKey}/Rating`,
       {
@@ -98,7 +109,17 @@ export async function setDataProductRating(axios, shortKey, title, comment, rati
   );
 }
 
-export async function getHasAlreadyRatedDataProduct(axios, shortKey)
+export async function deleteDataProductRating(axios, shortKey)
 {
-  return await axios.$get(`api/Gateway/DataProduct/${shortKey}/HasAlreadyRated`);
+  return await axios.request(`api/Gateway/DataProduct/${shortKey}/Rating`, {data: null, method: 'delete'});
+}
+
+export async function getDataProductRatingCanSubmit(axios, shortKey)
+{
+  return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Rating/CanSubmit`);
+}
+
+export async function getDataProductRatingCommentMaxLength(axios)
+{
+  return await axios.$get(`api/Gateway/DataProduct/Rating/Comment/MaxLength`);
 }

@@ -33,7 +33,6 @@
         await registerUser(this.$axios, this.firstName, this.lastName, this.userName, this.email, this.password)
           .then(response => {
             this.$auth.setUserToken(response.data.token);
-            window.location.reload();
           })
           .catch(() => {
             this.error = 'Username or email already taken.';

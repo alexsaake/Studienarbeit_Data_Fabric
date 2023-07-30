@@ -63,13 +63,15 @@ CREATE TABLE DataProducts
 
 CREATE TABLE DataProduct_Ratings
 (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_users BIGINT NOT NULL,
     id_dataProducts BIGINT NOT NULL,
     title VARCHAR(128),
     comment VARCHAR(128),
     rating NUMERIC(1) NOT NULL CHECK (rating>=1 AND rating<=5),
     submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_users, id_dataProducts),
+    isEdited BOOLEAN DEFAULT FALSE,
+    isDeleted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (id_users) REFERENCES User (id),
     FOREIGN KEY (id_dataProducts) REFERENCES DataProducts (id)
 );

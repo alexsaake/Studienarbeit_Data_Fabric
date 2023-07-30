@@ -10,7 +10,10 @@ public interface IDataProductsService
 {
     List<DataProductOverviewDto> getDataProductsOverview();
     DataProductDetailDto getDataProductDetail(String shortKey);
-    List<DataProductRatingDto> getDataProductsRating(String shortKey);
+    List<DataProductRatingDto> getDataProductRatings(String shortKey);
+    int getDataProductRatingCommentMaxLength();
+    boolean getDataProductRatingCanSubmit(String shortKey, String userName);
     void setDataProductsRating(DataProductRatingDto dataProductRating);
-    boolean getHasAlreadyRatedDataProduct(String shortKey, String userName);
+    void updateDataProductsRating(DataProductRatingDto dataProductRating);
+    void markAsDeletedDataProductRating(String shortKey, String userName);
 }

@@ -19,19 +19,20 @@
         </div>
       </v-col>
         <v-col
-                v-for="dataProductOverview in filteredDataProductsOverview"
-                v-else-if="filteredDataProductsOverview.length > 0"
-                :key="dataProductOverview.shortKey"
-                cols="12"
-                md="4"
+          v-for="dataProductOverview in filteredDataProductsOverview"
+          v-else-if="filteredDataProductsOverview.length > 0"
+          :key="dataProductOverview.shortKey"
+          cols="12"
+          md="4"
         >
-        <v-card
-          style="height: 100%"
-          @click="onClickDataProductDetail(dataProductOverview.shortKey)"
-        >
+        <v-card style="height: 100%" @click="onShowDataProduct(dataProductOverview.shortKey)">
           <data-product-overview-card
             style="height: 100%"
-            :data-product-overview="dataProductOverview"
+            :image="dataProductOverview.image"
+            :title="dataProductOverview.title"
+            :short-description="dataProductOverview.shortDescription"
+            :last-updated="dataProductOverview.lastUpdated"
+            :access-right="dataProductOverview.accessRight"
           />
         </v-card>
       </v-col>
@@ -39,111 +40,107 @@
         <p>No data products found.</p>
       </v-col>
     </v-row>
-    <v-overlay v-if="openedDetails !== ''" class="my-overlay">
-      <data-product-detail-card
-        v-click-outside="onClickOutsideDataProductDetail"
-        :short-key="openedDetails"
-      />
+    <v-overlay v-if="shortKey !== ''" class="my-overlay">
+      <v-card width="100%" height="100%" v-click-outside="onCloseDataProduct">
+        <data-product-detail-wrapper-card :short-key="shortKey" />
+      </v-card>
     </v-overlay>
   </v-container>
 </template>
 
 <script>
-import {getDataProductImage, getDataProducts} from "~/middleware/dataProductService";
-import DataProductOverviewCard from "~/components/DataProductOverviewCard.vue";
-import DataProductDetailCard from "~/components/DataProductDetailCard.vue";
+  import {getDataProductImage, getDataProducts} from "~/middleware/dataProductService";
+  import DataProductOverviewCard from "~/components/DataProductOverviewCard.vue";
+  import DataProductDetailWrapperCard from "~/components/DataProductDetailWrapperCard.vue";
 
-export default {
-  name: 'Marketplace',
-  components: {DataProductDetailCard, DataProductOverviewCard},
-  data() {
-    return {
-      search: '',
-      filter: '',
-      filters: ['All'],
-      dataProductsOverview: [],
-      openedDetails: '',
-      isLoading: true, // Initialize the loading state to true
-    }
-  },
-  computed: {
-    filteredDataProductsOverview() {
-      const search = this.search.toLowerCase()
-      const filter = this.filter
-
-      if (filter === '' || filter === 'All') {
-        return this.dataProductsOverview.filter((dataProduct) =>
-          dataProduct.title.toLowerCase().includes(search)
-        )
-      } else {
-        return this.dataProductsOverview.filter(
-          (dataProduct) =>
-            dataProduct.title.toLowerCase().includes(search) &&
-            dataProduct.category === filter
-        )
+  export default {
+    name: 'Marketplace',
+    components: {DataProductDetailWrapperCard, DataProductOverviewCard},
+    data() {
+      return {
+        search: '',
+        filter: '',
+        filters: ['All'],
+        dataProductsOverview: [],
+        isLoading: true, // Initialize the loading state to true
+        shortKey: ''
       }
     },
-  },
+    computed: {
+      filteredDataProductsOverview() {
+        const search = this.search.toLowerCase()
+        const filter = this.filter
 
-  async created() {
-    await this.fetchData() // Call the fetchData method on component creation
-  },
-
-  methods: {
-    async fetchData() {
-      const rawDataProductsOverview = await getDataProducts(
-        this.$axios
-      )
-
-      if (Array.isArray(rawDataProductsOverview)) {
-        const dataProductsOverview = []
-        for (const dataProduct of rawDataProductsOverview) {
-          dataProductsOverview.push({
-            shortKey: dataProduct.shortKey,
-            title: dataProduct.title,
-            shortDescription: dataProduct.shortDescription,
-            lastUpdated: new Date(dataProduct.lastUpdated).toLocaleDateString(
-              'ge-GE'
-            ),
-            category: dataProduct.category,
-            accessRight: dataProduct.accessRight,
-            image: await getDataProductImage(
-              this.$axios,
-              dataProduct.shortKey
-            ),
-          })
+        if (filter === '' || filter === 'All') {
+          return this.dataProductsOverview.filter((dataProduct) =>
+            dataProduct.title.toLowerCase().includes(search)
+          )
+        } else {
+          return this.dataProductsOverview.filter(
+            (dataProduct) =>
+              dataProduct.title.toLowerCase().includes(search) &&
+              dataProduct.category === filter
+          )
         }
-        this.dataProductsOverview = dataProductsOverview
-        this.filters = this.getDataProductCategories()
-      } else {
-        // markus: removed error because it always shows up if data is not instantly loaded
+      },
+    },
+
+    async created() {
+      await this.fetchData() // Call the fetchData method on component creation
+    },
+
+    methods: {
+      async fetchData() {
+        const rawDataProductsOverview = await getDataProducts(
+          this.$axios
+        )
+
+        if (Array.isArray(rawDataProductsOverview))
+        {
+          const dataProductsOverview = [];
+          for (const dataProduct of rawDataProductsOverview) {
+            dataProductsOverview.push({
+              shortKey: dataProduct.shortKey,
+              title: dataProduct.title,
+              shortDescription: dataProduct.shortDescription,
+              lastUpdated: new Date(dataProduct.lastUpdated).toLocaleDateString('ge-GE'),
+              category: dataProduct.category,
+              accessRight: dataProduct.accessRight,
+              image: await getDataProductImage(this.$axios, dataProduct.shortKey),
+            });
+          }
+          this.dataProductsOverview = dataProductsOverview;
+          this.filters = this.getDataProductCategories();
+        }
+
+        this.isLoading = false // Set loading state to false after fetching data
+      },
+
+      getDataProductCategories() {
+        const categories = this.dataProductsOverview.map(
+          (dataProduct) => dataProduct.category
+        )
+        return this.filters.concat(
+          Array.from(new Set(categories.map((category) => category)))
+        )
+      },
+      onShowDataProduct(shortKey)
+      {
+        this.shortKey = shortKey;
+      },
+      onCloseDataProduct()
+      {
+        this.shortKey = '';
       }
-
-      this.isLoading = false // Set loading state to false after fetching data
     },
-
-    getDataProductCategories() {
-      const categories = this.dataProductsOverview.map(
-        (dataProduct) => dataProduct.category
-      )
-      return this.filters.concat(
-        Array.from(new Set(categories.map((category) => category)))
-      )
-    },
-    onClickDataProductDetail(shortKey) {
-      this.openedDetails = shortKey
-    },
-    onClickOutsideDataProductDetail() {
-      if(document.activeElement.tagName === 'BODY'&&sessionStorage.getItem("datePickerOpen")==="false")
-         this.openedDetails = ''
-    },
-  },
-}
+  }
 </script>
+
 <style scoped>
-  .my-overlay >>> .v-overlay__content {
-    width: 100%;
+  .my-overlay >>> .v-overlay__content
+  {
+    width: 50%;
     height: 100%;
-    overflow: scroll;
+    overflow-y: scroll;
   }
 </style>

@@ -36,13 +36,13 @@
         <v-icon>mdi-minus</v-icon>
       </v-btn>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-card-actions v-if="!$auth.loggedIn">
-        <v-btn href="login">Login</v-btn>
-        <v-btn href="register">Register</v-btn>
+      <v-spacer />
+      <v-card-actions v-if="$auth.loggedIn">
+        <v-btn text to="/account">{{ getLoggedInUserName() }}</v-btn>
       </v-card-actions>
       <v-card-actions v-else>
-        <v-btn @click="onLogout()">Logout</v-btn>
+        <v-btn text to="/login">Login</v-btn>
+        <v-btn text to="/register" class="ml-5">Register</v-btn>
       </v-card-actions>
     </v-app-bar>
     <v-main>
@@ -51,17 +51,19 @@
       </v-container>
     </v-main>
     <v-footer :absolute="!fixed" app>
-      <v-btn text href="/impressum">Impressum</v-btn>
-      <v-btn text href="/datenschutzerklaerung">Datenschutz</v-btn>
+      <v-btn text to="/impressum">Impressum</v-btn>
+      <v-btn text to="/datenschutzerklaerung">Datenschutz</v-btn>
     </v-footer>
   </v-app>
 </template>
 
 <script>
-  export default {
+  export default
+  {
     name: 'DefaultLayout',
-    data() {
-      return {
+    data()
+    {
+      return{
         clipped: false,
         drawer: false,
         fixed: false,
@@ -84,11 +86,13 @@
       }
     },
     methods: {
-      async onLogout(){
-        await this.$auth.logout()
-          .then(() => {
-            window.location.reload();
-          });
+      getLoggedInUserName()
+      {
+        if(this.$auth.loggedIn && this.$auth.user !== null)
+        {
+          return this.$auth.user.userName;
+        }
+        return '';
       }
     }
   }
