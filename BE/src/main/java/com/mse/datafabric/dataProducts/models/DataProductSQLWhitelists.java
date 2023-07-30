@@ -4,7 +4,8 @@ package com.mse.datafabric.dataProducts.models;
 public enum DataProductSQLWhitelists {
     IMMO_RENT("IMMO_DATA","RENT",null, new DataProductSQLFilterDTO("CITY","FROMDATE","FROMDATE")),
     IMMO_COUNT("IMMO_DATA",null,"STATUS = 'active'", new DataProductSQLFilterDTO("CITY","FROMDATE","FROMDATE")),
-    IMMO_SIZE("IMMO_DATA","ROOMSIZE",null, new DataProductSQLFilterDTO("CITY","FROMDATE","FROMDATE"));
+    IMMO_SIZE("IMMO_DATA","ROOMSIZE",null, new DataProductSQLFilterDTO("CITY","FROMDATE","FROMDATE")),
+    IMMO_CITY("IMMO_DATA","CITY", null, null);
 
     public final String tableName;
     public final String selectColumn;

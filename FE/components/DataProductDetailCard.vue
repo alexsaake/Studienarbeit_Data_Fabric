@@ -71,18 +71,8 @@
             </v-row>
           </v-col>
           <v-col cols="12" md="6">
-            <v-layout row align-center>
-              <v-img src="insights.png" contain max-width="80px" class="mx-4" />
-
-              <v-btn class="mx-4" outlined>
-                <a
-                    style="color: white; text-decoration: unset"
-                    target="_blank"
-                    :href="'/api/Gateway/DataProduct/' + shortKey + '/Insights'"
-                >Insights</a
-                >
-              </v-btn>
-            </v-layout>
+            <data-product-insights-card :short-key="shortKey">
+            </data-product-insights-card>
           </v-col>
         </v-row>
       </v-container>
@@ -115,9 +105,10 @@ import {
   setDataProductRating
 } from "~/middleware/dataProductService";
 import DataProductRatingCard from "~/components/DataProductRatingCard.vue";
+import DataProductInsightsCard from "~/components/DataProductInsightsCard.vue";
 
 export default {
-  components: {DataProductRatingCard},
+  components: {DataProductRatingCard, DataProductInsightsCard},
   props: {
     shortKey: {
       type: String,

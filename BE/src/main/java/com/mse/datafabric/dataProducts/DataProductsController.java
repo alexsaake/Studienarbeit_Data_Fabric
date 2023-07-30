@@ -121,7 +121,7 @@ public class DataProductsController {
     }
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{dataproduct_key}/Insights",
+            value = "/DataProduct/{dataproduct_key}/Data/Insights",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
@@ -141,6 +141,26 @@ public class DataProductsController {
                 try {
                     ObjectMapper mapper = new ObjectMapper();
                     return mapper.writeValueAsString(insightsDTO);
+                }
+                catch (JsonProcessingException e) {
+                    myLogger.error("Could not parse json " + e);
+                }
+        }
+        return "{}";
+    }
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/Cities",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public String getDataProductColumnValues(@PathVariable String dataproduct_key){
+        switch (dataproduct_key){
+            case "immobilien":
+                String[] cityValues =  dataProductRepository.getDifferentColumnValues(DataProductSQLWhitelists.IMMO_CITY);
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    return mapper.writeValueAsString(cityValues);
                 }
                 catch (JsonProcessingException e) {
                     myLogger.error("Could not parse json " + e);

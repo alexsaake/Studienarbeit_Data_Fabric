@@ -27,7 +27,7 @@ public class DataProductRepository {
     }
 
     public void updateDataProductDate(String shortKey, Date date) {
-        String UPDATE_DATE_DATA_PRODUCT = "UPDATE DATAPRODUCTS SET LASTUPDATED = ? WHERE SHORTKEY = ?";
+        final String UPDATE_DATE_DATA_PRODUCT = "UPDATE DATAPRODUCTS SET LASTUPDATED = ? WHERE SHORTKEY = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(UPDATE_DATE_DATA_PRODUCT);
@@ -38,6 +38,15 @@ public class DataProductRepository {
         }
         catch (Exception e) {
 
+        }
+    }
+    public String[] getDifferentColumnValues(DataProductSQLWhitelists whitelist) {
+        final String SQL = "SELECT DISTINCT " + whitelist.selectColumn + " FROM " + whitelist.tableName;
+        try {
+            return jdbcTemplate.queryForList(SQL, String.class).toArray(new String[0]);
+        }
+        catch (Exception e) {
+            return null;
         }
     }
     private float getQueryResult(String sqlQuery, PreparedStatementSetter ps){

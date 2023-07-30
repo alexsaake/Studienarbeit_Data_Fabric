@@ -134,7 +134,8 @@ export default {
       this.openedDetails = shortKey
     },
     onClickOutsideDataProductDetail() {
-      this.openedDetails = ''
+      if(document.activeElement.tagName === 'BODY'&&sessionStorage.getItem("datePickerOpen")==="false")
+         this.openedDetails = ''
     },
   },
 }
