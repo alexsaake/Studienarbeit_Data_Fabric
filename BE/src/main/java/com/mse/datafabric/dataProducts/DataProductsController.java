@@ -4,8 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.mse.datafabric.auth.AuthenticationService;
+import com.mse.datafabric.dataProducts.models.DataProductInsightsDTO;
 import com.mse.datafabric.dataProducts.models.DataProductRatingDto;
+import com.mse.datafabric.dataProducts.models.DataProductSQLFilterDTO;
+import com.mse.datafabric.dataProducts.models.DataProductSQLWhitelists;
 import com.mse.datafabric.utils.TableJsonConverter;
+import jakarta.websocket.server.PathParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,8 @@ public class DataProductsController {
 
     @Autowired
     private TableJsonConverter tableJsonConverter;
+    @Autowired
+    private DataProductRepository dataProductRepository;
 
     @Autowired
     public DataProductsController(IDataProductsService dataProductsProvider, AuthenticationService authenticationService)
@@ -109,6 +115,55 @@ public class DataProductsController {
                     return tableJsonConverter.getAllTableDataAsJsonString("IMMO_DATA");
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
+                }
+        }
+        return "{}";
+    }
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/Insights",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public String getDataProductInsights(@PathVariable String dataproduct_key, @PathParam(value="areaFilter") String areaFilter, @PathParam(value="dateFromFilter") String dateFromFilter, @PathParam(value="dateToFilter") String dateToFilter){
+        DataProductSQLFilterDTO filterValues = new DataProductSQLFilterDTO(areaFilter,dateFromFilter,dateToFilter);
+        switch (dataproduct_key){
+            case "immobilien":
+                DataProductInsightsDTO insightsDTO = new DataProductInsightsDTO();
+                insightsDTO.averageRent = dataProductRepository.getInsightAverage(DataProductSQLWhitelists.IMMO_RENT, filterValues);
+                insightsDTO.averageSize = dataProductRepository.getInsightAverage(DataProductSQLWhitelists.IMMO_SIZE, filterValues);
+                insightsDTO.activeItemsCount = dataProductRepository.getInsightCount(DataProductSQLWhitelists.IMMO_COUNT, filterValues);
+                insightsDTO.highestRent = dataProductRepository.getInsightHighest(DataProductSQLWhitelists.IMMO_RENT, filterValues);
+                insightsDTO.lowestRent = dataProductRepository.getInsightLowest(DataProductSQLWhitelists.IMMO_RENT, filterValues);
+                insightsDTO.medianRent = dataProductRepository.getInsightMedian(DataProductSQLWhitelists.IMMO_RENT, filterValues);
+                insightsDTO.quartile25Rent = dataProductRepository.getInsightQuartile25(DataProductSQLWhitelists.IMMO_RENT, filterValues);
+                insightsDTO.quartile75Rent = dataProductRepository.getInsightQuartile75(DataProductSQLWhitelists.IMMO_RENT, filterValues);
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    return mapper.writeValueAsString(insightsDTO);
+                }
+                catch (JsonProcessingException e) {
+                    myLogger.error("Could not parse json " + e);
+                }
+        }
+        return "{}";
+    }
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/Cities",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public String getDataProductColumnValues(@PathVariable String dataproduct_key){
+        switch (dataproduct_key){
+            case "immobilien":
+                String[] cityValues =  dataProductRepository.getDifferentColumnValues(DataProductSQLWhitelists.IMMO_CITY);
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    return mapper.writeValueAsString(cityValues);
+                }
+                catch (JsonProcessingException e) {
+                    myLogger.error("Could not parse json " + e);
                 }
         }
         return "{}";
