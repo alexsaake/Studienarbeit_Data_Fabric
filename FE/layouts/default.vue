@@ -32,9 +32,6 @@
       <v-btn icon @click.stop="clipped = !clipped">
         <v-icon>mdi-application</v-icon>
       </v-btn>
-      <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer />
       <v-card-actions v-if="$auth.loggedIn">
@@ -46,11 +43,9 @@
       </v-card-actions>
     </v-app-bar>
     <v-main>
-      <v-container>
-        <Nuxt />
-      </v-container>
+      <Nuxt />
     </v-main>
-    <v-footer :absolute="!fixed" app>
+    <v-footer app>
       <v-btn text to="/impressum">Impressum</v-btn>
       <v-btn text to="/datenschutzerklaerung">Datenschutz</v-btn>
     </v-footer>
@@ -66,7 +61,6 @@
       return{
         clipped: false,
         drawer: false,
-        fixed: false,
         pages: [
           {
             icon: 'mdi-apps',

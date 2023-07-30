@@ -2,7 +2,7 @@
   <v-card>
     <v-form v-model="form" @submit.prevent="onSubmitRating">
       <h1>Please rate the data product</h1>
-      <v-text-field v-model="title" type="text" class="form-control" label="Title" clearable></v-text-field>
+      <v-text-field v-model="title" type="text" class="form-control" label="Title" clearable :counter="ratingTitleMaxLength" :maxlength="ratingTitleMaxLength"></v-text-field>
       <v-textarea v-model="comment" type="text" class="form-control" label="Comment" clearable :counter="ratingCommentMaxLength" :maxlength="ratingCommentMaxLength"></v-textarea>
       <v-input :value="rating" :rules="[required]"><v-rating v-model="rating" class="form-control"></v-rating></v-input>
       <v-btn :disabled="!form" type="submit">Submit</v-btn>
@@ -13,7 +13,7 @@
 
 <script>
 import {
-  getDataProductRatingCommentMaxLength,
+  getDataProductRatingMaxLengths,
   setDataProductRating,
   updateDataProductRating
 } from "~/middleware/dataProductService";
@@ -43,23 +43,21 @@ import {
         comment: '',
         rating: 0,
         form: false,
+        ratingTitleMaxLength: 0,
         ratingCommentMaxLength: 0
       }
     },
     async fetch() {
-      if(this.$auth.loggedIn){
-        this.ratingCommentMaxLength = await getDataProductRatingCommentMaxLength(this.$axios);
-      }
-    },
-    watch: {
-      isUpdate()
+      if(this.isUpdate)
       {
-        if(this.isUpdate)
-        {
-          this.title = this.existingRating.title;
-          this.comment = this.existingRating.comment;
-          this.rating = this.existingRating.rating;
-        }
+        this.title = this.existingRating.title;
+        this.comment = this.existingRating.comment;
+        this.rating = this.existingRating.rating;
+      }
+      if(this.$auth.loggedIn) {
+        const maxLenghts = await getDataProductRatingMaxLengths(this.$axios);
+        this.ratingTitleMaxLength = maxLenghts.title;
+        this.ratingCommentMaxLength = maxLenghts.comment;
       }
     },
     methods: {

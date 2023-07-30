@@ -4,12 +4,31 @@
     <v-card-title style="word-break: break-word">{{ title }}</v-card-title>
     <v-card-subtitle>{{ shortDescription }}</v-card-subtitle>
     <v-card-text>
-      {{ description }}<br />
-      Quelle: {{ source }}<br />
-      Quellen-Link: {{ sourceLink }}
-      Zuletzt aktualisiert: {{ lastUpdated }}<br />
-      Kategorie: {{ category }}<br />
-      Zugriff: {{ accessRight }}
+      <v-container class="pa-0">
+        <v-row no-gutters>
+          <v-col>{{ description }}</v-col>
+        </v-row>
+        <v-row class="mt-4" no-gutters>
+          <v-col cols="2">Quelle</v-col>
+          <v-col>{{ source }}</v-col>
+        </v-row>
+        <v-row class="mt-4" no-gutters>
+          <v-col cols="2">Quellen-Link:</v-col>
+          <v-col>{{ sourceLink }}</v-col>
+        </v-row>
+        <v-row class="mt-4" no-gutters>
+          <v-col cols="2">Zuletzt aktualisiert:</v-col>
+          <v-col>{{ lastUpdated }}</v-col>
+        </v-row>
+        <v-row class="mt-4" no-gutters>
+          <v-col cols="2">Kategorie</v-col>
+          <v-col>{{ category }}</v-col>
+        </v-row>
+        <v-row class="mt-4" no-gutters>
+          <v-col cols="2">Zugriff</v-col>
+          <v-col>{{ accessRight }}</v-col>
+        </v-row>
+      </v-container>
     </v-card-text>
   </v-card>
 </template>

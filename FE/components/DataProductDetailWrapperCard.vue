@@ -2,7 +2,7 @@
   <v-card v-if="!dataProductDetail" class="my-progress">
     <v-progress-circular :size="120" indeterminate color="white"/>
   </v-card>
-  <v-card v-else>
+  <v-card v-else class="my-details">
     <v-card>
       <data-product-detail-card
         :short-key="dataProductDetail.shortKey"
@@ -17,28 +17,32 @@
         :image="dataProductDetail.image"
       />
       <v-card-actions>
-        <v-btn class="mb-4 ml-4" outlined @click="showDataDialog = true">Datenprodukt abrufen</v-btn>
-        <v-btn v-show="$auth.loggedIn && canSubmit === true" class="mb-4 ml-4" outlined @click="onCreateRating()">Datenprodukt bewerten</v-btn>
+        <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
+        <v-btn v-if="$auth.loggedIn && canSubmit === true" @click="onCreateRating">Datenprodukt bewerten</v-btn>
       </v-card-actions>
-      <v-container v-for="(rating, index) in dataProductDetail.ratings" :key="index">
-        <data-product-rating-card
-            :title="rating.title"
-            :comment="rating.comment"
-            :rating="rating.rating"
-            :user-name="rating.userName"
-            :submitted="rating.submitted"
-            :is-edited="rating.isEdited"
-            :short-key="dataProductDetail.shortKey"
-            @on-rating-deleted="refreshRatings()"
-            @on-edit-rating="onUpdateRating(rating)"
-        />
+      <v-container class="pa-0">
+        <v-row no-gutters>
+          <v-col v-for="(rating, index) in dataProductDetail.ratings" :key="index" cols="12">
+            <data-product-rating-card
+                :title="rating.title"
+                :comment="rating.comment"
+                :rating="rating.rating"
+                :user-name="rating.userName"
+                :submitted="rating.submitted"
+                :is-edited="rating.isEdited"
+                :short-key="dataProductDetail.shortKey"
+                @on-rating-deleted="refreshRatings"
+                @on-edit-rating="onUpdateRating(rating)"
+            />
+          </v-col>
+        </v-row>
       </v-container>
     </v-card>
-    <v-card v-show="showDataDialog" class="my-dialog">
-      <data-product-use-data-card :short-key="dataProductDetail.shortKey" @on-close-dialog="showDataDialog = false" />
+    <v-card v-if="showUseDataDialog" v-click-outside="onCloseUseData" class="my-dialog">
+      <data-product-use-data-card :short-key="dataProductDetail.shortKey" @on-close-dialog="onCloseUseData" />
     </v-card>
-    <v-card v-show="showRatingDialog" class="my-dialog">
-      <data-product-edit-rating-card :short-key="dataProductDetail.shortKey" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded()" @on-close-dialog="onCloseRating()" />
+    <v-card v-if="showRatingDialog" v-click-outside="onCloseRating" class="my-dialog">
+      <data-product-edit-rating-card :short-key="dataProductDetail.shortKey" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
     </v-card>
   </v-card>
 </template>
@@ -65,7 +69,7 @@
     },
     data() {
       return {
-        showDataDialog: false,
+        showUseDataDialog: false,
         showRatingDialog: false,
         showDeleteRating: false,
         dataProductDetail: null, // Initialize to null to indicate data is not yet loaded
@@ -88,7 +92,6 @@
         this.dataProductDetail = null // Reset to null when shortKey changes to indicate data is not yet loaded
       }
     },
-    fetchOnServer: false,
     methods: {
       async fetchDataProductDetail(shortKey) {
         const rawDataProductDetail = await getDataProduct(this.$axios, shortKey);
@@ -117,6 +120,14 @@
           image: await getDataProductImage(this.$axios, rawDataProductDetail.shortKey),
           ratings: dataProductRatings
         };
+      },
+      onOpenUseData()
+      {
+        this.showUseDataDialog = true;
+      },
+      onCloseUseData()
+      {
+        this.showUseDataDialog = false;
       },
       async refreshRatings()
       {
@@ -165,9 +176,15 @@
     justify-content: center;
     align-items: center;
   }
+  .my-details
+  {
+    height: 100%;
+  }
   .my-dialog
   {
     position: fixed;
+    width: 50%;
+    height: 100%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

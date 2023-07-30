@@ -1,28 +1,36 @@
 <template>
-  <v-card>
+  <v-card class="my-card">
     <v-card-title v-if="title !== null" style="word-break: break-word">{{title}}</v-card-title>
     <v-card-text v-if="comment !== null" class="text-pre-wrap">{{comment}}</v-card-text>
     <v-rating :value="rating" readonly></v-rating>
     <v-card-text>
-      Verfasser: {{userName}}<br>
-      Datum: {{submitted}}
+      <v-container class="pa-0">
+        <v-row no-gutters>
+          <v-col cols="2">Verfasser:</v-col>
+          <v-col>{{ userName }}</v-col>
+        </v-row>
+        <v-row class="mt-4" no-gutters>
+          <v-col cols="2">Datum:</v-col>
+          <v-col>{{ submitted }}</v-col>
+        </v-row>
+      </v-container>
     </v-card-text>
     <v-card-text v-show="isEdited">
       bearbeitet
     </v-card-text>
     <v-card-actions>
-      <v-btn v-show="$auth.user.userName === userName" icon @click="showConfirmDeleteDialog = true">
+      <v-btn v-show="$auth.user.userName === userName" icon @click="onShowConfirmDeleteRating">
         <v-icon>mdi-delete</v-icon>
       </v-btn>
       <v-btn v-show="$auth.user.userName === userName" icon @click="$emit('on-edit-rating')">
         <v-icon>mdi-lead-pencil</v-icon>
       </v-btn>
     </v-card-actions>
-    <v-card v-show="showConfirmDeleteDialog" class="my-dialog">
+    <v-card v-if="showConfirmDeleteDialog" v-click-outside="onCloseConfirmDeleteRating" class="my-dialog">
       <v-card-title>Sicher löschen?</v-card-title>
       <v-card-actions>
         <v-btn @click="onConfirmDeleteRating">Löschen</v-btn>
-        <v-btn @click="onCancelDeleteRating">Abbrechen</v-btn>
+        <v-btn @click="onCloseConfirmDeleteRating">Abbrechen</v-btn>
       </v-card-actions>
     </v-card>
   </v-card>
@@ -63,7 +71,11 @@
               });
         }
       },
-      onCancelDeleteRating()
+      onShowConfirmDeleteRating()
+      {
+        this.showConfirmDeleteDialog = true;
+      },
+      onCloseConfirmDeleteRating()
       {
         this.showConfirmDeleteDialog = false;
       }
@@ -72,9 +84,15 @@
 </script>
 
 <style scoped>
+  .my-card
+  {
+    position: relative;
+  }
   .my-dialog
   {
-    position: fixed;
+    position: absolute;
+    width: 100%;
+    height: 100%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

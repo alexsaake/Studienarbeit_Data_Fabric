@@ -1,51 +1,43 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-text-field v-model="search" label="Search"></v-text-field>
-      </v-col>
-      <v-col cols="12" md="6">
-        <v-select v-model="filter" :items="filters" label="Filter"></v-select>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col v-if="isLoading">
-        <div class="circle">
-          <v-progress-circular
-            :size="120"
-            indeterminate
-            color="white"
-          ></v-progress-circular>
-        </div>
-      </v-col>
+  <v-card>
+    <v-card v-if="isLoading" class="my-progress">
+      <v-progress-circular :size="120" indeterminate color="white"/>
+    </v-card>
+    <v-container v-else-if="filteredDataProductsOverview.length > 0">
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-text-field v-model="search" label="Search"></v-text-field>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-select v-model="filter" :items="filters" label="Filter"></v-select>
+        </v-col>
+      </v-row>
+      <v-row>
         <v-col
           v-for="dataProductOverview in filteredDataProductsOverview"
-          v-else-if="filteredDataProductsOverview.length > 0"
           :key="dataProductOverview.shortKey"
-          cols="12"
-          md="4"
+          cols="12" md="4"
         >
-        <v-card style="height: 100%" @click="onShowDataProduct(dataProductOverview.shortKey)">
-          <data-product-overview-card
-            style="height: 100%"
-            :image="dataProductOverview.image"
-            :title="dataProductOverview.title"
-            :short-description="dataProductOverview.shortDescription"
-            :last-updated="dataProductOverview.lastUpdated"
-            :access-right="dataProductOverview.accessRight"
-          />
-        </v-card>
-      </v-col>
-      <v-col v-else>
-        <p>No data products found.</p>
-      </v-col>
-    </v-row>
+          <v-card style="height: 100%" @click="onShowDataProduct(dataProductOverview.shortKey)">
+            <data-product-overview-card
+              style="height: 100%"
+              :image="dataProductOverview.image"
+              :title="dataProductOverview.title"
+              :short-description="dataProductOverview.shortDescription"
+              :last-updated="dataProductOverview.lastUpdated"
+              :access-right="dataProductOverview.accessRight"
+            />
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-card v-else>
+      <p>No data products found.</p>
+    </v-card>
     <v-overlay v-if="shortKey !== ''" class="my-overlay">
-      <v-card width="100%" height="100%" v-click-outside="onCloseDataProduct">
-        <data-product-detail-wrapper-card :short-key="shortKey" />
-      </v-card>
+      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct" :short-key="shortKey" />
     </v-overlay>
-  </v-container>
+  </v-card>
 </template>
 
 <script>
@@ -137,6 +129,18 @@
 </script>
 
 <style scoped>
+  .my-progress
+  {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .my-overlay
+  {
+    width: 100%;
+    height: 100%;
+  }
   .my-overlay >>> .v-overlay__content
   {
     width: 50%;

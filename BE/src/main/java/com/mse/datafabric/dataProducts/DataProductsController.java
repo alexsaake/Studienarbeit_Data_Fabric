@@ -213,14 +213,14 @@ public class DataProductsController {
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/Rating/Comment/MaxLength",
+            value = "/DataProduct/Rating/MaxLengths",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public String getDataProductRatingCommentMaxLength(){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatingCommentMaxLength());
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatingMaxLengths());
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);

@@ -1,62 +1,26 @@
 export async function getDataProducts(axios)
 {
-  try
-  {
-    return await axios.$get("api/Gateway/DataProducts");
-  }
-  catch (error)
-  {
-    console.log(error);
-  }
+  return await axios.$get("api/Gateway/DataProducts");
 }
 
 export async function getDataProduct(axios, shortKey)
 {
-  try
-  {
-    return await axios.$get(`api/Gateway/DataProduct/${shortKey}`);
-  }
-  catch (error)
-  {
-    console.log(error);
-  }
+  return await axios.$get(`api/Gateway/DataProduct/${shortKey}`);
 }
-
 
 export async function getDataProductImage(axios, shortKey)
 {
-  try
-  {
-    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Image`);
-  }
-  catch (error)
-  {
-    console.log(error);
-  }
+  return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Image`);
 }
 
 export async function getDataProductData(axios, shortKey)
 {
-  try
-  {
-    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data`);
-  }
-  catch (error)
-  {
-    console.log(error);
-  }
+  return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data`);
 }
 
 export async function getDataProductRatings(axios, shortKey)
 {
-  try
-  {
-    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Ratings`);
-  }
-  catch (error)
-  {
-    console.log(error);
-  }
+  return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Ratings`);
 }
 
 export async function setDataProductRating(axios, shortKey, title, comment, rating)
@@ -91,7 +55,7 @@ export async function getDataProductRatingCanSubmit(axios, shortKey)
   return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Rating/CanSubmit`);
 }
 
-export async function getDataProductRatingCommentMaxLength(axios)
+export async function getDataProductRatingMaxLengths(axios)
 {
-  return await axios.$get(`api/Gateway/DataProduct/Rating/Comment/MaxLength`);
+  return await axios.$get(`api/Gateway/DataProduct/Rating/MaxLengths`);
 }

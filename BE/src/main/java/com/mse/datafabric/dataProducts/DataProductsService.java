@@ -88,12 +88,12 @@ class DataProductsService implements IDataProductsService
         return dataProductsRating;
     }
 
-    public int getDataProductRatingCommentMaxLength()
+    public DataProductRatingMaxLengths getDataProductRatingMaxLengths()
     {
-        String dataProductsSql = "SELECT comment FROM DataProduct_Ratings";
+        String dataProductsSql = "SELECT title, comment FROM DataProduct_Ratings";
         SqlRowSet rowSet = myJdbcTemplate.queryForRowSet(dataProductsSql);
         SqlRowSetMetaData metaData = rowSet.getMetaData();
-        return metaData.getPrecision(1);
+        return new DataProductRatingMaxLengths(metaData.getPrecision(1), metaData.getPrecision(2));
     }
 
     public boolean getDataProductRatingCanSubmit(String shortKey, String userName)
@@ -101,10 +101,7 @@ class DataProductsService implements IDataProductsService
         String dataProductsSql = "SELECT * FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN User usr ON rate.id_users = usr.id WHERE dp.shortKey = '%s' AND usr.username = '%s' AND rate.isDeleted = FALSE".formatted(shortKey, userName);
         List<Map<String, Object>> databaseDataProductsRating = myJdbcTemplate.queryForList(dataProductsSql);
 
-        if(databaseDataProductsRating.size() > 0){
-            return false;
-        }
-        return true;
+        return databaseDataProductsRating.size() == 0;
     }
 
     public void setDataProductsRating(DataProductRatingDto dataProductRating) {
