@@ -15,11 +15,8 @@
             <v-card-subtitle>(in Tabelle)</v-card-subtitle>
           </v-card>
         </v-col>
-        <v-col cols="6" md="3">
-          <v-card :to="'/dataTableView?shortKey=' + shortKey" target="_blank" class="d-flex flex-column fill-height">
-            <v-img src="insights.png"/>
-            <v-card-title>Insights</v-card-title>
-          </v-card>
+        <v-col cols="12" md="6">
+          <data-product-insights-card :short-key="shortKey" />
         </v-col>
       </v-row>
     </v-container>
