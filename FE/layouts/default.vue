@@ -36,14 +36,14 @@
         <v-icon>mdi-minus</v-icon>
       </v-btn>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <v-card-actions v-if="$auth.loggedIn">
         <v-btn text to="/account">{{ getLoggedInUserName() }}</v-btn>
       </v-card-actions>
-      <v-card v-else>
+      <v-card-actions v-else>
         <v-btn text to="/login">Login</v-btn>
-        <v-btn text to="/register">Register</v-btn>
-      </v-card>
+        <v-btn text to="/register" class="ml-5">Register</v-btn>
+      </v-card-actions>
     </v-app-bar>
     <v-main>
       <v-container>
