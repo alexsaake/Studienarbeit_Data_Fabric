@@ -28,7 +28,6 @@ import java.util.Base64;
 @RestController
 @RequestMapping("/api/Gateway")
 public class DataProductsController {
-
     private final Logger myLogger;
     private final IDataProductsService myDataProductsService;
     private final AuthenticationService myAuthenticationService;
@@ -188,7 +187,7 @@ public class DataProductsController {
     }
 
     @PreAuthorize("hasAuthority('USER')")
-    @ShellMethod( "getDataProduct" )
+    @ShellMethod( "postDataProduct" )
     @PostMapping(
             value = "/DataProduct/{dataproduct_key}/Rating"
     )
@@ -212,7 +211,7 @@ public class DataProductsController {
     }
 
     @PreAuthorize("hasAuthority('USER')")
-    @ShellMethod( "getDataProduct" )
+    @ShellMethod( "putDataProduct" )
     @PutMapping(
             value = "/DataProduct/{dataproduct_key}/Rating"
     )
@@ -236,7 +235,7 @@ public class DataProductsController {
     }
 
     @PreAuthorize("hasAuthority('USER')")
-    @ShellMethod( "getDataProduct" )
+    @ShellMethod( "deleteDataProduct" )
     @DeleteMapping(
             value = "/DataProduct/{dataproduct_key}/Rating"
     )
