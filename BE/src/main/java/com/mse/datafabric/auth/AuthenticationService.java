@@ -5,8 +5,8 @@ import com.mse.datafabric.auth.dto.AuthenticationResponseDto;
 import com.mse.datafabric.auth.dto.RegisterRequestDto;
 import com.mse.datafabric.config.JwtService;
 import com.mse.datafabric.user.UserRepository;
-import com.mse.datafabric.user.model.Role;
-import com.mse.datafabric.user.model.User;
+import com.mse.datafabric.user.dto.UserRoles;
+import com.mse.datafabric.user.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,13 +38,13 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponseDto register(RegisterRequestDto request) {
-        var user = User.builder()
+        var user = UserEntity.builder()
                 .firstname(request.getFirstName())
                 .lastname(request.getLastName())
                 .email(request.getEmail())
                 .username(request.getUserName())
                 .password(myPasswordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .role(UserRoles.USER)
                 .build();
 
         var savedUser = myUserRepository.save(user);

@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS Einkommensentwicklung;
 DROP TABLE IF EXISTS Data_To_Formats_Mappings;
 DROP TABLE IF EXISTS DataProduct_Ratings;
+DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS DataProducts;
 DROP TABLE IF EXISTS Data;
 DROP TABLE IF EXISTS Data_Formats;
@@ -61,6 +62,17 @@ CREATE TABLE DataProducts
     FOREIGN KEY (dataId) REFERENCES Data (id)
 );
 
+CREATE TABLE Users
+(
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    firstName VARCHAR(256) NOT NULL,
+    lastName VARCHAR(256) NOT NULL,
+    userName VARCHAR(256) UNIQUE NOT NULL,
+    email VARCHAR(256) UNIQUE NOT NULL,
+    password VARCHAR(256) NOT NULL,
+    role VARCHAR(16) NOT NULL
+);
+
 CREATE TABLE DataProduct_Ratings
 (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -72,7 +84,7 @@ CREATE TABLE DataProduct_Ratings
     submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     isEdited BOOLEAN DEFAULT FALSE,
     isDeleted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (id_users) REFERENCES User (id),
+    FOREIGN KEY (id_users) REFERENCES Users (id),
     FOREIGN KEY (id_dataProducts) REFERENCES DataProducts (id)
 );
 
