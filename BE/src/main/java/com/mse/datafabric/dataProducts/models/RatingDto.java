@@ -13,7 +13,7 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"shortKey", "userName", "title", "comment", "rating", "submitted", "isEdited"})
-public class DataProductRatingDto implements Serializable
+public class RatingDto implements Serializable
 {
     @Setter
     private String shortKey;
@@ -26,7 +26,7 @@ public class DataProductRatingDto implements Serializable
     private boolean isEdited;
 
     @JsonCreator
-    public DataProductRatingDto(@JsonProperty("title")String title, @JsonProperty("comment")String comment, @JsonProperty("rating")int rating, @JsonProperty("submitted")Date submitted, @JsonProperty("isEdited")boolean isEdited) {
+    public RatingDto(@JsonProperty("title")String title, @JsonProperty("comment")String comment, @JsonProperty("rating")int rating, @JsonProperty("submitted")Date submitted, @JsonProperty("isEdited")boolean isEdited) {
         this.title = title;
         this.comment = comment;
         this.rating = rating;

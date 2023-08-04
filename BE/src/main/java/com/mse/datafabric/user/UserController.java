@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.shell.standard.ShellMethod;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,17 +25,15 @@ public class UserController {
         myLogger = LoggerFactory.getLogger(this.getClass().getName());
     }
 
-    @ShellMethod( "getUser" )
     @GetMapping(
-            value = "/user",
+            value = "/User",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<UserResponseDto> getUser() {
         return ResponseEntity.ok(myUserService.getCurrentUser());
     }
 
-    @ShellMethod( "putUser" )
-    @PutMapping( value = "/user" )
+    @PutMapping( value = "/User" )
     public void updateUser(@RequestBody String requestBodyJson) {
         UserDto user = null;
         try {
@@ -48,5 +45,22 @@ public class UserController {
         }
 
         myUserService.updateUser(user);
+    }
+
+    @GetMapping(
+            value = "/User/Ratings",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getUSerRatings(){
+        String jsonString = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            jsonString = mapper.writeValueAsString(myUserService.getUserRatings());
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+
+        return jsonString;
     }
 }

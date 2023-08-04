@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.mse.datafabric.auth.AuthenticationService;
 import com.mse.datafabric.dataProducts.models.DataProductInsightsDTO;
-import com.mse.datafabric.dataProducts.models.DataProductRatingDto;
+import com.mse.datafabric.dataProducts.models.RatingDto;
 import com.mse.datafabric.dataProducts.models.DataProductSQLFilterDTO;
 import com.mse.datafabric.dataProducts.models.DataProductSQLWhitelists;
 import com.mse.datafabric.utils.TableJsonConverter;
@@ -195,10 +195,10 @@ public class DataProductsController {
         if(!myDataProductsService.getDataProductRatingCanSubmit(dataproduct_key, myAuthenticationService.getCurrentUserName())){
             return;
         }
-        DataProductRatingDto dataProductRating = null;
+        RatingDto dataProductRating = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            dataProductRating = mapper.readValue(requestBodyJson, DataProductRatingDto.class);
+            dataProductRating = mapper.readValue(requestBodyJson, RatingDto.class);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
@@ -219,10 +219,10 @@ public class DataProductsController {
         if(myDataProductsService.getDataProductRatingCanSubmit(dataproduct_key, myAuthenticationService.getCurrentUserName())){
             return;
         }
-        DataProductRatingDto dataProductRating = null;
+        RatingDto dataProductRating = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            dataProductRating = mapper.readValue(requestBodyJson, DataProductRatingDto.class);
+            dataProductRating = mapper.readValue(requestBodyJson, RatingDto.class);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
