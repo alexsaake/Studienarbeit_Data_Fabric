@@ -1,12 +1,13 @@
 package com.mse.datafabric.auth.dto;
 
+import com.mse.datafabric.user.entities.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Request body to create a {@link com.mse.datafabric.user.model.User}
+ * Request body to create a {@link UserEntity}
  */
 @Data
 @Builder

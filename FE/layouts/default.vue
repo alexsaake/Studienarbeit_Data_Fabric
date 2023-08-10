@@ -32,35 +32,20 @@
       <v-btn icon @click.stop="clipped = !clipped">
         <v-icon>mdi-application</v-icon>
       </v-btn>
-      <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-card v-if="$auth.loggedIn">
-        <v-layout>
-          <v-col style="margin: auto">
-            <div style="white-space: nowrap">Hello {{$auth.user.firstName}}</div>
-          </v-col>
-          <v-col>
-            <v-btn text to="/account">Edit Account</v-btn>
-          </v-col>
-          <v-col>
-            <v-btn text @click="onLogout()">Logout</v-btn>
-          </v-col>
-        </v-layout>
-      </v-card>
-      <v-card v-else>
+      <v-spacer />
+      <v-card-actions v-if="$auth.loggedIn">
+        <v-btn text to="/account">{{ getLoggedInUserName() }}</v-btn>
+      </v-card-actions>
+      <v-card-actions v-else>
         <v-btn text to="/login">Login</v-btn>
         <v-btn text to="/register">Register</v-btn>
-      </v-card>
+      </v-card-actions>
     </v-app-bar>
     <v-main>
-      <v-container>
-        <Nuxt />
-      </v-container>
+      <Nuxt />
     </v-main>
-    <v-footer :absolute="!fixed" app>
+    <v-footer app>
       <v-btn text to="/impressum">Impressum</v-btn>
       <v-btn text to="/datenschutzerklaerung">Datenschutz</v-btn>
     </v-footer>
@@ -68,13 +53,14 @@
 </template>
 
 <script>
-  export default {
+  export default
+  {
     name: 'DefaultLayout',
-    data() {
-      return {
+    data()
+    {
+      return{
         clipped: false,
         drawer: false,
-        fixed: false,
         pages: [
           {
             icon: 'mdi-apps',
@@ -94,11 +80,13 @@
       }
     },
     methods: {
-      async onLogout(){
-        await this.$auth.logout()
-            .then(() => {
-              window.location.reload();
-            });
+      getLoggedInUserName()
+      {
+        if(this.$auth.loggedIn && this.$auth.user !== null)
+        {
+          return this.$auth.user.userName;
+        }
+        return '';
       }
     }
   }

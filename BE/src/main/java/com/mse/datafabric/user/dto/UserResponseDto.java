@@ -1,4 +1,4 @@
-package com.mse.datafabric.user.model;
+package com.mse.datafabric.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;

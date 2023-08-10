@@ -63,6 +63,12 @@ export default {
           logout: false
         }
       }
+    },
+    redirect: {
+      login: '/login',
+      logout: '/',
+      callback: '/marketplace',
+      home: '/marketplace'
     }
   },
 

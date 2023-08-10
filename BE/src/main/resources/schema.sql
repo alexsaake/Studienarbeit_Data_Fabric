@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS Einkommensentwicklung;
 DROP TABLE IF EXISTS Data_To_Formats_Mappings;
 DROP TABLE IF EXISTS DataProduct_Ratings;
+DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS DataProducts;
 DROP TABLE IF EXISTS Data;
 DROP TABLE IF EXISTS Data_Formats;
@@ -61,16 +62,29 @@ CREATE TABLE DataProducts
     FOREIGN KEY (dataId) REFERENCES Data (id)
 );
 
+CREATE TABLE Users
+(
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    firstName VARCHAR(256) NOT NULL,
+    lastName VARCHAR(256) NOT NULL,
+    userName VARCHAR(256) UNIQUE NOT NULL,
+    email VARCHAR(256) UNIQUE NOT NULL,
+    password VARCHAR(256) NOT NULL,
+    role VARCHAR(16) NOT NULL
+);
+
 CREATE TABLE DataProduct_Ratings
 (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_users BIGINT NOT NULL,
     id_dataProducts BIGINT NOT NULL,
     title VARCHAR(128),
     comment VARCHAR(128),
     rating NUMERIC(1) NOT NULL CHECK (rating>=1 AND rating<=5),
     submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_users, id_dataProducts),
-    FOREIGN KEY (id_users) REFERENCES User (id),
+    isEdited BOOLEAN DEFAULT FALSE,
+    isDeleted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_users) REFERENCES Users (id),
     FOREIGN KEY (id_dataProducts) REFERENCES DataProducts (id)
 );
 
@@ -102,11 +116,11 @@ CREATE TABLE IF NOT EXISTS IMMO_DATA
     status          VARCHAR(1024),
     creationDate    DATE,
     title           VARCHAR(4096),
-    roomSize        VARCHAR(1024),
-    flatSize        VARCHAR(1024),
-    rent            VARCHAR(1024),
-    extraCharges    VARCHAR(1024),
-    deposit         VARCHAR(1024),
+    roomSize        BIGINT,
+    flatSize        BIGINT,
+    rent            BIGINT,
+    extraCharges    BIGINT,
+    deposit         BIGINT,
     fromDate        DATE,
     addressCity     VARCHAR(1024),
     addressStreet   VARCHAR(1024),

@@ -28,10 +28,4 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(authenticationService.authenticate(authenticationRequest));
     }
-
-    @GetMapping("/secured")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<String> securedEndpoint() {
-        return ResponseEntity.ok("Congrats! You have access to this endpoint");
-    }
 }
