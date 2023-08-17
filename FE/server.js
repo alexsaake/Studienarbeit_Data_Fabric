@@ -1,6 +1,7 @@
 const express = require('express');
 const basicAuth = require('express-basic-auth');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const dev = process.env.NODE_ENV !== 'production';
 
 const app = express();
 
@@ -19,7 +20,8 @@ app.use(
 
 // Proxy middleware
 app.use('/api', createProxyMiddleware({
-  target: 'http://localhost:8443', // Specify the target URL for proxying
+  target: 'http://'+(dev ? 'localhost' : '192.168.178.11')+':8443',
+  //target: 'http://localhost:8443', // Specify the target URL for proxying
   changeOrigin: false, // Add the 'host' header to the proxied request
 }));
 
