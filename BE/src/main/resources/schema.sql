@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS Immobilien;
 CREATE TABLE Data
 (
     id   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    data BLOB NOT NULL
+    data bytea NOT NULL
 );
 
 CREATE TABLE Data_Formats
@@ -55,7 +55,7 @@ CREATE TABLE DataProducts
     lastUpdated      TIMESTAMP           NOT NULL,
     categoryId       BIGINT              NOT NULL,
     accessRightId    BIGINT              NOT NULL,
-    image            BLOB,
+    image            bytea,
     dataId           BIGINT,
     FOREIGN KEY (accessRightId) REFERENCES DataProduct_AccessRights (id),
     FOREIGN KEY (categoryId) REFERENCES DataProduct_Categories (id),
