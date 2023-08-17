@@ -6,7 +6,7 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "prod": "npm run generate && node server.js",
+    "prod": "npm run generate && NODE_ENV=production node server.js",
     "prodtemp": "NODE_ENV=production nuxt",
     "generate": "nuxt generate",
     "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
