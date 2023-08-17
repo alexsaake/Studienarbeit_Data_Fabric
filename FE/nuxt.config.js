@@ -1,5 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
+import config from "vue/src/core/config";
 
+config.dev = process.env.NODE_ENV !== 'production';
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   server: {
@@ -76,7 +78,7 @@ export default {
     '/api': {
       // target: 'http://localhost:8443',
       // target: 'http://127.0.0.1:8443',
-      target: 'http://'+(process.env.STAGE === 'prod' ? '192.168.178.11' : 'localhost')+':8443',
+      target: 'http://'+(config.dev ? '192.168.178.11' : 'localhost')+':8443',
       // target: 'http://www.immofabric.de:8443',
       changeOrigin: true,
       secure: false,

@@ -29,10 +29,10 @@ pipeline {
         }
 
 
-        stage('NPM Run Dev') {
+        stage('NPM Run Dev Temp') {
           steps {
             dir('FE/') {
-                sh 'npm run dev STAGE=prod'
+                sh 'npm run prodtemp'
             }
           }
         }
