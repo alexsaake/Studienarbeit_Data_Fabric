@@ -2,6 +2,8 @@ package com.mse.datafabric.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.shell.standard.ShellComponent;
+import org.springframework.stereotype.Component;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -13,7 +15,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Map;
-
 
 public class RestClient{
 

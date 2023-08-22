@@ -17,9 +17,17 @@ public class DataProductSQLFilterDTO {
         int count = 0;
         if (filterValues.areaFilter == null && filterValues.dateFromFilter == null && filterValues.dateToFilter == null)
             return "";
-        String sqlFilter = " WHERE ";
+        String sqlFilter = " ";
         if (filterValues.areaFilter != null) {
-            sqlFilter += areaFilter + " = ?";
+            sqlFilter += areaFilter + " IN (";
+            String[] splits = filterValues.areaFilter.split(",");
+            for (int i = 0;i< splits.length;i++)
+            {
+                if(i > 0)
+                    sqlFilter += ",";
+                sqlFilter += "?";
+            }
+            sqlFilter += ")";
             count++;
         }
         if (filterValues.dateFromFilter != null) {

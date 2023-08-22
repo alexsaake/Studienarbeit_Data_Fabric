@@ -8,7 +8,9 @@ import com.mse.datafabric.dataProducts.models.DataProductInsightsDTO;
 import com.mse.datafabric.dataProducts.models.RatingDto;
 import com.mse.datafabric.dataProducts.models.DataProductSQLFilterDTO;
 import com.mse.datafabric.dataProducts.models.DataProductSQLWhitelists;
+import com.mse.datafabric.utils.GoogleMapsAPI;
 import com.mse.datafabric.utils.TableJsonConverter;
+import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
 import jakarta.websocket.server.PathParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,8 @@ public class DataProductsController {
     private TableJsonConverter tableJsonConverter;
     @Autowired
     private DataProductRepository dataProductRepository;
+    @Autowired
+    public GoogleMapsAPI googleMapsAPI;
 
     @Autowired
     public DataProductsController(IDataProductsService dataProductsProvider, AuthenticationService authenticationService)
@@ -124,8 +128,13 @@ public class DataProductsController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getDataProductInsights(@PathVariable String dataproduct_key, @PathParam(value="areaFilter") String areaFilter, @PathParam(value="dateFromFilter") String dateFromFilter, @PathParam(value="dateToFilter") String dateToFilter){
-        DataProductSQLFilterDTO filterValues = new DataProductSQLFilterDTO(areaFilter,dateFromFilter,dateToFilter);
+    public String getDataProductInsights(@PathVariable String dataproduct_key, @PathParam(value="areaFilter") String areaFilter,
+                                         @PathParam(value="dateFromFilter") String dateFromFilter,
+                                         @PathParam(value="dateToFilter") String dateToFilter,
+                                         @PathParam(value="areaFilter2") String areaFilter2){
+
+            DataProductSQLFilterDTO[] filterValues = {new DataProductSQLFilterDTO(areaFilter,dateFromFilter,dateToFilter),
+                    new DataProductSQLFilterDTO(areaFilter2,dateFromFilter,dateToFilter)};
         switch (dataproduct_key){
             case "immobilien":
                 DataProductInsightsDTO insightsDTO = new DataProductInsightsDTO();
@@ -153,10 +162,13 @@ public class DataProductsController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getDataProductColumnValues(@PathVariable String dataproduct_key){
+    public String getDataProductColumnValues(@PathVariable String dataproduct_key, @PathParam(value="areaFilter") String areaFilter,
+                                             @PathParam(value="dateFromFilter") String dateFromFilter,
+                                             @PathParam(value="dateToFilter") String dateToFilter){
+        DataProductSQLFilterDTO[] filterValues = {new DataProductSQLFilterDTO(areaFilter,dateFromFilter,dateToFilter)};
         switch (dataproduct_key){
             case "immobilien":
-                String[] cityValues =  dataProductRepository.getDifferentColumnValues(DataProductSQLWhitelists.IMMO_CITY);
+                String[] cityValues =  dataProductRepository.getDifferentColumnValues(DataProductSQLWhitelists.IMMO_CITY,filterValues);
                 try {
                     ObjectMapper mapper = new ObjectMapper();
                     return mapper.writeValueAsString(cityValues);
@@ -166,6 +178,45 @@ public class DataProductsController {
                 }
         }
         return "{}";
+    }
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/MapsDataIds",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public String getDataProductColumnValuesMaps(@PathVariable String dataproduct_key, @PathParam(value="areaFilter") String areaFilter,
+                                         @PathParam(value="dateFromFilter") String dateFromFilter,
+                                         @PathParam(value="dateToFilter") String dateToFilter){
+
+        DataProductSQLFilterDTO[] filterValues = {new DataProductSQLFilterDTO(areaFilter,dateFromFilter,dateToFilter)};
+        switch (dataproduct_key){
+            case "immobilien":
+                String[] columnValues =  dataProductRepository.getDifferentColumnValues(DataProductSQLWhitelists.MAPS_POSTAL_CODE,filterValues);
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    return mapper.writeValueAsString(columnValues);
+                }
+                catch (JsonProcessingException e) {
+                    myLogger.error("Could not parse json " + e);
+                }
+        }
+        return "{}";
+    }
+    @ShellMethod( "getDataProduct" )
+    @PostMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/MapsDataIds",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String setDataProductPlaceIds(@PathVariable String dataproduct_key){
+        int count = 0;
+        switch (dataproduct_key){
+            case "immobilien":
+                GoogleMapsAddressDTO[] dtos = dataProductRepository.getDataProductAddressData(new DataProductSQLWhitelists[]{DataProductSQLWhitelists.IMMO_ADDRESS_CITY, DataProductSQLWhitelists.IMMO_ADDRESS_STREET});
+                dataProductRepository.insertGoogleMapsData(dtos);
+                count = dataProductRepository.updateDataProductGoogleMapsIds(dtos,new DataProductSQLWhitelists[]{DataProductSQLWhitelists.IMMO_MAPS_ID,DataProductSQLWhitelists.IMMO_ADDRESS_CITY, DataProductSQLWhitelists.IMMO_ADDRESS_STREET});
+        }
+        return "{\"updated items\":"+ count +"}";
     }
 
     @ShellMethod( "getDataProduct" )

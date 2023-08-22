@@ -107,24 +107,39 @@ CREATE TABLE Immobilien
 );
 
 DROP TABLE IF EXISTS IMMO_DATA;
+DROP TABLE IF EXISTS GOOGLE_MAPS_DATA;
+CREATE TABLE IF NOT EXISTS GOOGLE_MAPS_DATA
+(
+    dataId              BIGINT NOT NULL AUTO_INCREMENT,
+    placeId             VARCHAR(1024),
+    locationLat         DOUBLE,
+    locationLng         DOUBLE,
+    postalCode          VARCHAR(1024),
+    PRIMARY KEY (dataId)
+
+);
+
+
 CREATE TABLE IF NOT EXISTS IMMO_DATA
 (
-    portalId        VARCHAR(1024),
-    itemId          VARCHAR(1024),
-    date            DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    city            VARCHAR(1024),
-    status          VARCHAR(1024),
-    creationDate    DATE,
-    title           VARCHAR(4096),
-    roomSize        BIGINT,
-    flatSize        BIGINT,
-    rent            BIGINT,
-    extraCharges    BIGINT,
-    deposit         BIGINT,
-    fromDate        DATE,
-    addressCity     VARCHAR(1024),
-    addressStreet   VARCHAR(1024),
-    currencyUnit    VARCHAR(1024),
-    sizeUnit        VARCHAR(1024),
-    PRIMARY KEY (portalId,itemId,date)
+    portalId            VARCHAR(1024),
+    itemId              VARCHAR(1024),
+    date                DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    city                VARCHAR(1024),
+    status              VARCHAR(1024),
+    creationDate        DATE,
+    title               VARCHAR(4096),
+    roomSize            BIGINT,
+    flatSize            BIGINT,
+    rent                BIGINT,
+    extraCharges        BIGINT,
+    deposit             BIGINT,
+    fromDate            DATE,
+    addressCity         VARCHAR(1024),
+    addressStreet       VARCHAR(1024),
+    currencyUnit        VARCHAR(1024),
+    sizeUnit            VARCHAR(1024),
+    googleMapsDataId    VARCHAR(1024),
+    PRIMARY KEY (portalId,itemId,date),
+    FOREIGN KEY (googleMapsDataId) REFERENCES GOOGLE_MAPS_DATA (dataId)
 );
