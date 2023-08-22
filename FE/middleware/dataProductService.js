@@ -24,6 +24,7 @@ export async function getDataProductInsights(axios, shortKey, param)
     return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/Insights`,{
       params: {
         areaFilter: param.areaFilter,
+        areaFilter2: param.areaFilter2,
         dateFromFilter: param.dateFromFilter,
         dateToFilter: param.dateToFilter
       }
@@ -39,6 +40,21 @@ export async function getDataProductInsightsCities(axios, shortKey)
   try
   {
     return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/Cities`);
+  }
+  catch (error)
+  {
+    console.log(error);
+  }
+}
+export async function getDataProductInsightsPostalCodes(axios, shortKey, param)
+{
+  try
+  {
+    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/MapsDataIds`,{
+      params: {
+        areaFilter: param.areaFilter,
+      }
+      });
   }
   catch (error)
   {

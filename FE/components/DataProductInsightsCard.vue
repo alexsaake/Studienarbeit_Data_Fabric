@@ -1,6 +1,6 @@
 <template>
   <v-card class="dataProductInsights">
-    <v-card v-if="!dataProductInsights || !dataProductInsightsCities">
+    <v-card v-if="!dataProductInsights || !dataProductInsightsCities || !dataProductInsightsPostalCodes">
       <v-progress-circular
         :size="120"
         indeterminate
@@ -54,8 +54,18 @@
               style="height: 60px"
               label="Stadt"
               :items="dataProductInsightsCities.cities"
-              @input="reloadData = true"
+              @input="reloadData = true; newEvent.postalCodes = 'Alle';"
             ></v-combobox>
+        </v-row>
+        <v-row class="insights-row">
+          <v-combobox
+            v-model="newEvent.postalCodes"
+            class="combobox includedPopout"
+            style="height: 60px"
+            label="Bezirk"
+            :items="dataProductInsightsPostalCodes.postalCodes"
+            @input="reloadData = true"
+          ></v-combobox>
         </v-row>
         <v-row class="insights-row">
           <v-col cols="12" md="6">
@@ -120,7 +130,7 @@
 <script>
 import { mdiCalendarRange, mdiClose} from '@mdi/js'
 import {
-  getDataProductInsights, getDataProductInsightsCities
+  getDataProductInsights, getDataProductInsightsCities, getDataProductInsightsPostalCodes
 } from "~/middleware/dataProductService";
 
 export default {
@@ -135,6 +145,7 @@ export default {
     return {
       dataProductInsights: null,
       dataProductInsightsCities: null,
+      dataProductInsightsPostalCodes: null,
       dateIcon: mdiCalendarRange,
       closeIcon: mdiClose,
       date: new Date().toISOString().substr(0, 10),
@@ -145,7 +156,8 @@ export default {
       newEvent: {
         whenStartedDate: null,
         whenEndedDate: null,
-        city: 'Alle'
+        city: 'Alle',
+        postalCodes: 'Alle'
       },
       reloadData: false
     }
@@ -157,6 +169,12 @@ export default {
     )
     array.cities.unshift('Alle');
     this.dataProductInsightsCities = array;
+    //
+    const arrayPostalCodes = await this.fetchDataProductInsightsPostalCodes(
+      this.shortKey
+    )
+    arrayPostalCodes.postalCodes.unshift('Alle');
+    this.dataProductInsightsPostalCodes = arrayPostalCodes;
   },
   computed: {
     computedDateFormatted () {
@@ -186,6 +204,16 @@ export default {
         this.dataProductInsightsCities = array;
       }
     },
+    async dataProductInsightsPostalCodes() {
+      // Load data when dataProductDetail changes from null to an object
+      if (this.dataProductInsightsPostalCodes === null) {
+        const array = await this.fetchDataProductInsightsPostalCodes(
+          this.shortKey
+        )
+        array.cities.unshift('Alle');
+        this.dataProductInsightsPostalCodes = array;
+      }
+    },
     date (val) {
       this.dateFormatted = this.formatDate(this.date);
     },
@@ -194,6 +222,11 @@ export default {
       this.dataProductInsights = await this.fetchDataProductInsights(
         this.shortKey
       )
+      const arrayPostalCodes = await this.fetchDataProductInsightsPostalCodes(
+        this.shortKey
+      )
+      arrayPostalCodes.postalCodes.unshift('Alle');
+      this.dataProductInsightsPostalCodes = arrayPostalCodes;
     },
     WhenEndedDate(){
       sessionStorage.setItem("datePickerOpen", this.WhenEndedDate);
@@ -210,6 +243,7 @@ export default {
         shortKey,
         {
           areaFilter: (this.newEvent.city==="Alle"?null:this.newEvent.city),
+          areaFilter2: (this.newEvent.postalCodes==="Alle"?null:this.newEvent.postalCodes),
           dateFromFilter: this.newEvent.whenStartedDate,
           dateToFilter: this.newEvent.whenEndedDate,
         }
@@ -231,6 +265,17 @@ export default {
         shortKey);
       return {
         cities: rawDataProductInsightsCities
+      };
+    },
+    async fetchDataProductInsightsPostalCodes(shortKey) {
+      const rawDataProductInsightsPostalCodes = await getDataProductInsightsPostalCodes(
+        this.$axios,
+        shortKey,
+        {
+          areaFilter: (this.newEvent.city==="Alle"?null:this.newEvent.city)
+        });
+      return {
+        postalCodes: rawDataProductInsightsPostalCodes
       };
     },
     formatDate (date) {
