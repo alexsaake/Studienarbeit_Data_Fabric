@@ -35,4 +35,6 @@ build/
 ### Spring Shell ###
 spring-shell.log
 
+FE/package-lock.json
+
 *.db

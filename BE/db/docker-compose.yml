@@ -1,0 +1,22 @@
+version: '3.5'
+
+services:
+  db:
+    container_name: pg_container
+    image: postgres:14.2
+    restart: always
+    environment:
+      POSTGRES_USER: msedfdb
+      POSTGRES_PASSWORD: msedfdb
+      POSTGRES_DB: datafabric
+    ports:
+      - 5432:5432
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@immofabric.de
+      PGADMIN_DEFAULT_PASSWORD: msedfdb
+    ports:
+      - 5051:80
