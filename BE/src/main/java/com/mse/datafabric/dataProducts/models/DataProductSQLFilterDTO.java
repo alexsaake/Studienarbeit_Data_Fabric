@@ -33,13 +33,13 @@ public class DataProductSQLFilterDTO {
         if (filterValues.dateFromFilter != null) {
             if (count > 0)
                 sqlFilter += " AND ";
-            sqlFilter += dateFromFilter + " >= ?";;
+            sqlFilter += dateFromFilter + " >= CAST(? AS DATE)";;
             count++;
         }
         if (filterValues.dateToFilter != null) {
             if (count > 0)
                 sqlFilter += " AND ";
-            sqlFilter += dateToFilter + " <= ?";;
+            sqlFilter += dateToFilter + " <= CAST(? AS DATE)";;
         }
         //
         return sqlFilter;

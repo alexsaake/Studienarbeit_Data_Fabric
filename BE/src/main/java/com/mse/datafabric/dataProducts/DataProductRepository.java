@@ -26,9 +26,10 @@ import java.util.List;
 @Repository
 public class DataProductRepository {
     public static final Logger LOGGER= LoggerFactory.getLogger(DataProductRepository.class);
-    public final JdbcTemplate jdbcTemplate;
+    @Autowired
+    public JdbcTemplate jdbcTemplate;
     public DataProductRepository() {
-        jdbcTemplate = new JdbcTemplate(getDataSource());
+
     }
 
     @Autowired
@@ -278,44 +279,18 @@ public class DataProductRepository {
         return getQueryResult(STATEMENT,setPreparedStatementFromColumns(whitelist.filter, filterValues,1));
     }
     public float getInsightMedian(DataProductSQLWhitelists whitelist, DataProductSQLFilterDTO[] filterValues) {
-        final String STATEMENT = "SELECT (" +
-                "(SELECT MAX(col1) FROM "+
-                "(SELECT top 50 percent "+whitelist.selectColumn+" AS col1 FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist)+" ORDER BY "+whitelist.selectColumn+") AS onehalf)"+
-                "+" +
-                "(SELECT MIN(col2) FROM "+
-                "(SELECT top 50 percent "+whitelist.selectColumn+" AS col2 FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist)+" ORDER BY "+whitelist.selectColumn+" DESC) AS otherhalf))"+
-                "/ 2 AS median";
+        final String STATEMENT = "SELECT PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY "+whitelist.selectColumn+") FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist);
         //
-        return getQueryResult(STATEMENT,setPreparedStatementFromColumns(whitelist.filter, filterValues,2));
+        return getQueryResult(STATEMENT,setPreparedStatementFromColumns(whitelist.filter, filterValues,1));
     }
     public float getInsightQuartile25(DataProductSQLWhitelists whitelist, DataProductSQLFilterDTO[] filterValues) {
-        final String STATEMENT = "SELECT (" +
-                "(SELECT MAX(col1) FROM "+
-                "(SELECT top 25 percent "+whitelist.selectColumn+" AS col1 FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist)+" ORDER BY "+whitelist.selectColumn+") AS onehalf)"+
-                "+" +
-                "(SELECT MIN(col2) FROM "+
-                "(SELECT top 25 percent "+whitelist.selectColumn+" AS col2 FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist)+" ORDER BY "+whitelist.selectColumn+" DESC) AS otherhalf))"+
-                "/ 2 AS quartile";
+        final String STATEMENT = "SELECT PERCENTILE_CONT(0.25) WITHIN GROUP(ORDER BY "+whitelist.selectColumn+") FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist);
         //
-        return getQueryResult(STATEMENT,setPreparedStatementFromColumns(whitelist.filter, filterValues,2));
+        return getQueryResult(STATEMENT,setPreparedStatementFromColumns(whitelist.filter, filterValues,1));
     }
     public float getInsightQuartile75(DataProductSQLWhitelists whitelist, DataProductSQLFilterDTO[] filterValues) {
-        final String STATEMENT = "SELECT (" +
-                "(SELECT MAX(col1) FROM "+
-                "(SELECT top 75 percent "+whitelist.selectColumn+" AS col1 FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist)+" ORDER BY "+whitelist.selectColumn+") AS onehalf)"+
-                "+" +
-                "(SELECT MIN(col2) FROM "+
-                "(SELECT top 75 percent "+whitelist.selectColumn+" AS col2 FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist)+" ORDER BY "+whitelist.selectColumn+" DESC) AS otherhalf))"+
-                "/ 2 AS quartile";
+        final String STATEMENT = "SELECT PERCENTILE_CONT(0.75) WITHIN GROUP(ORDER BY "+whitelist.selectColumn+") FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist);
         //
-        return getQueryResult(STATEMENT,setPreparedStatementFromColumns(whitelist.filter, filterValues,2));
-    }
-    public static DriverManagerDataSource getDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl("jdbc:h2:file:./db/datafabric;NON_KEYWORDS=USER;AUTO_SERVER=true");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-        return dataSource;
-
+        return getQueryResult(STATEMENT,setPreparedStatementFromColumns(whitelist.filter, filterValues,1));
     }
 }

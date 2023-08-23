@@ -1,8 +1,10 @@
 package com.mse.datafabric.immobilien.webScraper;
 
 import com.mse.datafabric.immobilien.webScraper.dtos.ScrapingContentDTO;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -15,12 +17,13 @@ import java.util.List;
 public class ScraperRepository {
 
     public static final Logger LOGGER= LoggerFactory.getLogger(ScraperRepository.class);
-    public final JdbcTemplate jdbcTemplate;
+    @Autowired
+    public JdbcTemplate jdbcTemplate;
 
     private static final String INSERT_INTO_IMMO_DATA = "INSERT INTO IMMO_DATA (portalId, itemId, city, status, creationDate, title, roomSize, flatSize, rent, extraCharges, deposit, fromDate, addressCity, addressStreet, currencyUnit,sizeUnit) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     public ScraperRepository() {
-        jdbcTemplate = new JdbcTemplate(getDataSource());
+
     }
 
     public boolean saveDTOToDatabase(List<ScrapingContentDTO> dtoList) {
@@ -69,12 +72,5 @@ public class ScraperRepository {
 
         LOGGER.info("DTO successfully saved!");
         return true;
-    }
-    public static DriverManagerDataSource getDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl("jdbc:h2:file:./db/datafabric;NON_KEYWORDS=USER;AUTO_SERVER=true");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-        return dataSource;
     }
 }

@@ -163,18 +163,9 @@ export default {
     }
   },
   async fetch() {
-    this.dataProductInsights = await this.fetchDataProductInsights(this.shortKey);
-    const array = await this.fetchDataProductInsightsCities(
-      this.shortKey
-    )
-    array.cities.unshift('Alle');
-    this.dataProductInsightsCities = array;
-    //
-    const arrayPostalCodes = await this.fetchDataProductInsightsPostalCodes(
-      this.shortKey
-    )
-    arrayPostalCodes.postalCodes.unshift('Alle');
-    this.dataProductInsightsPostalCodes = arrayPostalCodes;
+    await this.loadInsights();
+    await this.loadCities();
+    await this.loadPostalCodes();
   },
   computed: {
     computedDateFormatted () {
@@ -189,29 +180,19 @@ export default {
       // Load data when dataProductDetail changes from null to an object
       if (this.dataProductInsights === null) {
         this.reloadData = false;
-        this.dataProductInsights = await this.fetchDataProductInsights(
-          this.shortKey
-        )
+        await this.loadInsights();
       }
     },
     async dataProductInsightsCities() {
       // Load data when dataProductDetail changes from null to an object
       if (this.dataProductInsightsCities === null) {
-        const array = await this.fetchDataProductInsightsCities(
-          this.shortKey
-        )
-        array.cities.unshift('Alle');
-        this.dataProductInsightsCities = array;
+        await this.loadCities();
       }
     },
     async dataProductInsightsPostalCodes() {
       // Load data when dataProductDetail changes from null to an object
       if (this.dataProductInsightsPostalCodes === null) {
-        const array = await this.fetchDataProductInsightsPostalCodes(
-          this.shortKey
-        )
-        array.cities.unshift('Alle');
-        this.dataProductInsightsPostalCodes = array;
+        await this.loadPostalCodes();
       }
     },
     date (val) {
@@ -219,14 +200,8 @@ export default {
     },
     async reloadData(){
       this.reloadData = false;
-      this.dataProductInsights = await this.fetchDataProductInsights(
-        this.shortKey
-      )
-      const arrayPostalCodes = await this.fetchDataProductInsightsPostalCodes(
-        this.shortKey
-      )
-      arrayPostalCodes.postalCodes.unshift('Alle');
-      this.dataProductInsightsPostalCodes = arrayPostalCodes;
+      await this.loadInsights();
+      await this.loadPostalCodes();
     },
     WhenEndedDate(){
       sessionStorage.setItem("datePickerOpen", this.WhenEndedDate);
@@ -277,6 +252,25 @@ export default {
       return {
         postalCodes: rawDataProductInsightsPostalCodes
       };
+    },
+    async loadInsights(){
+      this.dataProductInsights = await this.fetchDataProductInsights(
+        this.shortKey
+      )
+    },
+    async loadCities(){
+      const array = await this.fetchDataProductInsightsCities(
+        this.shortKey
+      );
+      (array.cities != null?array.cities.unshift('Alle'):array.cities = ['Alle']);
+      this.dataProductInsightsCities = array;
+    },
+    async loadPostalCodes(){
+      const array = await this.fetchDataProductInsightsPostalCodes(
+        this.shortKey
+      );
+      (array.postalCodes != null?array.postalCodes.unshift('Alle'):array.postalCodes = ['Alle']);
+      this.dataProductInsightsPostalCodes = array;
     },
     formatDate (date) {
       if (!date) return null

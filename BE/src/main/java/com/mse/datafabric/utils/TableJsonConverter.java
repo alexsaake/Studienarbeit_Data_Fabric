@@ -27,7 +27,7 @@ public class TableJsonConverter {
         if (conn != null && stmt != null)
             return;
 
-        conn = DriverManager.getConnection("jdbc:h2:file:./db/datafabric;NON_KEYWORDS=USER;AUTO_SERVER=true", "sa", "");
+        conn = DriverManager.getConnection("jdbc:postgresql://immofabric.de:5432/datafabric", "msedfdb", "msedfdb");
         stmt = conn.createStatement();
 
     }
