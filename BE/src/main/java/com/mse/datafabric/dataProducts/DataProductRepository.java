@@ -50,14 +50,14 @@ public class DataProductRepository {
         }
     }
     public void insertGoogleMapsData(GoogleMapsAddressDTO[] dto){
-        final String INSERT = "SELECT dataId FROM FINAL TABLE (INSERT INTO GOOGLE_MAPS_DATA (placeId, locationLat, locationLng, postalCode) VALUES(?,?,?,?))";
+        final String INSERT = "INSERT INTO GOOGLE_MAPS_DATA (placeId, locationLat, locationLng, postalCode) VALUES(?,?,?,?) RETURNING dataId";
         for(int i = 0;i < dto.length; i++) {
             try {
                 int finalI = i;
                 int query = jdbcTemplate.query(INSERT, ps -> {
                     ps.setString(1, dto[finalI].placeId);
-                    ps.setFloat(2, dto[finalI].locationLat);
-                    ps.setFloat(3, dto[finalI].locationLng);
+                    ps.setDouble(2, dto[finalI].locationLat);
+                    ps.setDouble(3, dto[finalI].locationLng);
                     ps.setString(4, dto[finalI].postalCode);
                 }, resultSet -> {
                     if (resultSet.next()) {
@@ -67,7 +67,7 @@ public class DataProductRepository {
                 });
                 dto[finalI].dataId = query;
             } catch (Exception e) {
-
+                return;
             }
         }
     }
@@ -75,7 +75,8 @@ public class DataProductRepository {
         if(whitelist.length!=3)
             return 0;
         int count = 0;
-        final String UPDATE_ID = "UPDATE "+whitelist[0].tableName+" SET "+whitelist[0].selectColumn+" = ? "+
+        String[] selectColumn = whitelist[0].selectColumn.split("\\.");
+        final String UPDATE_ID = "UPDATE "+whitelist[0].tableName+" SET "+selectColumn[selectColumn.length-1]+" = ? "+
                 "WHERE "+whitelist[1].selectColumn+" = ? AND "+whitelist[2].selectColumn+" = ?";
         for(int i = 0;i < dto.length; i++){
             try {
@@ -92,7 +93,7 @@ public class DataProductRepository {
                 count++;
             }
             catch (Exception e) {
-
+                return 0;
             }
         }
         return count;
@@ -104,19 +105,19 @@ public class DataProductRepository {
         List<GoogleMapsAddressDTO> dtoLlist = new ArrayList<>();
 
         String query = "SELECT " + whitelists[0].selectColumn + ", "+whitelists[1].selectColumn + " FROM " + whitelists[0].tableName+
-                " WHERE googleMapsDataId is NULL";
+                " WHERE googleMapsDataId is NULL";;
         jdbcTemplate.query(
             query, new PreparedStatementSetter() {
-                public void setValues(PreparedStatement preparedStatement) throws
-                        SQLException {
+                public void setValues(PreparedStatement preparedStatement) throws SQLException {
                 }
             },new ResultSetExtractor<>() {
                 public Object extractData(ResultSet resultSet) throws SQLException,
                         DataAccessException {
                     while (resultSet.next()) {
-
-                        String city = resultSet.getString(whitelists[0].selectColumn);
-                        String street = resultSet.getString(whitelists[1].selectColumn);
+                        String[] columns = whitelists[0].selectColumn.split("\\.");
+                        String city = resultSet.getString(columns[columns.length-1]);
+                        columns = whitelists[1].selectColumn.split("\\.");
+                        String street = resultSet.getString(columns[columns.length-1]);
 
                         GoogleMapsAddressDTO dto = new GoogleMapsAddressDTO(city, street);
                         googleMapsAPI.updateDTO(dto);
@@ -227,11 +228,24 @@ public class DataProductRepository {
         if(whitelist.joinExpression == null || whitelist.filter == null)
             return sqlFilter;
         for(int i = 0;i < whitelist.filter.length;i++){
-            if(filterValues.length < i || filterValues[i].areaFilter == null)
-                continue;
-            String str = whitelist.filter[i].areaFilter.split("\\.")[0];
-            if(whitelist.joinExpression.contains(str+" ON"))
-                containsColumn = true;
+            if(filterValues.length < i ) {
+               continue;
+            }
+            if(filterValues[i].areaFilter != null) {
+                String str = whitelist.filter[i].areaFilter.split("\\.")[0];
+                if (whitelist.joinExpression.contains(str + " ON"))
+                    containsColumn = true;
+            }
+            if(filterValues[i].dateFromFilter != null) {
+                String str = whitelist.filter[i].dateFromFilter.split("\\.")[0];
+                if (whitelist.joinExpression.contains(str + " ON"))
+                    containsColumn = true;
+            }
+            if(filterValues[i].dateToFilter != null) {
+                String str = whitelist.filter[i].dateToFilter.split("\\.")[0];
+                if (whitelist.joinExpression.contains(str + " ON"))
+                    containsColumn = true;
+            }
         }
         if(!containsColumn)
             return sqlFilter;
@@ -292,5 +306,23 @@ public class DataProductRepository {
         final String STATEMENT = "SELECT PERCENTILE_CONT(0.75) WITHIN GROUP(ORDER BY "+whitelist.selectColumn+") FROM "+whitelist.tableName+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist);
         //
         return getQueryResult(STATEMENT,setPreparedStatementFromColumns(whitelist.filter, filterValues,1));
+    }
+    public GoogleMapsAddressDTO[] getInsightMapsData(DataProductSQLWhitelists whitelist, DataProductSQLFilterDTO[] filterValues) {
+        final String STATEMENT = "SELECT locationlat, locationlng FROM google_maps_data "+ getSQLJoin(filterValues, whitelist) + getSQLFilter(filterValues, whitelist);
+        //
+        List<GoogleMapsAddressDTO> dtoLlist = new ArrayList<>();
+        //
+        jdbcTemplate.query(
+                STATEMENT, setPreparedStatementFromColumns(whitelist.filter, filterValues,1),new ResultSetExtractor<>() {
+                    public Object extractData(ResultSet resultSet) throws SQLException,
+                            DataAccessException {
+                        while (resultSet.next()) {
+                            dtoLlist.add(new GoogleMapsAddressDTO(resultSet.getDouble("locationlat"),resultSet.getDouble("locationlng")));
+                        }
+                        return null;
+                    }
+                }
+        );
+        return dtoLlist.toArray(new GoogleMapsAddressDTO[0]);
     }
 }

@@ -2,20 +2,29 @@
   <v-card>
     <v-container>
       <v-row>
-        <v-col cols="6" md="3">
-          <v-card :to="'/api/Gateway/DataProduct/' + shortKey + '/Data'" target="_blank" class="d-flex flex-column fill-height">
-            <v-img src="insights.png"/>
-            <v-card-title>RESTful API</v-card-title>
-          </v-card>
+        <v-col cols="12" md="12" style="padding-bottom: 0">
+          <h3>Daten</h3>
         </v-col>
-        <v-col cols="6" md="3">
-          <v-card :to="'/dataTableView?shortKey=' + shortKey" target="_blank" class="d-flex flex-column fill-height">
-            <v-img src="insights.png"/>
-            <v-card-title>Vorschau</v-card-title>
-            <v-card-subtitle>(in Tabelle)</v-card-subtitle>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-card :to="'/api/Gateway/DataProduct/' + shortKey + '/Data'" target="_blank" class="d-flex flex-column fill-height">
+            <v-card-subtitle>RESTful API</v-card-subtitle>
           </v-card>
         </v-col>
         <v-col cols="12" md="6">
+          <v-card :to="'/dataTableView?shortKey=' + shortKey" target="_blank" class="d-flex flex-column fill-height">
+            <v-card-subtitle>Vorschau (in Tabelle)</v-card-subtitle>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12" style="padding-bottom: 0">
+          <h3>Insights</h3>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12">
           <data-product-insights-card :short-key="shortKey" />
         </v-col>
       </v-row>
@@ -38,3 +47,13 @@
     }
   }
 </script>
+
+
+<style lang="css">
+  .my-overlay >>> .v-overlay__content  {
+    width: 50%;
+    /*height: 100%;*/
+    overflow-y: scroll;
+  }
+
+</style>

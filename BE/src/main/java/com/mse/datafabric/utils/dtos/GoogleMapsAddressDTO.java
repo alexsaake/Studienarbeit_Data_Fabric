@@ -7,11 +7,15 @@ public class GoogleMapsAddressDTO {
     public String street;
     public String placeId;
     public String postalCode;
-    public float locationLat;
-    public float locationLng;
+    public double locationLat;
+    public double locationLng;
     public GoogleMapsAddressDTO(String city, String street){
         this.city = city;
         this.street = street;
         this.dataId = -1;
+    }
+    public GoogleMapsAddressDTO(double locationLat, double locationLng){
+        this.locationLat = locationLat;
+        this.locationLng = locationLng;
     }
 }

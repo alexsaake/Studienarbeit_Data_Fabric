@@ -43,9 +43,13 @@ public class GoogleMapsAPI {
         results = getResults(dto.street + ", "+ dto.city);
         String placeId = getPlaceId(results);
         String postalCode = getPostalCode(results);
+        double locationLat = getLocationLat(results);
+        double locationLng = getLocationLng(results);
         //
         dto.placeId = placeId;
         dto.postalCode = postalCode;
+        dto.locationLat = locationLat;
+        dto.locationLng = locationLng;
     }
     public GeocodingResult[] getResults(String address){
         GeocodingResult[] results;
@@ -73,6 +77,16 @@ public class GoogleMapsAPI {
             }
         }
         return null;
+    }
+    public double getLocationLng(GeocodingResult[] results){
+        if (results.length < 1 || results[0].geometry == null || results[0].geometry.location == null)
+            return 0;
+        return results[0].geometry.location.lng;
+    }
+    public double getLocationLat(GeocodingResult[] results){
+        if (results.length < 1 || results[0].geometry == null || results[0].geometry.location == null)
+            return 0;
+        return results[0].geometry.location.lat;
     }
 
 

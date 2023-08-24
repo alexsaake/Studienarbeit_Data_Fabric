@@ -178,15 +178,23 @@
   }
   .my-details
   {
-    height: 100%;
+    /*height: 100%;*/
   }
   .my-dialog
   {
     position: fixed;
     width: 50%;
-    height: 100%;
+    /*height: 100%;*/
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+  @media screen and (max-width: 600px) {
+      .my-dialog {
+          transform: unset;
+          width: 100%;
+          top: 0;
+          left: 0;
+      }
   }
 </style>

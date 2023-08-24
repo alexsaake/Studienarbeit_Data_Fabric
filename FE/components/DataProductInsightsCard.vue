@@ -8,118 +8,126 @@
       ></v-progress-circular>
     </v-card>
     <v-card v-else>
-      <v-card-title style="word-break: break-word">Insights</v-card-title>
-      <v-card-subtitle>Detaillierte Informationen zum Datenprodukt</v-card-subtitle>
-      <v-card-text>
-        <v-container>
-          <v-row class="insights-row">
-            <v-col cols="12" md="8">Anzahl an aktiven Einträgen:</v-col>
-            <v-col cols="12" md="4">{{dataProductInsights.activeItemsCount}}</v-col>
-          </v-row>
-          <v-row class="insights-row">
-            <v-col cols="12" md="8">Durchschnittliche Miete:</v-col>
-            <v-col cols="12" md="4">{{dataProductInsights.averageRent}} €</v-col>
-          </v-row>
-          <v-row class="insights-row">
-            <v-col cols="12" md="8">Durchschnittliche Zimmergröße:</v-col>
-            <v-col cols="12" md="4">{{dataProductInsights.averageSize}} m²</v-col>
-          </v-row>
-          <v-row class="insights-row">
-            <v-col cols="12" md="8">Günstigste Miete:</v-col>
-            <v-col cols="12" md="4">{{dataProductInsights.lowestRent}} €</v-col>
-          </v-row>
-          <v-row class="insights-row">
-            <v-col cols="12" md="8">Teuerste Miete:</v-col>
-            <v-col cols="12" md="4">{{dataProductInsights.highestRent}} €</v-col>
-          </v-row>
-          <v-row class="insights-row">
-            <v-col cols="12" md="8">Miete Median:</v-col>
-            <v-col cols="12" md="4">{{dataProductInsights.medianRent}} €</v-col>
-          </v-row>
-          <v-row class="insights-row">
-            <v-col cols="12" md="8">Miete 25% Quartil:</v-col>
-            <v-col cols="12" md="4">{{dataProductInsights.quartile25Rent}} €</v-col>
-          </v-row>
-          <v-row class="insights-row">
-            <v-col cols="12" md="8">Miete 75% Quartil:</v-col>
-            <v-col cols="12" md="4">{{dataProductInsights.quartile75Rent}} €</v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
       <v-container>
-        <v-row class="insights-row">
-            <v-combobox
-              v-model="newEvent.city"
-              class="combobox includedPopout"
-              style="height: 60px"
-              label="Stadt"
-              :items="dataProductInsightsCities.cities"
-              @input="reloadData = true; newEvent.postalCodes = 'Alle';"
-            ></v-combobox>
-        </v-row>
-        <v-row class="insights-row">
-          <v-combobox
-            v-model="newEvent.postalCodes"
-            class="combobox includedPopout"
-            style="height: 60px"
-            label="Bezirk"
-            :items="dataProductInsightsPostalCodes.postalCodes"
-            @input="reloadData = true"
-          ></v-combobox>
-        </v-row>
-        <v-row class="insights-row">
+        <v-row>
           <v-col cols="12" md="6">
-            <v-menu
-              v-model="WhenStartedDate"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="290px"
-            >
-              <template #activator="{ on, attrs }">
-                <v-text-field
-                  v-model="newEvent.whenStartedDate"
+            <v-card-subtitle>Detaillierte Informationen zum Datenprodukt</v-card-subtitle>
+            <v-card-text>
+              <v-container>
+                <v-row class="insights-row">
+                  <v-col cols="12" md="8">Anzahl an aktiven Einträgen:</v-col>
+                  <v-col cols="12" md="4">{{dataProductInsights.activeItemsCount}}</v-col>
+                </v-row>
+                <v-row class="insights-row">
+                  <v-col cols="12" md="8">Durchschnittliche Miete:</v-col>
+                  <v-col cols="12" md="4">{{dataProductInsights.averageRent}} €</v-col>
+                </v-row>
+                <v-row class="insights-row">
+                  <v-col cols="12" md="8">Durchschnittliche Zimmergröße:</v-col>
+                  <v-col cols="12" md="4">{{dataProductInsights.averageSize}} m²</v-col>
+                </v-row>
+                <v-row class="insights-row">
+                  <v-col cols="12" md="8">Günstigste Miete:</v-col>
+                  <v-col cols="12" md="4">{{dataProductInsights.lowestRent}} €</v-col>
+                </v-row>
+                <v-row class="insights-row">
+                  <v-col cols="12" md="8">Teuerste Miete:</v-col>
+                  <v-col cols="12" md="4">{{dataProductInsights.highestRent}} €</v-col>
+                </v-row>
+                <v-row class="insights-row">
+                  <v-col cols="12" md="8">Miete Median:</v-col>
+                  <v-col cols="12" md="4">{{dataProductInsights.medianRent}} €</v-col>
+                </v-row>
+                <v-row class="insights-row">
+                  <v-col cols="12" md="8">Miete 25% Quartil:</v-col>
+                  <v-col cols="12" md="4">{{dataProductInsights.quartile25Rent}} €</v-col>
+                </v-row>
+                <v-row class="insights-row">
+                  <v-col cols="12" md="8">Miete 75% Quartil:</v-col>
+                  <v-col cols="12" md="4">{{dataProductInsights.quartile75Rent}} €</v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-container>
+              <v-row class="insights-row">
+                <v-combobox
+                  v-model="newEvent.city"
+                  class="combobox includedPopout"
                   style="height: 60px"
-                  label="Datum VON"
-                  :prepend-icon="dateIcon"
-                  :append-icon="(newEvent.whenStartedDate === null ? undefined : closeIcon)"
-                  readonly
-                  v-bind="attrs"
-                  @click:prepend="WhenStartedDate = true"
-                  @click:append="newEvent.whenStartedDate = null;reloadData = true"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker v-model="newEvent.whenStartedDate" class="includedPopout" @input="WhenStartedDate = false;reloadData = true" />
-            </v-menu>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-menu
-              v-model="WhenEndedDate"
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="290px"
-            >
-              <template #activator="{ on, attrs }">
+                  label="Stadt"
+                  :items="dataProductInsightsCities.cities"
+                  @input="reloadData = true; newEvent.postalCodes = 'Alle';"
+                ></v-combobox>
+              </v-row>
+              <v-row class="insights-row">
+                <v-combobox
+                  v-model="newEvent.postalCodes"
+                  class="combobox includedPopout"
+                  style="height: 60px"
+                  label="Bezirk"
+                  :items="dataProductInsightsPostalCodes.postalCodes"
+                  @input="reloadData = true"
+                ></v-combobox>
+              </v-row>
+              <v-row class="insights-row">
+                <v-col cols="12" md="6">
+                  <v-menu
+                    v-model="WhenStartedDate"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template #activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="newEvent.whenStartedDate"
+                        style="height: 60px"
+                        label="Datum VON"
+                        :prepend-icon="dateIcon"
+                        :append-icon="(newEvent.whenStartedDate === null ? undefined : closeIcon)"
+                        readonly
+                        v-bind="attrs"
+                        @click:prepend="WhenStartedDate = true"
+                        @click:append="newEvent.whenStartedDate = null;reloadData = true"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="newEvent.whenStartedDate" class="includedPopout" @input="WhenStartedDate = false;reloadData = true" />
+                  </v-menu>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-menu
+                    v-model="WhenEndedDate"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template #activator="{ on, attrs }">
 
-                <v-text-field
-                  v-model="newEvent.whenEndedDate"
-                  style="height: 60px"
-                  label="Datum BIS"
-                  :prepend-icon="dateIcon"
-                  :append-icon="(newEvent.whenEndedDate === null ? undefined : closeIcon)"
-                  readonly
-                  v-bind="attrs"
-                  @click:prepend="WhenEndedDate = true"
-                  @click:append="newEvent.whenEndedDate = null;reloadData = true"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker v-model="newEvent.whenEndedDate" class="includedPopout" @input="WhenEndedDate = false;reloadData = true" />
-            </v-menu>
+                      <v-text-field
+                        v-model="newEvent.whenEndedDate"
+                        style="height: 60px"
+                        label="Datum BIS"
+                        :prepend-icon="dateIcon"
+                        :append-icon="(newEvent.whenEndedDate === null ? undefined : closeIcon)"
+                        readonly
+                        v-bind="attrs"
+                        @click:prepend="WhenEndedDate = true"
+                        @click:append="newEvent.whenEndedDate = null;reloadData = true"
+                        v-on="on"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker v-model="newEvent.whenEndedDate" class="includedPopout" @input="WhenEndedDate = false;reloadData = true" />
+                  </v-menu>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-col>
+          <v-col cols="12" md="6" >
+            <insights-map-card :short-key="shortKey" :maps-data="dataProductInsights.mapsData"/>
           </v-col>
         </v-row>
       </v-container>
@@ -232,6 +240,7 @@ export default {
         medianRent: rawDataProductInsights.medianRent,
         quartile25Rent: rawDataProductInsights.quartile25Rent,
         quartile75Rent: rawDataProductInsights.quartile75Rent,
+        mapsData: rawDataProductInsights.mapsData,
       };
     },
     async fetchDataProductInsightsCities(shortKey) {
@@ -299,5 +308,11 @@ export default {
   .dataProductDetail {
     width: 50%;
     transform: translate(50%, 0);
+  }
+  @media screen and (max-width: 600px) {
+      .dataProductDetail {
+          width: 100%;
+          transform: unset;
+      }
   }
 </style>

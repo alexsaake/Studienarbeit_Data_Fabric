@@ -25,8 +25,11 @@ public enum DataProductSQLWhitelists {
     IMMO_MAPS_ID("IMMO_DATA","IMMO_DATA.googleMapsDataId", null,null, null),
     MAPS_POSTAL_CODE("GOOGLE_MAPS_DATA","GOOGLE_MAPS_DATA.postalCode", "IMMO_DATA ON IMMO_DATA.googleMapsDataId = GOOGLE_MAPS_DATA.dataId","GOOGLE_MAPS_DATA.postalCode IS NOT NULL", new DataProductSQLFilterDTO[]{
             new DataProductSQLFilterDTO("IMMO_DATA.CITY","IMMO_DATA.FROMDATE","IMMO_DATA.FROMDATE")
+    }),
+    MAPS_DATA("GOOGLE_MAPS_DATA","GOOGLE_MAPS_DATA.postalCode", "IMMO_DATA ON IMMO_DATA.googleMapsDataId = GOOGLE_MAPS_DATA.dataId","GOOGLE_MAPS_DATA.postalCode IS NOT NULL", new DataProductSQLFilterDTO[]{
+            new DataProductSQLFilterDTO("IMMO_DATA.CITY","IMMO_DATA.FROMDATE","IMMO_DATA.FROMDATE"),
+            new DataProductSQLFilterDTO("GOOGLE_MAPS_DATA.postalCode", "IMMO_DATA.FROMDATE", "IMMO_DATA.FROMDATE")
     });
-    ;
 
 
     public final String tableName;

@@ -146,6 +146,7 @@ public class DataProductsController {
                 insightsDTO.medianRent = dataProductRepository.getInsightMedian(DataProductSQLWhitelists.IMMO_RENT, filterValues);
                 insightsDTO.quartile25Rent = dataProductRepository.getInsightQuartile25(DataProductSQLWhitelists.IMMO_RENT, filterValues);
                 insightsDTO.quartile75Rent = dataProductRepository.getInsightQuartile75(DataProductSQLWhitelists.IMMO_RENT, filterValues);
+                insightsDTO.mapsData = dataProductRepository.getInsightMapsData(DataProductSQLWhitelists.MAPS_DATA, filterValues);
                 try {
                     ObjectMapper mapper = new ObjectMapper();
                     return mapper.writeValueAsString(insightsDTO);
