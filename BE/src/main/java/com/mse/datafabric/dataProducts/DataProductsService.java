@@ -105,7 +105,7 @@ class DataProductsService implements IDataProductsService
     }
 
     public void setDataProductsRating(RatingDto dataProductRating) {
-        String dataProductsSql = "INSERT INTO DataProduct_Ratings (id_users, id_dataProducts, title, comment, rating) VALUES (SELECT id FROM users WHERE userName = '%s', SELECT id FROM DataProducts WHERE shortKey = '%s', '%s', '%s', %s)".formatted(dataProductRating.getUserName(), dataProductRating.getShortKey(), dataProductRating.getTitle(), dataProductRating.getComment(), dataProductRating.getRating());
+        String dataProductsSql = "INSERT INTO DataProduct_Ratings (id_users, id_dataProducts, title, comment, rating) VALUES ((SELECT id FROM users WHERE userName = '%s'), (SELECT id FROM DataProducts WHERE shortKey = '%s'), '%s', '%s', %s)".formatted(dataProductRating.getUserName(), dataProductRating.getShortKey(), dataProductRating.getTitle(), dataProductRating.getComment(), dataProductRating.getRating());
         myJdbcTemplate.update(dataProductsSql);
     }
 

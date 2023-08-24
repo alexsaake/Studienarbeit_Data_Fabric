@@ -5,24 +5,22 @@ import com.mse.datafabric.auth.dto.AuthenticationResponseDto;
 import com.mse.datafabric.auth.dto.RegisterRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/Gateway/auth")
+@RequestMapping("/api/Gateway/Auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    @PostMapping("/register")
+    @PostMapping("/Register")
     public ResponseEntity<AuthenticationResponseDto> register(
             @RequestBody RegisterRequestDto registerRequest
     ) {
         return ResponseEntity.ok(authenticationService.register(registerRequest));
     }
 
-    @PostMapping("/authenticate")
+    @PostMapping("/Authenticate")
     public ResponseEntity<AuthenticationResponseDto> authenticate(
             @RequestBody AuthenticationRequestDto authenticationRequest
     ) {

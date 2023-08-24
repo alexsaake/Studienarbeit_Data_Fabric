@@ -59,8 +59,8 @@ export default {
           property: 'user'
         },
         endpoints: {
-          login: { url: '/api/Gateway/auth/authenticate', method: 'post', propertyName: 'data.token' },
-          user: { url: '/api/Gateway/user', method: 'get' },
+          login: { url: '/api/Gateway/Auth/Authenticate', method: 'post', propertyName: 'data.token' },
+          user: { url: '/api/Gateway/User', method: 'get' },
           logout: false
         }
       }
