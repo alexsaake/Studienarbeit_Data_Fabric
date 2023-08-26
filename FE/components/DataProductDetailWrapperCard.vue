@@ -178,13 +178,13 @@
   }
   .my-details
   {
-    /*height: 100%;*/
+    height: 100%;
   }
   .my-dialog
   {
     position: fixed;
     width: 50%;
-    /*height: 100%;*/
+    height: 100%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);

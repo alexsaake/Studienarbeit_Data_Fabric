@@ -148,7 +148,7 @@
   .my-overlay >>> .v-overlay__content
   {
     width: 50%;
-    /*height: 100%;*/
+    height: 100%;
     overflow-y: scroll;
   }
   @media screen and (max-width: 600px) {
