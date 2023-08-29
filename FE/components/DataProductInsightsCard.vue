@@ -50,24 +50,29 @@
             </v-card-text>
             <v-container>
               <v-row class="insights-row">
-                <v-combobox
+                <v-select
                   v-model="newEvent.city"
-                  class="combobox includedPopout"
-                  style="height: 60px"
+                  style="height: 80px"
+                  clearable
+                  chips
                   label="Stadt"
                   :items="dataProductInsightsCities.cities"
-                  @input="reloadData = true; newEvent.postalCodes = 'Alle';"
-                ></v-combobox>
+                  multiple
+                  @input="reloadData = true; /* newEvent.postalCodes = ['Alle']; */"
+                ></v-select>
               </v-row>
               <v-row class="insights-row">
-                <v-combobox
+                <v-select
                   v-model="newEvent.postalCodes"
-                  class="combobox includedPopout"
-                  style="height: 60px"
+                  clearable
+                  chips
+                  style="height: 80px"
                   label="Bezirk"
                   :items="dataProductInsightsPostalCodes.postalCodes"
+                  multiple
                   @input="reloadData = true"
-                ></v-combobox>
+
+                ></v-select>
               </v-row>
               <v-row class="insights-row">
                 <v-col cols="12" md="6">
@@ -164,8 +169,8 @@ export default {
       newEvent: {
         whenStartedDate: null,
         whenEndedDate: null,
-        city: 'Alle',
-        postalCodes: 'Alle'
+        city: null,// ['Alle'],
+        postalCodes: null// ['Alle']
       },
       reloadData: false
     }
@@ -225,8 +230,8 @@ export default {
         this.$axios,
         shortKey,
         {
-          areaFilter: (this.newEvent.city==="Alle"?null:this.newEvent.city),
-          areaFilter2: (this.newEvent.postalCodes==="Alle"?null:this.newEvent.postalCodes),
+          areaFilter: this.parseSelectData(this.newEvent.city),
+          areaFilter2: this.parseSelectData(this.newEvent.postalCodes),
           dateFromFilter: this.newEvent.whenStartedDate,
           dateToFilter: this.newEvent.whenEndedDate,
         }
@@ -256,7 +261,7 @@ export default {
         this.$axios,
         shortKey,
         {
-          areaFilter: (this.newEvent.city==="Alle"?null:this.newEvent.city)
+          areaFilter: this.parseSelectData(this.newEvent.city)
         });
       return {
         postalCodes: rawDataProductInsightsPostalCodes
@@ -271,14 +276,14 @@ export default {
       const array = await this.fetchDataProductInsightsCities(
         this.shortKey
       );
-      (array.cities != null?array.cities.unshift('Alle'):array.cities = ['Alle']);
+      // (array.cities != null?array.cities.unshift('Alle'):array.cities = ['Alle']);
       this.dataProductInsightsCities = array;
     },
     async loadPostalCodes(){
       const array = await this.fetchDataProductInsightsPostalCodes(
         this.shortKey
       );
-      (array.postalCodes != null?array.postalCodes.unshift('Alle'):array.postalCodes = ['Alle']);
+      // (array.postalCodes != null?array.postalCodes.unshift('Alle'):array.postalCodes = ['Alle']);
       this.dataProductInsightsPostalCodes = array;
     },
     formatDate (date) {
@@ -293,6 +298,20 @@ export default {
       const [month, day, year] = date.split('/')
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
     },
+    parseSelectData(data){
+      if(data == null || data.length < 1)
+        return null;
+      // if(data.includes("Alle") && data.length === 1){
+      //   return null;
+      // }
+      // if(data.includes("Alle") && data[data.length-1] === "Alle"){
+      //   return data.pop();
+      // }
+      // if(data.includes("Alle")){
+      //   return data.shift();
+      // }
+      return data.join(",");
+    }
   },
 }
 </script>
@@ -309,6 +328,12 @@ export default {
     width: 50%;
     transform: translate(50%, 0);
   }
+  /*@media screen and (max-width: 900px) {*/
+  /*    .dataProductDetail {*/
+  /*        width: 70%;*/
+  /*        transform: translate(30%, 0);*/
+  /*    }*/
+  /*}*/
   @media screen and (max-width: 600px) {
       .dataProductDetail {
           width: 100%;

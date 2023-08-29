@@ -20,6 +20,9 @@
         <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
         <v-btn v-if="$auth.loggedIn && canSubmit === true" @click="onCreateRating">Datenprodukt bewerten</v-btn>
       </v-card-actions>
+      <v-card-actions v-if="screenWidth<600">
+        <v-btn @click="$emit('on-close-data-product');">Zurück</v-btn>
+      </v-card-actions>
       <v-container class="pa-0">
         <v-row no-gutters>
           <v-col v-for="(rating, index) in dataProductDetail.ratings" :key="index" cols="12">
@@ -75,7 +78,8 @@
         dataProductDetail: null, // Initialize to null to indicate data is not yet loaded
         canSubmit: true,
         isUpdate: false,
-        existingRating: null
+        existingRating: null,
+        screenWidth: null
       }
     },
     async fetch() {
@@ -91,6 +95,10 @@
       {
         this.dataProductDetail = null // Reset to null when shortKey changes to indicate data is not yet loaded
       }
+    },
+    mounted() {
+      this.updateScreenWidth();
+      this.onScreenResize();
     },
     methods: {
       async fetchDataProductDetail(shortKey) {
@@ -163,7 +171,15 @@
       onCloseDataProduct()
       {
         this.$emit('on-close-data-product');
-      }
+      },
+      onScreenResize() {
+        window.addEventListener("resize", () => {
+          this.updateScreenWidth();
+        });
+      },
+      updateScreenWidth() {
+        this.screenWidth = window.innerWidth;
+      },
     }
   }
 </script>
@@ -188,8 +204,16 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-      overflow-y: scroll;
+    overflow-y: scroll;
   }
+  /*@media screen and (max-width: 900px) {*/
+  /*    .my-dialog {*/
+  /*        transform: translate(-25%, -25%);*/
+  /*        width: 75%;*/
+  /*        top: 37.5%;*/
+  /*        left: 37.5%;*/
+  /*    }*/
+  /*}*/
   @media screen and (max-width: 600px) {
       .my-dialog {
           transform: unset;
