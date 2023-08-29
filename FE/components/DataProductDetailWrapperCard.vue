@@ -188,6 +188,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+      overflow-y: scroll;
   }
   @media screen and (max-width: 600px) {
       .my-dialog {

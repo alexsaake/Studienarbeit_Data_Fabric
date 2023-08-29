@@ -15,36 +15,36 @@
             <v-card-text>
               <v-container>
                 <v-row class="insights-row">
-                  <v-col cols="12" md="8">Anzahl an aktiven Einträgen:</v-col>
-                  <v-col cols="12" md="4">{{dataProductInsights.activeItemsCount}}</v-col>
+                  <v-col cols="9">Anzahl an aktiven Einträgen:</v-col>
+                  <v-col cols="3">{{dataProductInsights.activeItemsCount}}</v-col>
                 </v-row>
                 <v-row class="insights-row">
-                  <v-col cols="12" md="8">Durchschnittliche Miete:</v-col>
-                  <v-col cols="12" md="4">{{dataProductInsights.averageRent}} €</v-col>
+                  <v-col cols="9">Durchschnittliche Miete:</v-col>
+                  <v-col cols="3">{{dataProductInsights.averageRent}} €</v-col>
                 </v-row>
                 <v-row class="insights-row">
-                  <v-col cols="12" md="8">Durchschnittliche Zimmergröße:</v-col>
-                  <v-col cols="12" md="4">{{dataProductInsights.averageSize}} m²</v-col>
+                  <v-col cols="9">Durchschnittliche Zimmergröße:</v-col>
+                  <v-col cols="3">{{dataProductInsights.averageSize}} m²</v-col>
                 </v-row>
                 <v-row class="insights-row">
-                  <v-col cols="12" md="8">Günstigste Miete:</v-col>
-                  <v-col cols="12" md="4">{{dataProductInsights.lowestRent}} €</v-col>
+                  <v-col cols="9">Günstigste Miete:</v-col>
+                  <v-col cols="3">{{dataProductInsights.lowestRent}} €</v-col>
                 </v-row>
                 <v-row class="insights-row">
-                  <v-col cols="12" md="8">Teuerste Miete:</v-col>
-                  <v-col cols="12" md="4">{{dataProductInsights.highestRent}} €</v-col>
+                  <v-col cols="9">Teuerste Miete:</v-col>
+                  <v-col cols="3">{{dataProductInsights.highestRent}} €</v-col>
                 </v-row>
                 <v-row class="insights-row">
-                  <v-col cols="12" md="8">Miete Median:</v-col>
-                  <v-col cols="12" md="4">{{dataProductInsights.medianRent}} €</v-col>
+                  <v-col cols="9">Miete Median:</v-col>
+                  <v-col cols="3">{{dataProductInsights.medianRent}} €</v-col>
                 </v-row>
                 <v-row class="insights-row">
-                  <v-col cols="12" md="8">Miete 25% Quartil:</v-col>
-                  <v-col cols="12" md="4">{{dataProductInsights.quartile25Rent}} €</v-col>
+                  <v-col cols="9">Miete 25% Quartil:</v-col>
+                  <v-col cols="3">{{dataProductInsights.quartile25Rent}} €</v-col>
                 </v-row>
                 <v-row class="insights-row">
-                  <v-col cols="12" md="8">Miete 75% Quartil:</v-col>
-                  <v-col cols="12" md="4">{{dataProductInsights.quartile75Rent}} €</v-col>
+                  <v-col cols="9">Miete 75% Quartil:</v-col>
+                  <v-col cols="3">{{dataProductInsights.quartile75Rent}} €</v-col>
                 </v-row>
               </v-container>
             </v-card-text>
