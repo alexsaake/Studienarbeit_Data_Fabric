@@ -35,7 +35,7 @@
       <p>No data products found.</p>
     </v-card>
     <v-overlay v-if="shortKey !== ''" class="my-overlay">
-      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct" @on-close-data-product="onCloseDataProduct" :short-key="shortKey" />
+      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct"   :short-key="shortKey" @on-close-data-product="onCloseDataProduct" />
     </v-overlay>
   </v-card>
 </template>
@@ -79,6 +79,10 @@
 
     async created() {
       await this.fetchData() // Call the fetchData method on component creation
+      const { shortKey } = this.$route.query;
+      if (shortKey) {
+        this.onShowDataProduct(shortKey);
+      }
     },
 
     methods: {
@@ -145,24 +149,9 @@
     height: 100%;
     padding: 16px;
   }
-  .my-overlay >>> .v-overlay__content
-  {
-    width: 50%;
-    height: 100%;
-    overflow-y: scroll;
-  }
   /*@media screen and (max-width: 900px) {*/
   /*    .my-overlay >>> .v-overlay__content {*/
   /*        width: 70%;*/
   /*    }*/
   /*}*/
-  @media screen and (max-width: 600px) {
-      .my-overlay >>> .v-overlay__content {
-          width: 100%;
-      }
-      .my-overlay
-      {
-          padding: 0;
-      }
-  }
 </style>
