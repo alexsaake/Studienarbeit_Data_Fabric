@@ -149,6 +149,21 @@
     height: 100%;
     padding: 16px;
   }
+  .my-overlay >>> .v-overlay__content
+  {
+    width: 50%;
+    height: 100%;
+    overflow-y: scroll;
+  }
+  @media screen and (max-width: 600px) {
+    .my-overlay >>> .v-overlay__content {
+      width: 100%;
+    }
+    .my-overlay
+    {
+      padding: 0;
+    }
+  }
   /*@media screen and (max-width: 900px) {*/
   /*    .my-overlay >>> .v-overlay__content {*/
   /*        width: 70%;*/
