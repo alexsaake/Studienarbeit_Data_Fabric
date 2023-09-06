@@ -5,11 +5,14 @@
     </v-card>
     <v-container v-else-if="filteredDataProductsOverview.length > 0">
       <v-row>
-        <v-col cols="12" md="6">
-          <v-text-field v-model="search" label="Search"></v-text-field>
+        <v-col cols="12" md="4">
+          <v-text-field v-model="search" label="Suche"></v-text-field>
         </v-col>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="4">
           <v-select v-model="filter" :items="filters" label="Filter"></v-select>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-select v-model="sortOrder" :items="sortOrders" label="Sortierung"></v-select>
         </v-col>
       </v-row>
       <v-row>
@@ -26,6 +29,7 @@
               :short-description="dataProductOverview.shortDescription"
               :last-updated="dataProductOverview.lastUpdated"
               :access-right="dataProductOverview.accessRight"
+              :average-rating="dataProductOverview.averageRating"
             />
           </v-card>
         </v-col>
@@ -52,7 +56,9 @@
       return {
         search: '',
         filter: '',
-        filters: ['All'],
+        filters: [''],
+        sortOrder: 'Bewertung (abst.)',
+        sortOrders: ['Bewertung (abst.)', 'Bewertung (aufst.)', 'Neueste (abst.)', 'Neueste (aufst.)'],
         dataProductsOverview: [],
         isLoading: true, // Initialize the loading state to true
         shortKey: ''
@@ -62,17 +68,27 @@
       filteredDataProductsOverview() {
         const search = this.search.toLowerCase()
         const filter = this.filter
+        let sortFunction;
+        if(this.sortOrder === 'Bewertung (abst.)'){
+          sortFunction = function(dataProductA, dataProductB) {return dataProductB.averageRating - dataProductA.averageRating;}
+        } else if(this.sortOrder === 'Bewertung (aufst.)'){
+          sortFunction = function(dataProductA, dataProductB) {return dataProductA.averageRating - dataProductB.averageRating;}
+        } else if(this.sortOrder === 'Neueste (abst.)'){
+          sortFunction = function(dataProductA, dataProductB) {return dataProductB.lastUpdated - dataProductA.lastUpdated;}
+        } else if(this.sortOrder === 'Neueste (aufst.)') {
+          sortFunction = function(dataProductA, dataProductB) {return dataProductA.lastUpdated - dataProductB.lastUpdated;}
+        }
 
-        if (filter === '' || filter === 'All') {
+        if (filter === '') {
           return this.dataProductsOverview.filter((dataProduct) =>
             dataProduct.title.toLowerCase().includes(search)
-          )
+          ).sort(sortFunction)
         } else {
           return this.dataProductsOverview.filter(
             (dataProduct) =>
               dataProduct.title.toLowerCase().includes(search) &&
               dataProduct.category === filter
-          )
+          ).sort(sortFunction)
         }
       },
     },
@@ -99,10 +115,11 @@
               shortKey: dataProduct.shortKey,
               title: dataProduct.title,
               shortDescription: dataProduct.shortDescription,
-              lastUpdated: new Date(dataProduct.lastUpdated).toLocaleDateString('ge-GE'),
+              lastUpdated: new Date(dataProduct.lastUpdated),
               category: dataProduct.category,
               accessRight: dataProduct.accessRight,
               image: await getDataProductImage(this.$axios, dataProduct.shortKey),
+              averageRating: 0 // TODO: Display average rating
             });
           }
           this.dataProductsOverview = dataProductsOverview;
