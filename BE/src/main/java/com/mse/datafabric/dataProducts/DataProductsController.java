@@ -238,6 +238,15 @@ public class DataProductsController {
         return jsonString;
     }
 
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/{dataproduct_key}/Ratings/Averages",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getAvgRatings(@PathVariable String dataproduct_key){
+        return dataProductRepository.getAvgRatings(dataproduct_key);
+    }
+
     @PreAuthorize("hasAuthority('USER')")
     @ShellMethod( "postDataProduct" )
     @PostMapping(

@@ -4,7 +4,6 @@ import com.mse.datafabric.dataProducts.models.DataProductSQLFilterDTO;
 import com.mse.datafabric.dataProducts.models.DataProductSQLWhitelists;
 import com.mse.datafabric.utils.GoogleMapsAPI;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
-import io.micrometer.common.lang.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +11,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -178,6 +172,21 @@ public class DataProductRepository {
         catch (Exception e) {
             return null;
         }
+    }
+
+    public String getAvgRatings(String shortKey){
+
+        final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.shortkey = ?";
+
+        try {
+            return jdbcTemplate.queryForObject(queryAvg, new Object[]{shortKey}, String.class);
+        }
+
+        catch (Exception e) {
+            return null;
+        }
+
+
     }
     private PreparedStatementSetter setPreparedStatementFromColumns(DataProductSQLFilterDTO[] filterColumnKeys, DataProductSQLFilterDTO[] filterColumnValues, int occurrenceCount){
         return  new PreparedStatementSetter() {

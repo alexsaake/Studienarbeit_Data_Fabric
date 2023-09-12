@@ -45,7 +45,7 @@
 </template>
 
 <script>
-  import {getDataProductImage, getDataProducts} from "~/middleware/dataProductService";
+  import {getDataProductImage, getDataProducts, getDataProductAvgRatings} from "~/middleware/dataProductService";
   import DataProductOverviewCard from "~/components/DataProductOverviewCard.vue";
   import DataProductDetailWrapperCard from "~/components/DataProductDetailWrapperCard.vue";
 
@@ -119,7 +119,7 @@
               category: dataProduct.category,
               accessRight: dataProduct.accessRight,
               image: await getDataProductImage(this.$axios, dataProduct.shortKey),
-              averageRating: 0 // TODO: Display average rating
+              averageRating: await getDataProductAvgRatings(this.$axios, dataProduct.shortKey)
             });
           }
           this.dataProductsOverview = dataProductsOverview;
