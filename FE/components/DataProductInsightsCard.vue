@@ -1,6 +1,6 @@
 <template>
   <v-card class="dataProductInsights">
-    <v-card v-if="!dataProductInsights || !dataProductInsightsCities || !dataProductInsightsPostalCodes">
+    <v-card v-if="!dataProductInsights || !dataProductInsightFilters">
       <v-progress-circular
         :size="120"
         indeterminate
@@ -14,67 +14,38 @@
             <v-card-subtitle>Detaillierte Informationen zum Datenprodukt</v-card-subtitle>
             <v-card-text>
               <v-container>
-                <v-row class="insights-row">
-                  <v-col cols="9">Anzahl an aktiven Einträgen:</v-col>
-                  <v-col cols="3">{{dataProductInsights.activeItemsCount}}</v-col>
-                </v-row>
-                <v-row class="insights-row">
-                  <v-col cols="9">Durchschnittliche Miete:</v-col>
-                  <v-col cols="3">{{dataProductInsights.averageRent}} €</v-col>
-                </v-row>
-                <v-row class="insights-row">
-                  <v-col cols="9">Durchschnittliche Zimmergröße:</v-col>
-                  <v-col cols="3">{{dataProductInsights.averageSize}} m²</v-col>
-                </v-row>
-                <v-row class="insights-row">
-                  <v-col cols="9">Günstigste Miete:</v-col>
-                  <v-col cols="3">{{dataProductInsights.lowestRent}} €</v-col>
-                </v-row>
-                <v-row class="insights-row">
-                  <v-col cols="9">Teuerste Miete:</v-col>
-                  <v-col cols="3">{{dataProductInsights.highestRent}} €</v-col>
-                </v-row>
-                <v-row class="insights-row">
-                  <v-col cols="9">Miete Median:</v-col>
-                  <v-col cols="3">{{dataProductInsights.medianRent}} €</v-col>
-                </v-row>
-                <v-row class="insights-row">
-                  <v-col cols="9">Miete 25% Quartil:</v-col>
-                  <v-col cols="3">{{dataProductInsights.quartile25Rent}} €</v-col>
-                </v-row>
-                <v-row class="insights-row">
-                  <v-col cols="9">Miete 75% Quartil:</v-col>
-                  <v-col cols="3">{{dataProductInsights.quartile75Rent}} €</v-col>
+                <v-row v-for="data in dataProductInsights.insightData" :key="data.displayName" class="insights-row">
+                  <v-col cols="9">{{data.displayName}}:</v-col>
+                  <v-col cols="3">{{data.insightValue}} {{data.unit}}</v-col>
                 </v-row>
               </v-container>
             </v-card-text>
-            <v-container>
-              <v-row class="insights-row">
+            <v-container v-for="(data) in dataProductInsightFilters.filters" :key="data.displayName">
+              <v-row v-if="data.filterType === 3" class="insights-row">
                 <v-select
-                  v-model="newEvent.city"
+                  v-model="getFilterById(data.filterId).value"
                   style="height: 80px"
                   clearable
                   chips
-                  label="Stadt"
-                  :items="dataProductInsightsCities.cities"
+                  :label="data.displayName"
+                  :items="getFilterById(data.filterId).filterValues"
                   multiple
-                  @input="reloadData = true; /* newEvent.postalCodes = ['Alle']; */"
+                  @input="reloadData = true;"
                 ></v-select>
               </v-row>
-              <v-row class="insights-row">
+              <v-row v-if="data.filterType === 2" class="insights-row">
                 <v-select
-                  v-model="newEvent.postalCodes"
+                  v-model="getFilterById(data.filterId).value"
+                  style="height: 80px"
                   clearable
                   chips
-                  style="height: 80px"
-                  label="Bezirk"
-                  :items="dataProductInsightsPostalCodes.postalCodes"
+                  :label="data.displayName"
+                  :items="getFilterById(data.filterId).filterValues"
                   multiple
-                  @input="reloadData = true"
-
+                  @input="reloadData = true;"
                 ></v-select>
               </v-row>
-              <v-row class="insights-row">
+              <v-row v-if="data.filterType === 1" class="insights-row">
                 <v-col cols="12" md="6">
                   <v-menu
                     v-model="WhenStartedDate"
@@ -86,19 +57,19 @@
                   >
                     <template #activator="{ on, attrs }">
                       <v-text-field
-                        v-model="newEvent.whenStartedDate"
+                        v-model="getFilterById(data.filterId).dateFrom"
                         style="height: 60px"
-                        label="Datum VON"
+                        :label="data.displayName+' von'"
                         :prepend-icon="dateIcon"
-                        :append-icon="(newEvent.whenStartedDate === null ? undefined : closeIcon)"
+                        :append-icon="(getFilterById(data.filterId).dateFrom === null ? undefined : closeIcon)"
                         readonly
                         v-bind="attrs"
                         @click:prepend="WhenStartedDate = true"
-                        @click:append="newEvent.whenStartedDate = null;reloadData = true"
+                        @click:append="getFilterById(data.filterId).dateFrom = null;reloadData = true"
                         v-on="on"
                       ></v-text-field>
                     </template>
-                    <v-date-picker v-model="newEvent.whenStartedDate" class="includedPopout" @input="WhenStartedDate = false;reloadData = true" />
+                    <v-date-picker v-model="getFilterById(data.filterId).dateFrom" class="includedPopout" @input="WhenStartedDate = false;reloadData = true" />
                   </v-menu>
                 </v-col>
                 <v-col cols="12" md="6">
@@ -113,19 +84,19 @@
                     <template #activator="{ on, attrs }">
 
                       <v-text-field
-                        v-model="newEvent.whenEndedDate"
+                        v-model="getFilterById(data.filterId).dateTo"
                         style="height: 60px"
-                        label="Datum BIS"
+                        :label="data.displayName+' bis'"
                         :prepend-icon="dateIcon"
-                        :append-icon="(newEvent.whenEndedDate === null ? undefined : closeIcon)"
+                        :append-icon="(getFilterById(data.filterId).dateTo === null ? undefined : closeIcon)"
                         readonly
                         v-bind="attrs"
                         @click:prepend="WhenEndedDate = true"
-                        @click:append="newEvent.whenEndedDate = null;reloadData = true"
+                        @click:append="getFilterById(data.filterId).dateTo = null;reloadData = true"
                         v-on="on"
                       ></v-text-field>
                     </template>
-                    <v-date-picker v-model="newEvent.whenEndedDate" class="includedPopout" @input="WhenEndedDate = false;reloadData = true" />
+                    <v-date-picker v-model="getFilterById(data.filterId).dateTo" class="includedPopout" @input="WhenEndedDate = false;reloadData = true" />
                   </v-menu>
                 </v-col>
               </v-row>
@@ -143,7 +114,7 @@
 <script>
 import { mdiCalendarRange, mdiClose} from '@mdi/js'
 import {
-  getDataProductInsights, getDataProductInsightsCities, getDataProductInsightsPostalCodes
+  getDataProductInsights, getDataProductInsightFilters, getDataProductInsightFilterValues
 } from "~/middleware/dataProductService";
 
 export default {
@@ -157,8 +128,8 @@ export default {
   data() {
     return {
       dataProductInsights: null,
-      dataProductInsightsCities: null,
-      dataProductInsightsPostalCodes: null,
+      dataProductInsightFilters: null,
+      dataProductInsightFilterValues: null,
       dateIcon: mdiCalendarRange,
       closeIcon: mdiClose,
       date: new Date().toISOString().substr(0, 10),
@@ -166,19 +137,20 @@ export default {
       menu2: false,
       WhenStartedDate: null,
       WhenEndedDate: null,
+      filterData: [],
       newEvent: {
         whenStartedDate: null,
         whenEndedDate: null,
-        city: null,// ['Alle'],
-        postalCodes: null// ['Alle']
+        city: null,
+        postalCodes: null
       },
       reloadData: false
     }
   },
   async fetch() {
     await this.loadInsights();
-    await this.loadCities();
-    await this.loadPostalCodes();
+    await this.loadFilters();
+    await this.loadFilterValues();
   },
   computed: {
     computedDateFormatted () {
@@ -196,16 +168,10 @@ export default {
         await this.loadInsights();
       }
     },
-    async dataProductInsightsCities() {
+    async dataProductInsightFilters() {
       // Load data when dataProductDetail changes from null to an object
-      if (this.dataProductInsightsCities === null) {
-        await this.loadCities();
-      }
-    },
-    async dataProductInsightsPostalCodes() {
-      // Load data when dataProductDetail changes from null to an object
-      if (this.dataProductInsightsPostalCodes === null) {
-        await this.loadPostalCodes();
+      if (this.dataProductInsightFilters === null) {
+        await this.loadFilters();
       }
     },
     date (val) {
@@ -214,7 +180,7 @@ export default {
     async reloadData(){
       this.reloadData = false;
       await this.loadInsights();
-      await this.loadPostalCodes();
+      await this.loadFilterValues();
     },
     WhenEndedDate(){
       sessionStorage.setItem("datePickerOpen", this.WhenEndedDate);
@@ -230,41 +196,33 @@ export default {
         this.$axios,
         shortKey,
         {
-          areaFilter: this.parseSelectData(this.newEvent.city),
-          areaFilter2: this.parseSelectData(this.newEvent.postalCodes),
-          dateFromFilter: this.newEvent.whenStartedDate,
-          dateToFilter: this.newEvent.whenEndedDate,
+          filterKeys: this.setFilterKeys(),
+          filterValues: this.setFilterValues()
         }
       );
       return {
-        averageRent: rawDataProductInsights.averageRent,
-        activeItemsCount: rawDataProductInsights.activeItemsCount,
-        averageSize: rawDataProductInsights.averageSize,
-        highestRent: rawDataProductInsights.highestRent,
-        lowestRent: rawDataProductInsights.lowestRent,
-        medianRent: rawDataProductInsights.medianRent,
-        quartile25Rent: rawDataProductInsights.quartile25Rent,
-        quartile75Rent: rawDataProductInsights.quartile75Rent,
+        insightData: rawDataProductInsights.insightData,
         mapsData: rawDataProductInsights.mapsData,
       };
     },
-    async fetchDataProductInsightsCities(shortKey) {
-      const rawDataProductInsightsCities = await getDataProductInsightsCities(
+    async fetchDataProductInsightFilters(shortKey) {
+      const rawDataProductInsightFilters = await getDataProductInsightFilters(
         this.$axios,
         shortKey);
       return {
-        cities: rawDataProductInsightsCities
+        filters: rawDataProductInsightFilters
       };
     },
-    async fetchDataProductInsightsPostalCodes(shortKey) {
-      const rawDataProductInsightsPostalCodes = await getDataProductInsightsPostalCodes(
+    async fetchDataProductInsightFilterValues(shortKey, filterId) {
+      const rawDataProductInsightFilterValues = await getDataProductInsightFilterValues(
         this.$axios,
         shortKey,
+        filterId,
         {
           areaFilter: this.parseSelectData(this.newEvent.city)
         });
       return {
-        postalCodes: rawDataProductInsightsPostalCodes
+        filterValues: rawDataProductInsightFilterValues
       };
     },
     async loadInsights(){
@@ -272,19 +230,60 @@ export default {
         this.shortKey
       )
     },
-    async loadCities(){
-      const array = await this.fetchDataProductInsightsCities(
+    async loadFilters(){
+      const array = await this.fetchDataProductInsightFilters(
         this.shortKey
       );
-      // (array.cities != null?array.cities.unshift('Alle'):array.cities = ['Alle']);
-      this.dataProductInsightsCities = array;
+      this.filterData = [];
+      for (const filter of array.filters) {
+        const filterV = await this.loadFilterValues(filter.filterId);
+        this.filterData.push({
+          filterId: filter.filterId,
+          filterType: filter.filterType,
+          value: null,
+          dateFrom: null,
+          dateTo: null,
+          filterValues: filterV.filterValues
+        });
+      }
+      this.dataProductInsightFilters = array;
     },
-    async loadPostalCodes(){
-      const array = await this.fetchDataProductInsightsPostalCodes(
-        this.shortKey
+    async loadFilterValues(filterId){
+      if(filterId === undefined)
+        return null;
+      return await this.fetchDataProductInsightFilterValues(
+        this.shortKey,
+        filterId
       );
-      // (array.postalCodes != null?array.postalCodes.unshift('Alle'):array.postalCodes = ['Alle']);
-      this.dataProductInsightsPostalCodes = array;
+    },
+    setFilterKeys(){
+      const filterKeys = [];
+      this.filterData.forEach (filter =>{
+        if((filter.value == null || filter.value.length <= 0) && filter.dateTo == null && filter.dateFrom == null)
+          return;
+        filterKeys.push(filter.filterId);
+      });
+      console.log(filterKeys.join(";"));
+      return (filterKeys.length === 0?null:filterKeys.join(";"));
+    },
+    setFilterValues(){
+      const filterValues = [];
+      this.filterData.forEach (filter =>{
+        if(filter.value != null && filter.value.length > 0)
+          filterValues.push(filter.value.join(","));
+        if(filter.dateTo != null || filter.dateFrom != null)
+          filterValues.push(filter.dateFrom+","+filter.dateTo);
+      });
+      console.log(filterValues.join(";"));
+      return (filterValues.length === 0?null:filterValues.join(";"));
+    },
+    getFilterById(id){
+      let filterObj = null;
+      this.filterData.forEach (filter =>{
+        if(filter.filterId === id)
+          filterObj = filter;
+      });
+      return filterObj;
     },
     formatDate (date) {
       if (!date) return null
@@ -301,15 +300,6 @@ export default {
     parseSelectData(data){
       if(data == null || data.length < 1)
         return null;
-      // if(data.includes("Alle") && data.length === 1){
-      //   return null;
-      // }
-      // if(data.includes("Alle") && data[data.length-1] === "Alle"){
-      //   return data.pop();
-      // }
-      // if(data.includes("Alle")){
-      //   return data.shift();
-      // }
       return data.join(",");
     }
   },

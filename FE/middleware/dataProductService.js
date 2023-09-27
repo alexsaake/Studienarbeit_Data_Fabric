@@ -23,10 +23,8 @@ export async function getDataProductInsights(axios, shortKey, param)
   {
     return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/Insights`,{
       params: {
-        areaFilter: param.areaFilter,
-        areaFilter2: param.areaFilter2,
-        dateFromFilter: param.dateFromFilter,
-        dateToFilter: param.dateToFilter
+        filterKeys: param.filterKeys,
+        filterValues: param.filterValues,
       }
     });
   }
@@ -35,22 +33,22 @@ export async function getDataProductInsights(axios, shortKey, param)
     console.log(error);
   }
 }
-export async function getDataProductInsightsCities(axios, shortKey)
+export async function getDataProductInsightFilters(axios, shortKey)
 {
   try
   {
-    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/Cities`);
+    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/Insights/Filter`);
   }
   catch (error)
   {
     console.log(error);
   }
 }
-export async function getDataProductInsightsPostalCodes(axios, shortKey, param)
+export async function getDataProductInsightFilterValues(axios, shortKey, filterId, param)
 {
   try
   {
-    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/MapsDataIds`,{
+    return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data/Insights/Filter/${filterId}`,{
       params: {
         areaFilter: param.areaFilter,
       }
@@ -66,6 +64,7 @@ export async function getDataProductRatings(axios, shortKey)
 {
   return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Ratings`);
 }
+
 
 export async function setDataProductRating(axios, shortKey, title, comment, rating)
 {

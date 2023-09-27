@@ -1,8 +1,10 @@
 package com.mse.datafabric.utils;
 
+import com.mse.datafabric.dataProducts.DataProductRepository;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -20,6 +22,9 @@ public class TableJsonConverter {
     Connection conn = null;
     Statement stmt=null;
 
+    @Autowired
+    private DataProductRepository dataProductRepository;
+
     public TableJsonConverter(){
 
     }
@@ -32,14 +37,12 @@ public class TableJsonConverter {
 
     }
     @ShellMethod( "getJson" )
-    public String getAllTableDataAsJsonString(String tableName) throws SQLException {
-        List<String> whitelist = Arrays.asList("IMMO_DATA");
-
-        if(!whitelist.contains(tableName))
+    public String getAllTableDataAsJsonString(String shortkey) throws SQLException {
+        if(!dataProductRepository.shortkeyIsTableName(shortkey))
             return "{}";
 
         connectDB();
-        ResultSet resultSet = stmt.executeQuery("SELECT * FROM " + tableName);
+        ResultSet resultSet = stmt.executeQuery("SELECT * FROM " + shortkey);
 
         ResultSetMetaData md = resultSet.getMetaData();
         int numCols = md.getColumnCount();

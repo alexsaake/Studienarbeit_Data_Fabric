@@ -4,12 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.mse.datafabric.auth.AuthenticationService;
-import com.mse.datafabric.dataProducts.models.DataProductInsightsDTO;
-import com.mse.datafabric.dataProducts.models.RatingDto;
-import com.mse.datafabric.dataProducts.models.DataProductSQLFilterDTO;
-import com.mse.datafabric.dataProducts.models.DataProductSQLWhitelists;
+import com.mse.datafabric.dataProducts.data.DataProductData;
+import com.mse.datafabric.dataProducts.data.insights.*;
+import com.mse.datafabric.dataProducts.models.*;
 import com.mse.datafabric.utils.GoogleMapsAPI;
-import com.mse.datafabric.utils.TableJsonConverter;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
 import jakarta.websocket.server.PathParam;
 import org.slf4j.Logger;
@@ -17,12 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.Base64;
 
 
@@ -35,11 +33,17 @@ public class DataProductsController {
     private final AuthenticationService myAuthenticationService;
 
     @Autowired
-    private TableJsonConverter tableJsonConverter;
+    public JdbcTemplate jdbcTemplate;
     @Autowired
     private DataProductRepository dataProductRepository;
     @Autowired
+    private DataProductInsightRepository dataProductInsightRepository;
+    @Autowired
     public GoogleMapsAPI googleMapsAPI;
+    @Autowired
+    private DataProductInsights insights;
+    @Autowired
+    private DataProductData productData;
 
     @Autowired
     public DataProductsController(IDataProductsService dataProductsProvider, AuthenticationService authenticationService)
@@ -112,15 +116,8 @@ public class DataProductsController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public String getDataProductDetailData(@PathVariable String dataproduct_key){
-        switch (dataproduct_key){
-            case "immobilien":
-                try {
-                    return tableJsonConverter.getAllTableDataAsJsonString("IMMO_DATA");
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-        }
-        return "{}";
+        return dataProductRepository.getData(dataproduct_key);
+
     }
     @ShellMethod( "getDataProduct" )
     @GetMapping(
@@ -128,95 +125,70 @@ public class DataProductsController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getDataProductInsights(@PathVariable String dataproduct_key, @PathParam(value="areaFilter") String areaFilter,
-                                         @PathParam(value="dateFromFilter") String dateFromFilter,
-                                         @PathParam(value="dateToFilter") String dateToFilter,
-                                         @PathParam(value="areaFilter2") String areaFilter2){
+    public String getDataProductInsights(@PathVariable String dataproduct_key, @PathParam(value="filterKeys") String filterKeys,
+                                         @PathParam(value="filterValues") String filterValues){
 
-            DataProductSQLFilterDTO[] filterValues = {new DataProductSQLFilterDTO(areaFilter,dateFromFilter,dateToFilter),
-                    new DataProductSQLFilterDTO(areaFilter2,dateFromFilter,dateToFilter)};
-        switch (dataproduct_key){
-            case "immobilien":
-                DataProductInsightsDTO insightsDTO = new DataProductInsightsDTO();
-                insightsDTO.averageRent = dataProductRepository.getInsightAverage(DataProductSQLWhitelists.IMMO_RENT, filterValues);
-                insightsDTO.averageSize = dataProductRepository.getInsightAverage(DataProductSQLWhitelists.IMMO_SIZE, filterValues);
-                insightsDTO.activeItemsCount = dataProductRepository.getInsightCount(DataProductSQLWhitelists.IMMO_COUNT, filterValues);
-                insightsDTO.highestRent = dataProductRepository.getInsightHighest(DataProductSQLWhitelists.IMMO_RENT, filterValues);
-                insightsDTO.lowestRent = dataProductRepository.getInsightLowest(DataProductSQLWhitelists.IMMO_RENT, filterValues);
-                insightsDTO.medianRent = dataProductRepository.getInsightMedian(DataProductSQLWhitelists.IMMO_RENT, filterValues);
-                insightsDTO.quartile25Rent = dataProductRepository.getInsightQuartile25(DataProductSQLWhitelists.IMMO_RENT, filterValues);
-                insightsDTO.quartile75Rent = dataProductRepository.getInsightQuartile75(DataProductSQLWhitelists.IMMO_RENT, filterValues);
-                insightsDTO.mapsData = dataProductRepository.getInsightMapsData(DataProductSQLWhitelists.MAPS_DATA, filterValues);
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    return mapper.writeValueAsString(insightsDTO);
-                }
-                catch (JsonProcessingException e) {
-                    myLogger.error("Could not parse json " + e);
-                }
+        DataProductInsightFilter filter = new DataProductInsightFilter(filterKeys,filterValues,dataproduct_key, dataProductInsightRepository);
+        //
+        insights.getData(dataproduct_key, filter);
+        //
+        DataProductInsightsDTO insightsDTO = new DataProductInsightsDTO();
+        insightsDTO.insightData = dataProductInsightRepository.getInsights(dataproduct_key);
+        //insightsDTO.mapsData = dataProductInsightRepository.getInsightMapsData(dataproduct_key, filter);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(insightsDTO);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+
+        return "{}";
+    }
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/Insights/Filter",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public String getInsightFilters(@PathVariable String dataproduct_key){
+        InsightFilterDTO[] filter =  dataProductInsightRepository.getInsightFilters(dataproduct_key);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(filter);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
         }
         return "{}";
     }
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/Cities",
+            value = "/DataProduct/{dataproduct_key}/Data/Insights/Filter/{filter_id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getDataProductColumnValues(@PathVariable String dataproduct_key, @PathParam(value="areaFilter") String areaFilter,
-                                             @PathParam(value="dateFromFilter") String dateFromFilter,
-                                             @PathParam(value="dateToFilter") String dateToFilter){
-        DataProductSQLFilterDTO[] filterValues = {new DataProductSQLFilterDTO(areaFilter,dateFromFilter,dateToFilter)};
-        switch (dataproduct_key){
-            case "immobilien":
-                String[] cityValues =  dataProductRepository.getDifferentColumnValues(DataProductSQLWhitelists.IMMO_CITY,filterValues);
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    return mapper.writeValueAsString(cityValues);
-                }
-                catch (JsonProcessingException e) {
-                    myLogger.error("Could not parse json " + e);
-                }
+    public String getInsightFilterValues(@PathVariable String dataproduct_key,@PathVariable int filter_id){
+        String[] values =  dataProductInsightRepository.getFilterValues(dataproduct_key, filter_id);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(values);
         }
-        return "{}";
-    }
-    @ShellMethod( "getDataProduct" )
-    @GetMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/MapsDataIds",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    public String getDataProductColumnValuesMaps(@PathVariable String dataproduct_key, @PathParam(value="areaFilter") String areaFilter,
-                                         @PathParam(value="dateFromFilter") String dateFromFilter,
-                                         @PathParam(value="dateToFilter") String dateToFilter){
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
 
-        DataProductSQLFilterDTO[] filterValues = {new DataProductSQLFilterDTO(areaFilter,dateFromFilter,dateToFilter)};
-        switch (dataproduct_key){
-            case "immobilien":
-                String[] columnValues =  dataProductRepository.getDifferentColumnValues(DataProductSQLWhitelists.MAPS_POSTAL_CODE,filterValues);
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    return mapper.writeValueAsString(columnValues);
-                }
-                catch (JsonProcessingException e) {
-                    myLogger.error("Could not parse json " + e);
-                }
-        }
         return "{}";
     }
     @ShellMethod( "getDataProduct" )
     @PostMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/MapsDataIds",
+            value = "/DataProduct/{dataproduct_key}/Data/MapsData",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String setDataProductPlaceIds(@PathVariable String dataproduct_key){
-        int count = 0;
-        switch (dataproduct_key){
-            case "immobilien":
-                GoogleMapsAddressDTO[] dtos = dataProductRepository.getDataProductAddressData(new DataProductSQLWhitelists[]{DataProductSQLWhitelists.IMMO_ADDRESS_CITY, DataProductSQLWhitelists.IMMO_ADDRESS_STREET});
-                dataProductRepository.insertGoogleMapsData(dtos);
-                count = dataProductRepository.updateDataProductGoogleMapsIds(dtos,new DataProductSQLWhitelists[]{DataProductSQLWhitelists.IMMO_MAPS_ID,DataProductSQLWhitelists.IMMO_ADDRESS_CITY, DataProductSQLWhitelists.IMMO_ADDRESS_STREET});
-        }
+    public String setDataProductMapsData(@PathVariable String dataproduct_key){
+        productData.setShortkey(dataproduct_key);
+        int count = productData.dataProductAddMapsData();
+
         return "{\"updated items\":"+ count +"}";
     }
 

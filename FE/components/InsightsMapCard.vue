@@ -82,6 +82,8 @@ export default {
       let lngMin = 0;
       let lngMax = 0;
       markers.forEach(marker=>{
+        if(marker.getPosition() === undefined)
+          return;
         const lat = marker.getPosition().lat();
         const lng = marker.getPosition().lng();
         if(lat > latMax)
@@ -103,6 +105,8 @@ export default {
         return map1.setZoom(12);
       const bounds = new this.google.maps.LatLngBounds();
       markers.forEach(marker => {
+        if(marker.getPosition() === undefined)
+          return;
         bounds.extend(new this.google.maps.LatLng(marker.getPosition().lat(), marker.getPosition().lng()));
       });
       console.log(bounds);
