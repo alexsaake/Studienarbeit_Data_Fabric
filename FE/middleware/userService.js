@@ -7,3 +7,7 @@ export async function updateUser(axios, firstName, lastName, email)
             email
         });
 }
+export async function getUserRatings(axios)
+{
+    return await axios.$get(`api/Gateway/User/Ratings`);
+}

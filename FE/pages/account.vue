@@ -1,5 +1,6 @@
 <template>
   <v-card v-if="$auth.loggedIn">
+    <v-container>
     <v-form>
       <h1>User details</h1>
       <v-text-field v-model="user.firstName" type="text" class="form-control" label="First Name" :disabled="!isEditing" />
@@ -7,6 +8,22 @@
       <v-text-field v-model="user.userName" type="text" class="form-control" label="User Name" disabled />
       <v-text-field v-model="user.email" type="email" class="form-control" label="Email" :disabled="!isEditing" />
     </v-form>
+    </v-container>
+    <v-container>
+        <h1>Your Ratings</h1>
+        <v-row no-gutters>
+          <v-col v-for="(rating, index) in userRatings" :key="index" cols="12">
+            <user-rating-card
+                :title="rating.title"
+                :comment="rating.comment"
+                :rating="rating.rating"
+                :submitted="rating.submitted"
+                :is-edited="rating.isEdited"
+                :short-key="rating.dataProductShortKey"
+            />
+          </v-col>
+        </v-row>
+    </v-container>
     <v-card-actions>
       <v-btn @click="onLogout()">Logout</v-btn>
       <v-btn @click="onEdit()">{{ editSaveButtonText }}</v-btn>
@@ -16,7 +33,7 @@
 </template>
 
 <script>
-  import {updateUser} from "~/middleware/userService";
+import { updateUser, getUserRatings } from "~/middleware/userService";
 
   export default {
     name: 'Account',
@@ -28,17 +45,36 @@
           userName: '',
           email: ''
         },
+        userRatings: [],
         isEditing: false,
         editSaveButtonText: 'Edit'
       }
     },
-    fetch() {
+    async fetch() {
       this.user.firstName = this.$auth.user.firstName;
       this.user.lastName = this.$auth.user.lastName;
       this.user.userName = this.$auth.user.userName;
       this.user.email = this.$auth.user.email;
+      this.userRatings = await this.fetchUserRatings();
     },
     methods: {
+      async fetchUserRatings() {
+        const userRatings = await getUserRatings(this.$axios);
+        const formattedUserRatings = [];
+        for (const rawRating of userRatings) {
+          const formattedRating = {
+            dataProductShortKey: rawRating.shortKey,
+            title: rawRating.title,
+            comment: rawRating.comment,
+            rating: rawRating.rating,
+            submitted: new Date(rawRating.submitted).toLocaleDateString('ge-GE'),
+            isEdited: rawRating.edited
+          };
+          formattedUserRatings.push(formattedRating);
+        }
+        return formattedUserRatings;
+      },
+
       async onLogout() {
         await this.$auth.logout();
       },
