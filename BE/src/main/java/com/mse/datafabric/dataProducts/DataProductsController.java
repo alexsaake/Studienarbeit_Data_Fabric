@@ -133,8 +133,8 @@ public class DataProductsController {
         insights.getData(dataproduct_key, filter);
         //
         DataProductInsightsDTO insightsDTO = new DataProductInsightsDTO();
-        insightsDTO.insightData = dataProductInsightRepository.getInsights(dataproduct_key);
-        //insightsDTO.mapsData = dataProductInsightRepository.getInsightMapsData(dataproduct_key, filter);
+        insightsDTO.insightData = insights.getInsights(dataproduct_key);
+        insightsDTO.mapsData = insights.getInsightMapsData(dataproduct_key, filter);
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.writeValueAsString(insightsDTO);
@@ -169,7 +169,7 @@ public class DataProductsController {
     )
     @ResponseBody
     public String getInsightFilterValues(@PathVariable String dataproduct_key,@PathVariable int filter_id){
-        String[] values =  dataProductInsightRepository.getFilterValues(dataproduct_key, filter_id);
+        String[] values =  insights.getDifferentColumnValues(dataproduct_key, filter_id);
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.writeValueAsString(values);

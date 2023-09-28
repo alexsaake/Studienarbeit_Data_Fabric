@@ -11,6 +11,10 @@ public class InsightFilterDTO {
         this.filterType = filterType;
         this.filterId = filterId;
     }
+    public InsightFilterDTO(String filterColumn, int filterType){
+        this.filterColumn =  filterColumn;
+        this.filterType =  filterType;
+    }
     public void setFilterColumn(String filterColumn){
         this.filterColumn =  filterColumn;
     }

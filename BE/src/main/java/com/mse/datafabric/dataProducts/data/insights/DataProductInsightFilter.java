@@ -1,7 +1,10 @@
 package com.mse.datafabric.dataProducts.data.insights;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,12 +36,11 @@ public class DataProductInsightFilter {
     private void setActiveFilters(){
         List<InsightFilterDTO> dtoList = new ArrayList<>();
         for (int i = 0; i < filterKeys.length; i++) {
-            String filterColumn = dataProductInsightRepository.getFilterColumnById(Integer.parseInt(filterKeys[i]));
-            int filterType = dataProductInsightRepository.getFilterTypeById(Integer.parseInt(filterKeys[i]));
-            if(filterColumn == null || filterType == 0)
+
+            InsightFilterDTO dto = dataProductInsightRepository.getFilterById(shortkey,Integer.parseInt(filterKeys[i]));
+            if(dto == null || dto.filterColumn == null || dto.filterType == 0)
                 continue;
-            InsightFilterDTO dto = new InsightFilterDTO(null, filterType, -1);
-            dto.setFilterColumn(filterColumn);
+            dto.setFilterColumn(dto.filterColumn);
             dtoList.add(dto);
         }
         activeFilters = dtoList.toArray(new InsightFilterDTO[0]);
@@ -54,66 +56,50 @@ public class DataProductInsightFilter {
     private String getValue(Map<String, Object> dataRow, String filterColumn){
         return String.valueOf(dataRow.get(filterColumn));
     }
+    private String getMapsValue(Map<String, Object> dataRow, String filterColumn){
+        Map<String, Object> mapsData = (Map<String, Object>) dataRow.get("_mapsData");
+        return String.valueOf(mapsData.get(filterColumn));
+    }
+    private boolean checkDates(Map<String, Object> dataRow, String filterColumn, String[] filterValues){
+        if(filterValues.length != 2)
+            return false;
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = formatter.parse(getValue(dataRow, filterColumn));
+            Date dateFrom = null;
+            Date dateTo = null;
+
+            if(!filterValues[0].equals("null")){
+                dateFrom = formatter.parse(filterValues[0]);
+            }
+            if(!filterValues[1].equals("null")){
+                dateTo = formatter.parse(filterValues[1]);
+            }
+            //
+            if(dateFrom != null && dateTo == null)
+                return date.after(dateFrom) || date.equals(dateFrom);
+            if(dateTo != null && dateFrom == null)
+                return date.before(dateTo) || date.equals(dateTo);
+            return (date.after(dateFrom) || date.equals(dateFrom)) && (date.before(dateTo) || date.equals(dateTo));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public boolean checkFilterValues(Map<String, Object> dataRow, String filterColumn, int filterType, String[] filterValues){
         for (int i = 0; i < filterValues.length; i++) {
-            if(getValue(dataRow, filterColumn).equals(filterValues[i]))
-                return true;
+            switch (filterType){
+                case 1:
+                        return checkDates(dataRow, filterColumn, filterValues);
+                case 2:
+                    if(getMapsValue(dataRow, filterColumn).equals(filterValues[i]))
+                        return true;
+                    break;
+                case 3:
+                    if(getValue(dataRow, filterColumn).equals(filterValues[i]))
+                        return true;
+                    break;
+            }
         }
         return false;
-    }
-
-    public String getSQLFilter(String shortkey, String statement){
-        String prefix = " WHERE ";
-        if(statement.toUpperCase().contains("WHERE"))
-            prefix = " AND ";
-
-        if(filterKeys.length != filterValues.length)
-            return null;
-        String sqlFilter = "";
-        int count = 0;
-        for (int i = 0; i < filterKeys.length; i++) {
-            String filterColumn = dataProductInsightRepository.getFilterColumnById(Integer.parseInt(filterKeys[i]));
-            int filterType = dataProductInsightRepository.getFilterTypeById(Integer.parseInt(filterKeys[i]));
-            if(filterColumn == null || filterType == 0)
-                continue;
-            String filter = getFilter(shortkey, filterColumn, filterType, filterValues[i]);
-            if(!filter.equals("")){
-                if (count > 0)
-                    sqlFilter += " AND ";
-                count++;
-            }
-            sqlFilter += filter;
-
-        }
-        return (sqlFilter.equals("") ? "" : prefix + sqlFilter);
-    }
-    private String getFilter(String shortKey, String filterColumn, int filterType, String filterValue){
-        String sqlFilter = "";
-        String[] splits = filterValue.split(",");
-        switch (filterType){
-            case 2:
-                sqlFilter ="google_maps_data."+filterColumn +" IN ('";
-            case 3:
-                if(sqlFilter.equals(""))
-                    sqlFilter =shortKey+"."+filterColumn +" IN ('";
-                for (int i = 0;i< splits.length;i++)
-                {
-                    if(i > 0)
-                        sqlFilter += "','";
-                    sqlFilter += splits[i];
-                }
-                sqlFilter += "')";
-                break;
-            case 1:
-                if(splits.length > 0 && !splits[0].equals("null"))
-                    sqlFilter = shortKey+"."+filterColumn + " >= CAST('"+splits[0]+"' AS DATE)";
-                if(splits.length > 1 && !splits[1].equals("null")){
-                    if(!splits[0].equals("null"))
-                        sqlFilter += " AND ";
-                    sqlFilter += shortKey+"."+filterColumn + " <= CAST('"+splits[1]+"' AS DATE)";
-                }
-                break;
-        }
-        return sqlFilter;
     }
 }

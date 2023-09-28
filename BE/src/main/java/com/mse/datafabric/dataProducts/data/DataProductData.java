@@ -8,6 +8,8 @@ import com.mse.datafabric.utils.GoogleMapsAPI;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,12 +18,11 @@ public class DataProductData {
     @Autowired
     private DataProductRepository dataProductRepository;
     private String shortkey;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     public GoogleMapsAPI googleMapsAPI;
+
 
     public void setShortkey(String shortkey){
         this.shortkey = shortkey;

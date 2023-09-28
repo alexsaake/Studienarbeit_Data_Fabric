@@ -10,7 +10,10 @@
     <v-card v-else>
       <v-container>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col v-if="dataProductInsights.insightData === undefined || dataProductInsights.insightData.length <= 0" cols="12">
+            <v-card-subtitle>Keine Insights hinterlegt</v-card-subtitle>
+          </v-col>
+          <v-col v-else cols="12" :md="(dataProductInsights.mapsData === undefined || dataProductInsights.mapsData.length <= 0?12:6)">
             <v-card-subtitle>Detaillierte Informationen zum Datenprodukt</v-card-subtitle>
             <v-card-text>
               <v-container>
@@ -102,7 +105,7 @@
               </v-row>
             </v-container>
           </v-col>
-          <v-col cols="12" md="6" >
+          <v-col  v-if="dataProductInsights.mapsData !== undefined && dataProductInsights.mapsData.length > 0" cols="12" md="6" >
             <insights-map-card :short-key="shortKey" :maps-data="dataProductInsights.mapsData"/>
           </v-col>
         </v-row>
