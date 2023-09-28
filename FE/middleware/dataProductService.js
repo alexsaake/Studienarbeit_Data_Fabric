@@ -76,6 +76,10 @@ export async function setDataProductRating(axios, shortKey, title, comment, rati
       }
   );
 }
+export async function getDataProductAvgRatings(axios, shortKey)
+{
+  return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Ratings/Averages`);
+}
 
 export async function updateDataProductRating(axios, shortKey, title, comment, rating)
 {

@@ -55,6 +55,18 @@ public class DataProductRepository {
             return null;
         }
     }
+    public String getAvgRatings(String shortKey){
+
+        final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.shortkey = ?";
+
+        try {
+            return jdbcTemplate.queryForObject(queryAvg, new Object[]{shortKey}, String.class);
+        }
+
+        catch (Exception e) {
+            return null;
+        }
+    }
     public String getData(String shortkey){
         final String STATEMENT = "SELECT data FROM dataproducts WHERE dataproducts.shortkey = ?";
         try {
