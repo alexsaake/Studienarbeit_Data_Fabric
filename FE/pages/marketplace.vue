@@ -41,6 +41,7 @@
     <v-overlay v-if="shortKey !== ''" class="my-overlay">
       <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct"   :short-key="shortKey" @on-close-data-product="onCloseDataProduct" />
     </v-overlay>
+    <overlay-button @custom-click="$router.push('/newDataProduct');"></overlay-button>
   </v-card>
 </template>
 
@@ -48,10 +49,11 @@
   import {getDataProductImage, getDataProducts, getDataProductAvgRatings} from "~/middleware/dataProductService";
   import DataProductOverviewCard from "~/components/DataProductOverviewCard.vue";
   import DataProductDetailWrapperCard from "~/components/DataProductDetailWrapperCard.vue";
+  import OverlayButton from "~/components/OverlayButton.vue";
 
   export default {
     name: 'Marketplace',
-    components: {DataProductDetailWrapperCard, DataProductOverviewCard},
+    components: { OverlayButton, DataProductDetailWrapperCard, DataProductOverviewCard},
     data() {
       return {
         search: '',
