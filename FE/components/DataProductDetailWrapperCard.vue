@@ -14,6 +14,7 @@
         :last-updated="dataProductDetail.lastUpdated"
         :category="dataProductDetail.category"
         :access-right="dataProductDetail.accessRight"
+        :avg-rating="dataProductDetail.avgRating"
         :image="dataProductDetail.image"
       />
       <v-card-actions>
@@ -51,11 +52,11 @@
 </template>
 
 <script>
-  import {
-    getDataProduct,
-    getDataProductImage, getDataProductRatingCanSubmit,
-    getDataProductRatings
-  } from "~/middleware/dataProductService";
+import {
+  getDataProduct, getDataProductAvgRatings,
+  getDataProductImage, getDataProductRatingCanSubmit,
+  getDataProductRatings
+} from "~/middleware/dataProductService";
   import DataProductRatingCard from "~/components/DataProductRatingCard.vue";
   import DataProductDetailCard from "~/components/DataProductDetailCard.vue";
   import DataProductEditRatingCard from "~/components/DataProductEditRatingCard.vue";
@@ -79,7 +80,7 @@
         canSubmit: true,
         isUpdate: false,
         existingRating: null,
-        screenWidth: null
+        screenWidth: null,
       }
     },
     async fetch() {
@@ -112,7 +113,7 @@
             rating: rawDataProductRating.rating,
             userName: rawDataProductRating.userName,
             submitted: new Date(rawDataProductRating.submitted).toLocaleDateString('ge-GE'),
-            isEdited: rawDataProductRating.isEdited
+            isEdited: rawDataProductRating.isEdited,
           });
         }
         return {
@@ -126,7 +127,9 @@
           category: rawDataProductDetail.category,
           accessRight: rawDataProductDetail.accessRight,
           image: await getDataProductImage(this.$axios, rawDataProductDetail.shortKey),
-          ratings: dataProductRatings
+          ratings: dataProductRatings,
+          avgRating: await getDataProductAvgRatings(this.$axios, rawDataProductDetail.shortKey)
+
         };
       },
       onOpenUseData()

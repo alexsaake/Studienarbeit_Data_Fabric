@@ -28,6 +28,10 @@
           <v-col cols="2">Zugriff</v-col>
           <v-col>{{ accessRight }}</v-col>
         </v-row>
+        <v-row class="mt-4" no-gutters>
+          <v-col cols="3">Durchschnittliche Bewertung </v-col>
+          <v-col>{{ avgRating.toFixed(2) }}</v-col>
+        </v-row>
       </v-container>
     </v-card-text>
   </v-card>
@@ -47,7 +51,8 @@
       sourceLink: String,
       lastUpdated: String,
       category: String,
-      accessRight: String
+      accessRight: String,
+      avgRating: Number
     }
   }
 </script>
