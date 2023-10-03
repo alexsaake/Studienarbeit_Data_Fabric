@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 
+import static jakarta.xml.bind.DatatypeConverter.parseFloat;
+
 @Repository
 public class DataProductRepository {
     public static final Logger LOGGER= LoggerFactory.getLogger(DataProductRepository.class);
@@ -55,16 +57,16 @@ public class DataProductRepository {
             return null;
         }
     }
-    public String getAvgRatings(String shortKey){
+    public Float getAvgRatings(String shortKey){
 
         final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.shortkey = ?";
 
         try {
-            return jdbcTemplate.queryForObject(queryAvg, new Object[]{shortKey}, String.class);
+            return parseFloat(jdbcTemplate.queryForObject(queryAvg, new Object[]{shortKey}, String.class));
         }
 
         catch (Exception e) {
-            return null;
+            return 0.0F;
         }
     }
     public String getData(String shortkey){

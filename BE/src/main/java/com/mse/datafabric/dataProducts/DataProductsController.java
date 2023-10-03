@@ -215,7 +215,7 @@ public class DataProductsController {
             value = "/DataProduct/{dataproduct_key}/Ratings/Averages",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String getAvgRatings(@PathVariable String dataproduct_key){
+    public Float getAvgRatings(@PathVariable String dataproduct_key){
         return dataProductRepository.getAvgRatings(dataproduct_key);
     }
 
