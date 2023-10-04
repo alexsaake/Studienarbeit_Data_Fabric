@@ -17,6 +17,12 @@
             <v-card-subtitle>Detaillierte Informationen zum Datenprodukt</v-card-subtitle>
             <v-card-text>
               <v-container>
+                <v-row class="insights-row">
+                  <v-col style="font-weight: bold" cols="9">Anzahl betrachteter Datensätze:</v-col>
+                  <v-col  style="font-weight: bold" cols="3">{{dataProductInsights.insightCount}}</v-col>
+                </v-row>
+              </v-container>
+              <v-container>
                 <v-row v-for="data in dataProductInsights.insightData" :key="data.displayName" class="insights-row">
                   <v-col cols="9">{{data.displayName}}:</v-col>
                   <v-col cols="3">{{data.insightValue}} {{data.unit}}</v-col>
@@ -205,6 +211,7 @@ export default {
       );
       return {
         insightData: rawDataProductInsights.insightData,
+        insightCount: rawDataProductInsights.insightCount,
         mapsData: rawDataProductInsights.mapsData,
       };
     },

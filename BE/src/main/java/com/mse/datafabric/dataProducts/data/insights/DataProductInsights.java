@@ -37,6 +37,9 @@ public class DataProductInsights {
         data = dataProductData.getData();
         filterData();
     }
+    public int getDataCount(){
+        return data.size();
+    }
     public void filterData(){
         List<Map<String, Object>> filteredDataList = new ArrayList<>();
         data.forEach(row->{

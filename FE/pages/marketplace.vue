@@ -41,6 +41,7 @@
     <v-overlay v-if="shortKey !== ''" class="my-overlay">
       <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct"   :short-key="shortKey" @on-close-data-product="onCloseDataProduct" />
     </v-overlay>
+    <overlay-button @custom-click="$auth.loggedIn?$router.push('/newDataProduct'):$router.push('/login?page=newDataProduct');"></overlay-button>
   </v-card>
 </template>
 
@@ -48,10 +49,19 @@
   import {getDataProductImage, getDataProducts, getDataProductAvgRatings} from "~/middleware/dataProductService";
   import DataProductOverviewCard from "~/components/DataProductOverviewCard.vue";
   import DataProductDetailWrapperCard from "~/components/DataProductDetailWrapperCard.vue";
+  import OverlayButton from "~/components/OverlayButton.vue";
 
   export default {
     name: 'Marketplace',
-    components: {DataProductDetailWrapperCard, DataProductOverviewCard},
+    components: { OverlayButton, DataProductDetailWrapperCard, DataProductOverviewCard},
+    beforeRouteLeave (to, from, next) {
+      if(!this.shortKey) {
+        next()
+      } else {
+        this.shortKey = '';
+        next(false)
+      }
+    },
     data() {
       return {
         search: '',
@@ -95,8 +105,8 @@
 
     async created() {
       await this.fetchData() // Call the fetchData method on component creation
-      const { shortKey } = this.$route.query;
-      if (shortKey) {
+      if(this.$route.query !== undefined && this.$route.query.shortkey !== undefined) {
+        const shortKey = this.$route.query.shortkey;
         this.onShowDataProduct(shortKey);
       }
     },

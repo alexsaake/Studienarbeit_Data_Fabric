@@ -16,6 +16,7 @@
         :access-right="dataProductDetail.accessRight"
         :avg-rating="dataProductDetail.avgRating"
         :image="dataProductDetail.image"
+        :user-name="dataProductDetail.userName"
       />
       <v-card-actions>
         <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
@@ -128,8 +129,8 @@ import {
           accessRight: rawDataProductDetail.accessRight,
           image: await getDataProductImage(this.$axios, rawDataProductDetail.shortKey),
           ratings: dataProductRatings,
-          avgRating: await getDataProductAvgRatings(this.$axios, rawDataProductDetail.shortKey)
-
+          avgRating: await getDataProductAvgRatings(this.$axios, rawDataProductDetail.shortKey),
+          userName: rawDataProductDetail.userName
         };
       },
       onOpenUseData()

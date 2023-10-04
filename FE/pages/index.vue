@@ -5,7 +5,25 @@
       <p>Nutze das volle Potenzial der Daten.</p>
       <p>Entdecke die Welt der Datenprodukte, konsumiere wertvolle Informationen und biete deine eigenen Daten an, um neue Möglichkeiten zu schaffen.</p>
       <p>Willkommen bei DataFabric - Wo Daten zu Produkten werden.</p>
-      <v-btn color="primary" href="/marketplace">Jetzt entdecken!</v-btn>
+      <v-container>
+        <v-row>
+          <v-col>
+            <v-btn color="primary" href="/marketplace">Jetzt entdecken!</v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn color="primary" :href="$auth.loggedIn?'/newDataProduct':'/login?page=newDataProduct'">Eigenes Datenproduct anbieten</v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-img>
   </div>
 </template>
+<script setup>
+</script>
+<style>
+.row{
+    padding: 5px;
+}
+</style>

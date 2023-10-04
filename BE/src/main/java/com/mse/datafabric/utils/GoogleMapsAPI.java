@@ -1,26 +1,13 @@
 package com.mse.datafabric.utils;
 
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
-import com.google.maps.errors.ApiException;
 import com.google.maps.model.AddressComponent;
 import com.google.maps.model.GeocodingResult;
-import com.mse.datafabric.dataProducts.models.DataProductSQLWhitelists;
-import com.mse.datafabric.immobilien.webScraper.wgGesuchtDE.PageWgGesuchtDe;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.google.maps.model.AddressComponentType.POSTAL_CODE;
 

@@ -55,6 +55,8 @@ export default {
       });
     },
     addMarkers(){
+      if(this.google == null)
+        return;
       for (let i = 0; i < this.mapsData.length; i++){
         const markerLocation = { lat: this.mapsData[i].locationLat, lng: this.mapsData[i].locationLng };
         markers.push(new this.google.maps.Marker({

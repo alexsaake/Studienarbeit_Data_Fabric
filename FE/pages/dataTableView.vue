@@ -64,6 +64,8 @@ export default {
                 const values = [];
 
                 for (const [key, val] of Object.entries(data[rowIndex])) {
+                    if(key.startsWith("_"))
+                        continue;
                     features.push({
                         index: features.length,
                         value: key,
@@ -75,7 +77,6 @@ export default {
                 }
                 if(rowIndex === 0)
                     head = features;
-
                 rows.push({
                     index: rows.length,
                     value: values,

@@ -50,7 +50,6 @@ public class DataProductsController {
     {
         this(dataProductsProvider, authenticationService, LoggerFactory.getLogger("DataProductsController"));
     }
-
     public DataProductsController(IDataProductsService dataProductsProvider, AuthenticationService authenticationService, Logger logger)
     {
         myDataProductsService = dataProductsProvider;
@@ -76,6 +75,37 @@ public class DataProductsController {
         return jsonString;
     }
 
+    @GetMapping(
+            value = "/DataProducts/Categories",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getDataProductsCategories(){
+        String jsonString = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            jsonString = mapper.writeValueAsString(dataProductRepository.getCategories());
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return jsonString;
+    }
+    @GetMapping(
+            value = "/DataProducts/AccessRights",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getDataProductsAccessRights(){
+        String jsonString = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            jsonString = mapper.writeValueAsString(dataProductRepository.getAccessRights());
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return jsonString;
+    }
+
     @ShellMethod( "getDataProduct/Image" )
     @GetMapping(
             value = "/DataProduct/{dataproduct_key}/Image",
@@ -87,7 +117,12 @@ public class DataProductsController {
             file = Base64.getEncoder().encode((new ClassPathResource(dataproduct_key+".jpg")).getInputStream().readAllBytes());
         }
         catch (Exception e) {
-            myLogger.error("Could not load Image: " + e);
+            try {
+                file = Base64.getEncoder().encode((new ClassPathResource("defaultImage.jpg")).getInputStream().readAllBytes());
+            }
+            catch (Exception e2) {
+                myLogger.error("Could not load Image: " + e2);
+            }
         }
         return file;
     }
@@ -108,6 +143,24 @@ public class DataProductsController {
         }
 
         return jsonString;
+    }
+    @PostMapping(
+            value = "/DataProduct/{dataproduct_key}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @PreAuthorize("hasAuthority('USER')")
+    public boolean createDataProduct(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+        DataProductDTO dto;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            dto = mapper.readValue(requestBodyJson, DataProductDTO.class);
+            dto.shortKey = dataproduct_key;
+            return dataProductRepository.insertDataProduct(dataproduct_key, dto);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return false;
     }
 
     @ShellMethod( "getDataProduct" )
@@ -134,6 +187,7 @@ public class DataProductsController {
         //
         DataProductInsightsDTO insightsDTO = new DataProductInsightsDTO();
         insightsDTO.insightData = insights.getInsights(dataproduct_key);
+        insightsDTO.insightCount = insights.getDataCount();
         insightsDTO.mapsData = insights.getInsightMapsData(dataproduct_key, filter);
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -185,6 +239,7 @@ public class DataProductsController {
             value = "/DataProduct/{dataproduct_key}/Data/MapsData",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @PreAuthorize("hasAuthority('USER')")
     public String setDataProductMapsData(@PathVariable String dataproduct_key){
         productData.setShortkey(dataproduct_key);
         int count = productData.dataProductAddMapsData();

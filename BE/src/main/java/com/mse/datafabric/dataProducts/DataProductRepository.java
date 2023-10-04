@@ -1,5 +1,6 @@
 package com.mse.datafabric.dataProducts;
 
+import com.mse.datafabric.dataProducts.models.DataProductDTO;
 import com.mse.datafabric.utils.GoogleMapsAPI;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
 import org.slf4j.Logger;
@@ -10,6 +11,10 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static jakarta.xml.bind.DatatypeConverter.parseFloat;
 
@@ -39,6 +44,30 @@ public class DataProductRepository {
 
         }
     }
+    public boolean insertDataProduct(String shortKey, DataProductDTO dto){
+        final String STATEMENT = "INSERT INTO DATAPRODUCTS (shortKey, title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?))";
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(STATEMENT);
+                ps.setString(1, shortKey);
+                ps.setString(2, dto.title);
+                ps.setString(3, dto.shortDescription);
+                ps.setString(4, dto.description);
+                ps.setString(5, dto.source);
+                ps.setString(6, dto.sourceLink);
+                ps.setInt(7, dto.categoryId);
+                ps.setInt(8, dto.accessRightId);
+                ps.setString(9, dto.data);
+                ps.setString(10, dto.username);
+
+                return ps;
+            });
+        }
+        catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
     public GoogleMapsAddressDTO getAddressColumns(String shortkey){
         final String STATEMENT = "SELECT maps_city_column, maps_street_column FROM dataproduct_maps_data " +
                 "JOIN dataproducts ON dataproducts.id = dataproduct_maps_data.dataproduct_id WHERE dataproducts.shortkey = ?";
@@ -58,7 +87,6 @@ public class DataProductRepository {
         }
     }
     public Float getAvgRatings(String shortKey){
-
         final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.shortkey = ?";
 
         try {
@@ -67,6 +95,38 @@ public class DataProductRepository {
 
         catch (Exception e) {
             return 0.0F;
+        }
+    }
+    public Map<String, String>[] getCategories(){
+        final String STATEMENT = "SELECT DISTINCT dataproduct_categories.id, dataproduct_categories.category FROM dataproduct_categories JOIN dataproducts ON dataproducts.categoryid = dataproduct_categories.id";
+        try {
+            return jdbcTemplate.query(STATEMENT, this::getKeyValue);
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+    public Map<String, String>[] getAccessRights(){
+        final String STATEMENT = "SELECT DISTINCT dataproduct_accessrights.id, dataproduct_accessrights.accessright FROM dataproduct_accessrights JOIN dataproducts ON dataproducts.accessrightid = dataproduct_accessrights.id";
+        try {
+            return jdbcTemplate.query(STATEMENT, this::getKeyValue);
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+    public Map<String, String>[] getKeyValue(ResultSet resultSet){
+        try {
+            List<Map<String, String>> hashList = new ArrayList<>();
+            while (resultSet.next()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("key",resultSet.getString(1));
+                map.put("value",resultSet.getString(2));
+                hashList.add(map);
+            }
+            return hashList.toArray(new Map[0]);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
     public String getData(String shortkey){
