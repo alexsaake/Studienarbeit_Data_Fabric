@@ -51,7 +51,7 @@ class DataProductsServiceTest
     {
         Map<String, Object> databaseDataProduct = Map.of("shortKey","shortKey","title", "title","shortDescription","shortDescription","description","description","source","source","sourceLink","sourceLink","lastUpdated", new Timestamp(0),"category","Wirtschaft","accessRight","gratis");
         Mockito.when(myJdbcTemplateMock.queryForMap(anyString())).thenReturn(databaseDataProduct);
-        DataProductOverviewDto expectedDataProduct = new DataProductDetailDto("shortKey", "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft, "description", "source", "sourceLink");
+        DataProductOverviewDto expectedDataProduct = new DataProductDetailDto("shortKey", "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft, "description", "source", "sourceLink","schne");
 
         DataProductDetailDto actualDataProduct = myDataProductsService.getDataProductDetail("shortKey");
 
