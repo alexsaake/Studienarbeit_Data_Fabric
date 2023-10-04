@@ -8,6 +8,11 @@ export async function getDataProduct(axios, shortKey)
   return await axios.$get(`api/Gateway/DataProduct/${shortKey}`);
 }
 
+export async function insertDataProduct(axios, shortKey, data)
+{
+  return await axios.$post(`api/Gateway/DataProduct/${shortKey}`, data);
+}
+
 export async function getDataProductImage(axios, shortKey)
 {
   return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Image`);
@@ -16,6 +21,15 @@ export async function getDataProductImage(axios, shortKey)
 export async function getDataProductData(axios, shortKey)
 {
   return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data`);
+}
+
+export async function getDataProductCategories(axios)
+{
+  return await axios.$get(`api/Gateway/DataProducts/Categories`);
+}
+export async function getDataProductAccessRights(axios)
+{
+  return await axios.$get(`api/Gateway/DataProducts/AccessRights`);
 }
 export async function getDataProductInsights(axios, shortKey, param)
 {

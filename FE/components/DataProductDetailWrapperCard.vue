@@ -15,6 +15,7 @@
         :category="dataProductDetail.category"
         :access-right="dataProductDetail.accessRight"
         :image="dataProductDetail.image"
+        :user-name="dataProductDetail.userName"
       />
       <v-card-actions>
         <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
@@ -126,7 +127,8 @@
           category: rawDataProductDetail.category,
           accessRight: rawDataProductDetail.accessRight,
           image: await getDataProductImage(this.$axios, rawDataProductDetail.shortKey),
-          ratings: dataProductRatings
+          ratings: dataProductRatings,
+          userName: rawDataProductDetail.userName
         };
       },
       onOpenUseData()

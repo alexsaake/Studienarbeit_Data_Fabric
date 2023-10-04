@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title>Datenprodukt erstellen</v-card-title>
     <horizontal-stepper :steps="steps" @completed-step="completeStep" :top-buttons="true"
-                      @active-step="isStepActive" @stepper-finished="alert"></horizontal-stepper>
+                      @active-step="isStepActive" @stepper-finished="uploadData"></horizontal-stepper>
   </v-card>
 </template>
 
@@ -10,6 +10,9 @@
 import HorizontalStepper from "~/components/dataProductStepper/HorizontalStepper.vue";
 import StepMetaData from "~/components/dataProductStepper/StepMetaData.vue";
 import StepProductData from "~/components/dataProductStepper/StepProductData.vue";
+import StepMapsData from "~/components/dataProductStepper/StepMapsData.vue";
+import StepInsights from "~/components/dataProductStepper/StepInsights.vue";
+import { insertDataProduct } from "~/middleware/dataProductService";
 export default {
   name: "newDataProduct",
   components: {
@@ -32,12 +35,35 @@ export default {
           component: StepProductData,
           completed: false
         },
+        {
+          name: 'mapsData',
+          title: 'Google Maps Verbindung',
+          subtitle: 'Verbinde dein Datenprodukt mit Google Maps und erhalte somit genaue Standorte zu deinen Daten',
+          component: StepMapsData,
+          completed: false
+        },
+        {
+          name: 'insights',
+          title: 'Generiere Insights',
+          subtitle: 'Erstelle deine eigenen Insights zu deinem Datenprodukt, um dieses noch interessanter zu machen',
+          component: StepInsights,
+          completed: false
+        },
       ],
       activeStep: 0
     }
   },
   computed: {},
+  mounted() {
+    if(!this.$auth.loggedIn)
+      this.$router.push('/login?page=newDataProduct');
+  },
   methods: {
+    async uploadDataProduct(data) {
+      return await insertDataProduct(
+        this.$axios, data.title, data
+      );
+    },
     completeStep(payload) {
       this.steps.forEach((step) => {
         if (step.name === payload.name) {
@@ -54,8 +80,16 @@ export default {
         }
       })
     },
-    alert(payload) {
-      alert('end')
+    async uploadData(payload) {
+      const ret = await this.uploadDataProduct(payload);
+      if(ret === true){
+        alert('Datenprodukt wurde erfolgreich angelegt!');
+        window.location.href = "/marketplace?shortkey=" + payload.title;
+
+      }else{
+        alert('Datenprodukt konnte nicht angelegt werden!');
+      }
+
     }
   }
 

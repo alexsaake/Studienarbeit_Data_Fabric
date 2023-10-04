@@ -1,57 +1,98 @@
 <template>
-  <v-container style="margin-top: 50px">
-    <v-row justify="center">
-      <v-col class="col" cols="12" md="6">
-        <v-text-field
-          ref="title"
-          v-model="form.title"
-          label="Titel"
-          :rules="[rules.required, rules.counter]"
-          counter
-          maxlength="20"
-        ></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row justify="center">
-      <v-col class="col" cols="12" md="6">
-        <v-text-field v-model="form.shortDescription" label="Kurzbeschreibung"></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row justify="center">
-      <v-col class="col" cols="12" md="6">
-        <v-text-field v-model="form.description" label="Beschreibung"></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row justify="center">
-      <v-col class="col" cols="12" md="6">
-        <v-text-field v-model="form.source" label="Quelle"></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row justify="center">
-      <v-col class="col" cols="12" md="6">
-        <v-text-field v-model="form.sourceLink" label="Quellen-Link"></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row justify="center">
-      <v-col class="col" cols="12" md="6">
-        <v-text-field v-model="form.lastUpdate" label="Zuletzt akualisiert"></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row justify="center">
-      <v-col class="col" cols="12" md="6">
-        <v-text-field v-model="form.category" label="Kategorie"></v-text-field>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-card>
+    <v-card v-if="!dataProductCategories || !dataProductAccessRights">
+      <v-progress-circular
+        :size="120"
+        indeterminate
+        color="white"
+      ></v-progress-circular>
+    </v-card>
+    <v-container v-else style="margin-top: 50px">
+      <v-row justify="center">
+        <v-col class="col" cols="12" md="6">
+          <v-text-field
+            ref="title"
+            v-model="form.title"
+            label="Titel"
+            :rules="[rules.required, rules.counter]"
+            counter
+            maxlength="50"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col class="col" cols="12" md="6">
+          <v-text-field
+            ref="shortDescription"
+            v-model="form.shortDescription"
+            label="Kurzbeschreibung"
+            :rules="[rules.required, rules.counter]"
+            counter
+            maxlength="50">
+          </v-text-field>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col class="col" cols="12" md="6">
+          <v-text-field
+            ref="description"
+            v-model="form.description"
+            label="Beschreibung"
+            :rules="[rules.required, rules.counter]"
+            counter
+            maxlength="50">
+          </v-text-field>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col class="col" cols="12" md="6">
+          <v-text-field v-model="form.source" label="Quelle"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col class="col" cols="12" md="6">
+          <v-text-field v-model="form.sourceLink" label="Quellen-Link"></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col class="col" cols="12" md="6">
+          <v-select
+            ref="category"
+            v-model="form.category"
+            label="Kategorie"
+            :rules="[rules.required]"
+            :items="dataProductCategories.categories"
+            item-text="value"
+            item-value="key"
+            ></v-select>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col class="col" cols="12" md="6">
+          <v-select
+            ref="accessRight"
+            v-model="form.accessRight"
+            label="Zugriff"
+            :rules="[rules.required]"
+            :items="dataProductAccessRights.accessRights"
+            item-text="value"
+            item-value="key"
+          ></v-select>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-card>
 </template>
 
 <script>
-import {validationMixin} from 'vuelidate'
+import { getDataProductCategories, getDataProductAccessRights  } from "~/middleware/dataProductService";
+
 export default {
   props: ['clickedNext', 'currentStep'],
-  mixins: [validationMixin],
   data() {
     return {
+      dataProductCategories: null,
+      dataProductAccessRights: null,
       form: {
         title: '',
         shortDescription: '',
@@ -60,29 +101,42 @@ export default {
         sourceLink: '',
         lastUpdate: '',
         category: '',
+        accessRight: ''
       },
       rules: {
-        required: value => !!value || 'Required.',
-        counter: value => value.length <= 20 || 'Max 20 characters',
-        email: value => {
-          const pattern =
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          return pattern.test(value) || 'Invalid e-mail.'
-        }
+        required: value => !!value || 'Notwendig.',
+        counter: value => value.length <= 50 || 'Max. 50 Zeichen',
       }
     }
   },
+  async fetch() {
+    this.dataProductCategories = await this.fetchDataProductCategories();
+    this.dataProductAccessRights = await this.fetchDataProductAccessRights();
+    this.setValidation();
+  },
   watch: {
+    async dataProductCategories() {
+      if (this.dataProductCategories === null) {
+        this.dataProductCategories = await this.fetchDataProductCategories();
+      }
+    },
+    async dataProductAccessRights() {
+      if (this.dataProductAccessRights === null) {
+        this.dataProductAccessRights = await this.fetchDataProductAccessRights();
+      }
+    },
     form: {
       handler: function (val) {
-        if(this.checkFormValidation()) {
-          this.$emit('can-continue', {value: true});
-        } else {
-          this.$emit('can-continue', {value: false});
-          setTimeout(()=> {
-            this.$emit('change-next', {nextBtnValue: false});
-          }, 3000)
-        }
+        this.setValidation();
+        this.$emit('data', {
+          title: this.form.title,
+          description: this.form.description,
+          shortDescription: this.form.shortDescription,
+          source: this.form.source,
+          sourceLink: this.form.sourceLink,
+          category: this.form.category,
+          accessRight: this.form.accessRight
+        });
       },
       deep: true
     },
@@ -93,22 +147,41 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      if (this.checkFormValidation()) {
-        this.$emit('can-continue', { value: true });
-      } else {
-        this.$emit('can-continue', { value: false });
-      }
-    });
+    this.setValidation();
   },
   activated() {
-    if (this.checkFormValidation()) {
-      this.$emit('can-continue', { value: true });
-    } else {
-      this.$emit('can-continue', { value: false });
-    }
+    this.setValidation();
   },
+  fetchOnServer: false,
   methods:{
+    async fetchDataProductCategories() {
+      const rawData = await getDataProductCategories(
+        this.$axios,
+      );
+      return {
+        categories: rawData,
+      };
+    },
+    async fetchDataProductAccessRights() {
+      const rawData = await getDataProductAccessRights(
+        this.$axios,
+      );
+      return {
+        accessRights: rawData,
+      };
+    },
+    setValidation(){
+      this.$nextTick(() => {
+        if(this.checkFormValidation()) {
+          this.$emit('can-continue', {value: true});
+        } else {
+          this.$emit('can-continue', {value: false});
+          setTimeout(()=> {
+            this.$emit('change-next', {nextBtnValue: false});
+          }, 3000)
+        }
+      });
+    },
     checkFormValidation() {
       let valid = true;
       Object.keys(this.form).forEach(f => {

@@ -30,10 +30,10 @@
       <transition :enter-active-class="enterAnimation" :leave-active-class="leaveAnimation" mode="out-in">
         <!--If keep alive-->
         <keep-alive v-if="keepAliveData">
-          <component :is="steps[currentStep.index].component" :clicked-next="nextButton[currentStep.name]" :current-step="currentStep" @can-continue="proceed" @change-next="changeNextBtnValue"></component>
+          <component :is="steps[currentStep.index].component" :clicked-next="nextButton[currentStep.name]" :current-step="currentStep" :data-product="dataProduct" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData"></component>
         </keep-alive>
         <!--If not show component and destroy it in each step change-->
-        <component  :is="steps[currentStep.index].component" v-else :clicked-next="nextButton[currentStep.name]"   :current-step="currentStep" @can-continue="proceed" @change-next="changeNextBtnValue"></component>
+        <component  :is="steps[currentStep.index].component" v-else :clicked-next="nextButton[currentStep.name]"   :current-step="currentStep" :data-product="dataProduct" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData"></component>
       </transition>
     </div>
     <div :class="['bottom', (currentStep.index > 0) ? '' : 'only-next']">
@@ -64,18 +64,7 @@ export default {
       type: Array,
       default: function() {
         return [
-          {
-            icon: "mail",
-            name: "first",
-            title: "Sample title 1",
-            subtitle: "Subtitle sample"
-          },
-          {
-            icon: "report_problem",
-            name: "second",
-            title: "Sample title 2",
-            subtitle: "Subtitle sample"
-          }
+
         ];
       }
     },
@@ -95,7 +84,8 @@ export default {
       nextButton: {},
       canContinue: false,
       finalStep: false,
-      keepAliveData: this.keepAlive
+      keepAliveData: this.keepAlive,
+      dataProduct: {},
     };
   },
   computed: {
@@ -132,6 +122,25 @@ export default {
     this.init();
   },
   methods: {
+    setData(payload){
+      if(payload.data !== undefined)
+        this.dataProduct.data = payload.data;
+      if(payload.title !== undefined)
+        this.dataProduct.title = payload.title;
+      if(payload.description !== undefined)
+        this.dataProduct.description = payload.description;
+      if(payload.shortDescription !== undefined)
+        this.dataProduct.shortDescription = payload.shortDescription;
+      if(payload.source !== undefined)
+        this.dataProduct.source = payload.source;
+      if(payload.sourceLink !== undefined)
+        this.dataProduct.sourceLink = payload.sourceLink;
+      if(payload.category !== undefined)
+        this.dataProduct.category = payload.category;
+      if(payload.accessRight !== undefined)
+        this.dataProduct.accessRight = payload.accessRight;
+      this.dataProduct.username = this.$auth.user.userName;
+    },
     isStepActive(index, step) {
       if (this.currentStep.index === index) {
         return "activated";
@@ -161,7 +170,7 @@ export default {
       this.nextButton[this.currentStep.name] = true;
       if (this.canContinue) {
         if (this.finalStep) {
-          this.$emit("stepper-finished", this.currentStep);
+          this.$emit("stepper-finished", this.dataProduct);
         }
         const currentIndex = this.currentStep.index + 1;
         this.activateStep(currentIndex);

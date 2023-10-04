@@ -14,12 +14,14 @@ public class DataProductDetailDto extends DataProductOverviewDto implements Seri
     private String description;
     private String source;
     private String sourceLink;
+    private String userName;
 
-    public DataProductDetailDto(String shortKey, String title, String shortDescription, Date lastUpdated, DataProductAccessRights accessRight, DataProductCategories category, String description, String source, String sourceLink) {
+    public DataProductDetailDto(String shortKey, String title, String shortDescription, Date lastUpdated, DataProductAccessRights accessRight, DataProductCategories category, String description, String source, String sourceLink, String userName) {
         super(shortKey, title, shortDescription, lastUpdated, accessRight, category);
         this.description = description;
         this.source = source;
         this.sourceLink = sourceLink;
+        this.userName = userName;
     }
 
     @Override

@@ -48,7 +48,7 @@ class DataProductsService implements IDataProductsService
     }
 
     public DataProductDetailDto getDataProductDetail(String shortKey) {
-        String dataProductSql = "SELECT dp.title, dp.shortDescription, dp.description, dp.source, dp.sourceLink, dp.lastUpdated, dpc.category, dpar.accessRight FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id WHERE dp.shortKey = '%s'".formatted(shortKey);
+        String dataProductSql = "SELECT dp.title, dp.shortDescription, dp.description, dp.source, dp.sourceLink, dp.lastUpdated, dpc.category, dpar.accessRight, users.username FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id JOIN users ON dp.userid = users.id WHERE dp.shortKey = '%s'".formatted(shortKey);
         Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
 
         return new DataProductDetailDto(
@@ -60,10 +60,10 @@ class DataProductsService implements IDataProductsService
             DataProductCategories.valueOf((String)databaseDataProduct.get("category")),
             (String)databaseDataProduct.get("description"),
             (String)databaseDataProduct.get("source"),
-            (String)databaseDataProduct.get("sourceLink")
+            (String)databaseDataProduct.get("sourceLink"),
+            (String)databaseDataProduct.get("username")
         );
     }
-
     public List<RatingDto> getDataProductRatings(String shortKey)
     {
         String dataProductsSql = "SELECT dp.shortKey, usr.userName, rate.title, rate.comment, rate.rating, rate.submitted, rate.isEdited FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN Users usr ON rate.id_users = usr.id WHERE dp.shortKey = '%s' AND rate.isDeleted = FALSE".formatted(shortKey);

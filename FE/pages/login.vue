@@ -24,6 +24,8 @@
       async onSubmit() {
         await this.$auth.loginWith("local", {data: {userName: this.userName, password: this.password}})
           .then(() => {
+            if(this.$route.query.page !== undefined)
+              this.$router.push('/'+ this.$route.query.page );
           })
           .catch(() => {
             this.error = 'Username or password invalid.';

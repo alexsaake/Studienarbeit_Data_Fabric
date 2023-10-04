@@ -13,7 +13,7 @@
         </v-row>
         <v-row>
           <v-col>
-            <v-btn color="primary" href="/newDataProduct">Eigenes Datenproduct anbieten</v-btn>
+            <v-btn color="primary" :href="$auth.loggedIn?'/newDataProduct':'/login?page=newDataProduct'">Eigenes Datenproduct anbieten</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -22,3 +22,8 @@
 </template>
 <script setup>
 </script>
+<style>
+.row{
+    padding: 5px;
+}
+</style>
