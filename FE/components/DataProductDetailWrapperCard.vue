@@ -25,6 +25,7 @@
         <v-btn @click="$emit('on-close-data-product');">Zurück</v-btn>
       </v-card-actions>
       <v-container class="pa-0">
+        <v-row  v-if="dataProductDetail.ratings.length == 0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
         <v-row no-gutters>
           <v-col v-for="(rating, index) in dataProductDetail.ratings" :key="index" cols="12">
             <data-product-rating-card

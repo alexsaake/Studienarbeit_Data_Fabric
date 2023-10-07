@@ -15,7 +15,7 @@
           <v-col>{{ accessRight }}</v-col>
         </v-row>
         <v-row class="mt-4" no-gutters>
-          <v-col>Durschnittliche Bewertung</v-col>
+          <v-col>Durchschnittliche Bewertung</v-col>
           <v-col><pre>{{ averageRating.toFixed(2) }}</pre></v-col>
           <v-col><v-rating :value="averageRating" readonly half-increments></v-rating></v-col>
         </v-row>
