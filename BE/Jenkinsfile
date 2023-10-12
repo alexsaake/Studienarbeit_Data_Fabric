@@ -30,6 +30,13 @@ pipeline {
                 }
             }
         }
+        stage("Test") {
+           steps {
+                dir('BE/') {
+                    sh "mvn test
+                }
+            }
+        }
         stage("Spring-Boot:Run") {
             steps {
                   dir('BE/') {
