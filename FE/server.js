@@ -11,7 +11,7 @@ const users = {
 
 // Forwarding middleware
 app.use('/api', createProxyMiddleware({
-  target: 'http://'+(true ? 'localhost' : '192.168.178.11')+':8443',
+  target: 'http://'+(dev ? 'localhost' : '192.168.178.11')+':8443',
   changeOrigin: false, // Add the 'host' header to the proxied request
 }));
 
