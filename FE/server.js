@@ -6,24 +6,23 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = express();
 
 const users = {
-  // Replace 'username' with your desired username and 'password' with your desired password
   dataFabricUser: '123IHaveAccess',
 };
 
+// Forwarding middleware
+app.use('/api', createProxyMiddleware({
+  target: 'http://'+(true ? 'localhost' : '192.168.178.11')+':8443',
+  changeOrigin: false, // Add the 'host' header to the proxied request
+}));
+
+// Basic auth middleware
 app.use(
   basicAuth({
     users,
     challenge: true,
-    unauthorizedResponse: 'Unauthorized',
-  })
+    unauthorizedResponse: 'Unauthorized'
+    })
 );
-
-// Proxy middleware
-app.use('/api', createProxyMiddleware({
-  target: 'http://'+(dev ? 'localhost' : '192.168.178.11')+':8443',
-  //target: 'http://localhost:8443', // Specify the target URL for proxying
-  changeOrigin: false, // Add the 'host' header to the proxied request
-}));
 
 app.use(express.static('dist'));
 
