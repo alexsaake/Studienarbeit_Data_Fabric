@@ -11,6 +11,12 @@
     </v-container>
     <v-container>
 
+
+      <v-card-actions>
+        <v-btn @click="onLogout()">Logout</v-btn>
+        <v-btn @click="onEdit()">{{ editSaveButtonText }}</v-btn>
+      </v-card-actions>
+
         <v-row v-if="userRatings.length !=0" justify="center" class="pb-10">Your Ratings</v-row>
         <v-row no-gutters>
           <v-col v-for="(rating, index) in userRatings" :key="index" cols="12">
@@ -26,10 +32,6 @@
           <v-row v-if="userRatings.length==0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
         </v-row>
     </v-container>
-    <v-card-actions>
-      <v-btn @click="onLogout()">Logout</v-btn>
-      <v-btn @click="onEdit()">{{ editSaveButtonText }}</v-btn>
-    </v-card-actions>
   </v-card>
   <v-card-text v-else>No user logged in!</v-card-text>
 </template>
