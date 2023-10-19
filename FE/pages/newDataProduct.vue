@@ -12,7 +12,7 @@ import StepMetaData from "~/components/dataProductStepper/StepMetaData.vue";
 import StepProductData from "~/components/dataProductStepper/StepProductData.vue";
 import StepMapsData from "~/components/dataProductStepper/StepMapsData.vue";
 import StepInsights from "~/components/dataProductStepper/StepInsights.vue";
-import { insertDataProduct } from "~/middleware/dataProductService";
+import { insertDataProduct, insertInsightFilter, insertInsights } from "~/middleware/dataProductService";
 export default {
   name: "newDataProduct",
   components: {
@@ -59,9 +59,19 @@ export default {
       this.$router.push('/login?page=newDataProduct');
   },
   methods: {
-    async uploadDataProduct(data) {
+    async uploadDataProduct(shortkey, data) {
       return await insertDataProduct(
-        this.$axios, data.title, data
+        this.$axios, shortkey, data
+      );
+    },
+    async uploadInsights(shortkey, data) {
+      return await insertInsights(
+        this.$axios, shortkey, data
+      );
+    },
+    async uploadInsightFilter(shortkey, data) {
+      return await insertInsightFilter(
+        this.$axios, shortkey, data
       );
     },
     completeStep(payload) {
@@ -81,15 +91,19 @@ export default {
       })
     },
     async uploadData(payload) {
-      const ret = await this.uploadDataProduct(payload);
+      const ret = await this.uploadDataProduct(payload.product.title, payload.product);
       if(ret === true){
-        alert('Datenprodukt wurde erfolgreich angelegt!');
-        window.location.href = "/marketplace?shortkey=" + payload.title;
-
-      }else{
-        alert('Datenprodukt konnte nicht angelegt werden!');
+        const ret2 = await this.uploadInsights(payload.product.title, payload.insights);
+        if(ret2 === true){
+          const ret3 = await this.uploadInsightFilter(payload.product.title, payload.filter);
+          if(ret3 === true){
+            alert('Datenprodukt wurde erfolgreich angelegt!');
+            window.location.href = "/marketplace?shortkey=" + payload.product.title;
+            return;
+          }
+        }
       }
-
+      alert('Datenprodukt konnte nicht angelegt werden!');
     }
   }
 

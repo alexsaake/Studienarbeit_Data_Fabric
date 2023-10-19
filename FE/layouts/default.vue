@@ -32,7 +32,8 @@
       <v-btn icon @click.stop="clipped = !clipped">
         <v-icon>mdi-application</v-icon>
       </v-btn>
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-toolbar-title v-if="!easterEggShow" @click="kaggleEasterEgg">{{ title }}</v-toolbar-title>
+      <v-toolbar-title v-if="easterEggShow" ><a href="https://www.kaggle.com/" class="kaggle">KAGGLE</a> Fabric</v-toolbar-title>
       <v-spacer />
       <v-card-actions v-if="$auth.loggedIn">
         <v-btn text to="/account">{{ getLoggedInUserName() }}</v-btn>
@@ -59,6 +60,8 @@
     data()
     {
       return{
+        easterEggCount: 0,
+        easterEggShow: false,
         clipped: false,
         drawer: false,
         pages: [
@@ -79,6 +82,16 @@
         title: 'Data Fabric'
       }
     },
+    watch:{
+      easterEggCount:{
+        handler: function (val) {
+          if(this.easterEggCount >= 6)
+            this.easterEggCount = 0;
+          console.log(this.easterEggCount);
+        },
+        deep: true
+      }
+    },
     methods: {
       getLoggedInUserName()
       {
@@ -87,7 +100,31 @@
           return this.$auth.user.userName;
         }
         return '';
+      },
+      kaggleEasterEgg(){
+        if(this.easterEggCount === 0){
+          const timer = setTimeout(() => {
+            this.easterEggCount=0;
+            clearTimeout(timer);
+          }, 1000);
+        }
+        //
+        if(this.easterEggCount === 4){
+          this.easterEggShow = true;
+          const timer2 = setTimeout(() => {
+            this.easterEggShow = false;
+            clearTimeout(timer2);
+          }, 2000);
+        }
+        this.easterEggCount++;
       }
     }
   }
 </script>
+<style>
+.kaggle{
+    text-decoration: none;
+    color: #20BEFF !important;
+    font-family: zeitung, sans-serif !important;
+}
+</style>

@@ -85,7 +85,11 @@ export default {
       canContinue: false,
       finalStep: false,
       keepAliveData: this.keepAlive,
-      dataProduct: {},
+      dataProduct: {
+        product: {},
+        insights: [],
+        filter: []
+      },
     };
   },
   computed: {
@@ -124,22 +128,28 @@ export default {
   methods: {
     setData(payload){
       if(payload.data !== undefined)
-        this.dataProduct.data = payload.data;
+        this.dataProduct.product.data = payload.data;
       if(payload.title !== undefined)
-        this.dataProduct.title = payload.title;
+        this.dataProduct.product.title = payload.title;
       if(payload.description !== undefined)
-        this.dataProduct.description = payload.description;
+        this.dataProduct.product.description = payload.description;
       if(payload.shortDescription !== undefined)
-        this.dataProduct.shortDescription = payload.shortDescription;
+        this.dataProduct.product.shortDescription = payload.shortDescription;
       if(payload.source !== undefined)
-        this.dataProduct.source = payload.source;
+        this.dataProduct.product.source = payload.source;
       if(payload.sourceLink !== undefined)
-        this.dataProduct.sourceLink = payload.sourceLink;
+        this.dataProduct.product.sourceLink = payload.sourceLink;
       if(payload.category !== undefined)
-        this.dataProduct.category = payload.category;
+        this.dataProduct.product.category = payload.category;
       if(payload.accessRight !== undefined)
-        this.dataProduct.accessRight = payload.accessRight;
-      this.dataProduct.username = this.$auth.user.userName;
+        this.dataProduct.product.accessRight = payload.accessRight;
+      if(payload.insights !== undefined)
+        this.dataProduct.insights = payload.insights;
+      if(payload.filter !== undefined)
+        this.dataProduct.filter = payload.filter;
+      this.dataProduct.product.username = this.$auth.user.userName;
+      //
+      console.log(JSON.stringify(this.dataProduct));
     },
     isStepActive(index, step) {
       if (this.currentStep.index === index) {

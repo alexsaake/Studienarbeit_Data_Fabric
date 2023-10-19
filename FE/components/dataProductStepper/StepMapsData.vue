@@ -101,8 +101,8 @@ export default {
       return valid;
     },
     getDataColumns(){
-      if(this.dataProduct !==null && this.dataProduct.data !==null && this.dataProduct.data.length > 0)
-      return Object.keys(this.dataProduct.data[0]);
+      if(this.dataProduct !==null && this.dataProduct.product.data !==null && this.dataProduct.product.data.length > 0)
+      return Object.keys(this.dataProduct.product.data[0]);
     }
   }
 }
