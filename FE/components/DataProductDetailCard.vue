@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="my-card">
     <v-img :src="'data:text/plain;base64,' + image" height="300px" />
     <v-card-actions style="position: absolute; top: 310px; right: 20px;">
       <v-btn v-show="$auth.loggedIn && $auth.user.userName === userName" icon @click="onShowConfirmDeleteRating" >
@@ -46,10 +46,19 @@
         </v-row>
       </v-container>
     </v-card-text>
+    <v-card v-if="showConfirmDeleteDialog" v-click-outside="onCloseConfirmDeleteRating" class="my-dialog">
+      <v-card-title>Sicher löschen?</v-card-title>
+      <v-card-actions>
+        <v-btn @click="onConfirmDeleteRating">Löschen</v-btn>
+        <v-btn @click="onCloseConfirmDeleteRating">Abbrechen</v-btn>
+      </v-card-actions>
+    </v-card>
   </v-card>
 </template>
 
 <script>
+import {deleteDataProduct} from "~/middleware/dataProductService";
+
   export default {
     name: 'DataProductDetailCard',
     props:
@@ -67,10 +76,48 @@
       avgRating: Number,
       userName: String
     },
+    data()
+    {
+      return {
+        showConfirmDeleteDialog: false
+      }
+    },
     methods:{
-      onShowConfirmDeleteRating(){
-
+      async onConfirmDeleteRating()
+      {
+        if(this.$auth.loggedIn)
+        {
+          await deleteDataProduct(this.$axios, this.shortKey)
+              .then(() => {
+                this.showConfirmDeleteDialog = false;
+                this.$emit('on-data-product-deleted');
+              });
+        }
+      },
+      onShowConfirmDeleteRating()
+      {
+        this.showConfirmDeleteDialog = true;
+      },
+      onCloseConfirmDeleteRating()
+      {
+        this.showConfirmDeleteDialog = false;
       }
     }
   }
 </script>
+
+<style scoped>
+.my-card
+{
+  position: relative;
+}
+.my-dialog
+{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>

@@ -17,6 +17,7 @@
         :avg-rating="dataProductDetail.avgRating"
         :image="dataProductDetail.image"
         :user-name="dataProductDetail.userName"
+        @on-data-product-deleted="$emit('on-data-product-deleted');"
       />
       <v-card-actions>
         <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
@@ -65,7 +66,8 @@ import {
   import DataProductUseDataCard from "~/components/DataProductUseDataCard.vue";
 
   export default {
-    components: {DataProductUseDataCard, DataProductEditRatingCard, DataProductDetailCard, DataProductRatingCard},
+    components: {
+      DataProductUseDataCard, DataProductEditRatingCard, DataProductDetailCard, DataProductRatingCard},
     props: {
       shortKey: {
         type: String,

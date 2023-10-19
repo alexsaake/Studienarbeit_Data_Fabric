@@ -57,6 +57,8 @@ CREATE TABLE DataProducts
     accessRightId    BIGINT              NOT NULL,
     image            bytea,
     dataId           BIGINT,
+    userId           BIGINT              NOT NULL,
+    isDeleted        BOOLEAN             NOT NULL DEFAULT FALSE,
     FOREIGN KEY (accessRightId) REFERENCES DataProduct_AccessRights (id),
     FOREIGN KEY (categoryId) REFERENCES DataProduct_Categories (id),
     FOREIGN KEY (dataId) REFERENCES Data (id)

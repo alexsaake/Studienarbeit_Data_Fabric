@@ -11,6 +11,7 @@ public interface IDataProductsService
 {
     List<DataProductOverviewDto> getDataProductsOverview();
     DataProductDetailDto getDataProductDetail(String shortKey);
+    void softDeleteDataProduct(String shortKey, String userName);
     List<RatingDto> getDataProductRatings(String shortKey);
     DataProductRatingMaxLengths getDataProductRatingMaxLengths();
     boolean getDataProductRatingCanSubmit(String shortKey, String userName);

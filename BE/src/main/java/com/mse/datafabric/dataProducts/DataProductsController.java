@@ -163,6 +163,15 @@ public class DataProductsController {
         }
         return false;
     }
+
+    @DeleteMapping(
+            value = "/DataProduct/{dataproduct_key}"
+    )
+    @PreAuthorize("hasAuthority('USER')")
+    public void deleteDataProduct(@PathVariable String dataproduct_key){
+        myDataProductsService.softDeleteDataProduct(dataproduct_key, myAuthenticationService.getCurrentUserName());
+    }
+
     @PostMapping(
             value = "/DataProduct/{dataproduct_key}/Data/Insights",
             produces = MediaType.APPLICATION_JSON_VALUE

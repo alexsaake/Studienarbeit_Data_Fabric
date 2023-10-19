@@ -40,7 +40,7 @@
       <p>No data products found.</p>
     </v-card>
     <v-overlay v-if="shortKey !== ''" class="my-overlay">
-      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct"   :short-key="shortKey" @on-close-data-product="onCloseDataProduct" />
+      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct" :short-key="shortKey" @on-close-data-product="onCloseDataProduct" @on-data-product-deleted="onDataProductDeleted" />
     </v-overlay>
     <overlay-button @custom-click="$auth.loggedIn?$router.push('/newDataProduct'):$router.push('/login?page=newDataProduct');"></overlay-button>
   </v-card>
@@ -54,7 +54,7 @@
 
   export default {
     name: 'Marketplace',
-    components: { OverlayButton, DataProductDetailWrapperCard, DataProductOverviewCard},
+    components: {OverlayButton, DataProductDetailWrapperCard, DataProductOverviewCard},
     beforeRouteLeave (to, from, next) {
       if(!this.shortKey) {
         next()
@@ -159,6 +159,11 @@
         {
           this.shortKey = '';
         }
+      },
+      async onDataProductDeleted()
+      {
+        this.onCloseDataProduct();
+        await this.fetchData();
       }
     },
   }
