@@ -38,7 +38,7 @@ class DataProductsService implements IDataProductsService
                 (String)databaseDataProduct.get("title"),
                 (String)databaseDataProduct.get("shortDescription"),
                 new Date(((Timestamp) databaseDataProduct.get("lastUpdated")).getTime()),
-                (String)databaseDataProduct.get("userName"),
+                (String)databaseDataProduct.get("username"),
                 DataProductAccessRights.valueOf((String)databaseDataProduct.get("accessRight")),
                 DataProductCategories.valueOf((String)databaseDataProduct.get("category"))
             );

@@ -36,9 +36,9 @@ class DataProductsControllerTest
     void getDataProductsOverview_ValidDataProducts_ReturnValidJSON()
     {
         List<DataProductOverviewDto> dataProductOverviewBeans = new ArrayList<>();
-        dataProductOverviewBeans.add(new DataProductOverviewDto(ShortKey, "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft));
+        dataProductOverviewBeans.add(new DataProductOverviewDto(ShortKey, "title", "shortDescription", new Date(0), "saa", DataProductAccessRights.gratis, DataProductCategories.Wirtschaft));
         Mockito.when(myDataProductsProviderMock.getDataProductsOverview()).thenReturn(dataProductOverviewBeans);
-        String expectedResponseJSON = "[{\"shortKey\":\"shortKey\",\"title\":\"title\",\"shortDescription\":\"shortDescription\",\"lastUpdated\":0,\"category\":\"Wirtschaft\",\"accessRight\":\"gratis\"}]";
+        String expectedResponseJSON = "[{\"shortKey\":\"shortKey\",\"title\":\"title\",\"shortDescription\":\"shortDescription\",\"lastUpdated\":0,\"userName\":\"saa\",\"category\":\"Wirtschaft\",\"accessRight\":\"gratis\"}]";
 
         String actualResponseJSON = myDataProductsController.getDataProductsOverview();
 
@@ -50,7 +50,7 @@ class DataProductsControllerTest
     {
         DataProductDetailDto dataProductDetailBean = new DataProductDetailDto(ShortKey, "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft, "description", "source", "sourceLink","schne");
         Mockito.when(myDataProductsProviderMock.getDataProductDetail(anyString())).thenReturn(dataProductDetailBean);
-        String expectedResponseJSON = "{\"shortKey\":\"shortKey\",\"title\":\"title\",\"shortDescription\":\"shortDescription\",\"description\":\"description\",\"source\":\"source\",\"sourceLink\":\"sourceLink\",\"lastUpdated\":0,\"category\":\"Wirtschaft\",\"accessRight\":\"gratis\",\"userName\":\"schne\"}";
+        String expectedResponseJSON = "{\"shortKey\":\"shortKey\",\"title\":\"title\",\"shortDescription\":\"shortDescription\",\"description\":\"description\",\"userName\":\"schne\",\"source\":\"source\",\"sourceLink\":\"sourceLink\",\"lastUpdated\":0,\"category\":\"Wirtschaft\",\"accessRight\":\"gratis\"}";
 
         String actualResponseJSON = myDataProductsController.getDataProductDetail(ShortKey);
 

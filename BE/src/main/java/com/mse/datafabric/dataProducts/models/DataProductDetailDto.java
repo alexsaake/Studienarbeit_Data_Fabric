@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Getter
-@JsonPropertyOrder({"shortKey", "title", "shortDescription", "description", "source", "sourceLink", "lastUpdated", "category", "accessRights"})
+@JsonPropertyOrder({"shortKey", "title", "shortDescription", "description", "userName", "source", "sourceLink", "lastUpdated", "category", "accessRights"})
 public class DataProductDetailDto extends DataProductOverviewDto implements Serializable
 {
     private String description;

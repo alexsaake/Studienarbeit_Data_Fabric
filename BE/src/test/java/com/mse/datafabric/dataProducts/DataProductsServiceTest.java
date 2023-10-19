@@ -33,11 +33,11 @@ class DataProductsServiceTest
     @Test
     void getDataProductsOverview_ValidDataProducts_ReturnValidDataProductOverviewBeanList()
     {
-        Map<String, Object> databaseDataProduct = Map.of("shortKey","shortKey","title", "title","shortDescription","shortDescription","lastUpdated", new Timestamp(0),"category","Wirtschaft","accessRight","gratis");
+        Map<String, Object> databaseDataProduct = Map.of("shortKey","shortKey","title", "title","shortDescription","shortDescription","lastUpdated", new Timestamp(0), "username", "saa","category","Wirtschaft","accessRight","gratis");
         List<Map<String, Object>> databaseDataProducts = new ArrayList<>();
         databaseDataProducts.add(databaseDataProduct);
         Mockito.when(myJdbcTemplateMock.queryForList(anyString())).thenReturn(databaseDataProducts);
-        DataProductOverviewDto expectedDataProduct = new DataProductOverviewDto("shortKey", "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft);
+        DataProductOverviewDto expectedDataProduct = new DataProductOverviewDto("shortKey", "title", "shortDescription", new Date(0),"saa", DataProductAccessRights.gratis, DataProductCategories.Wirtschaft);
         List<DataProductOverviewDto> expectedDataProducts = new ArrayList<>();
         expectedDataProducts.add(expectedDataProduct);
 
@@ -49,7 +49,7 @@ class DataProductsServiceTest
     @Test
     void getDataProductDetail_ValidDataProduct_ReturnValidDataProductDetailBean()
     {
-        Map<String, Object> databaseDataProduct = Map.of("shortKey","shortKey","title", "title","shortDescription","shortDescription","description","description","source","source","sourceLink","sourceLink","lastUpdated", new Timestamp(0),"category","Wirtschaft","accessRight","gratis");
+        Map<String, Object> databaseDataProduct = Map.of("shortKey","shortKey","title", "title","shortDescription","shortDescription","description","description", "username", "schne", "source","source","sourceLink","sourceLink","lastUpdated", new Timestamp(0),"category","Wirtschaft","accessRight","gratis");
         Mockito.when(myJdbcTemplateMock.queryForMap(anyString())).thenReturn(databaseDataProduct);
         DataProductOverviewDto expectedDataProduct = new DataProductDetailDto("shortKey", "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft, "description", "source", "sourceLink","schne");
 

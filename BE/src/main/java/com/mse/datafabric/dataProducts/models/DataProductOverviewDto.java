@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"shortKey", "title", "shortDescription", "lastUpdated", "category", "accessRights"})
+@JsonPropertyOrder({"shortKey", "title", "shortDescription", "lastUpdated", "userName", "category", "accessRights"})
 public class DataProductOverviewDto implements Serializable
 {
     protected String shortKey;
