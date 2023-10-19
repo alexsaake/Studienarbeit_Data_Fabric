@@ -51,7 +51,7 @@ public class DataProductInsights {
         List<Float> values = new ArrayList<>();
         data.forEach(row->{
             Object rowObj = row.get(columnName);
-            if(rowObj == null)
+            if(rowObj == null || rowObj == "")
                 return;
             Float value = Float.valueOf(String.valueOf(rowObj).replace(" ",""));
             values.add(value);
