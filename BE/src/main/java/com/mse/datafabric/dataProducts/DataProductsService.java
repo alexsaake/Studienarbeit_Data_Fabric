@@ -26,7 +26,7 @@ class DataProductsService implements IDataProductsService
 
     public List<DataProductOverviewDto> getDataProductsOverview()
     {
-        String dataProductsSql = "SELECT dp.shortKey, dp.title, dp.shortDescription, dp.lastUpdated, dpc.category, dpar.accessRight FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id";
+        String dataProductsSql = "SELECT dp.shortKey, dp.title, dp.shortDescription, dp.lastUpdated, users.username, dpc.category, dpar.accessRight FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id JOIN users ON dp.userid = users.id";
         List<Map<String, Object>> databaseDataProducts = myJdbcTemplate.queryForList(dataProductsSql);
 
         List<DataProductOverviewDto> dataProducts = new ArrayList<>();
@@ -38,6 +38,7 @@ class DataProductsService implements IDataProductsService
                 (String)databaseDataProduct.get("title"),
                 (String)databaseDataProduct.get("shortDescription"),
                 new Date(((Timestamp) databaseDataProduct.get("lastUpdated")).getTime()),
+                (String)databaseDataProduct.get("userName"),
                 DataProductAccessRights.valueOf((String)databaseDataProduct.get("accessRight")),
                 DataProductCategories.valueOf((String)databaseDataProduct.get("category"))
             );

@@ -30,6 +30,7 @@
               :last-updated="dataProductOverview.lastUpdated"
               :access-right="dataProductOverview.accessRight"
               :average-rating="dataProductOverview.averageRating"
+              :user-name="dataProductOverview.userName"
             />
           </v-card>
         </v-col>
@@ -129,7 +130,8 @@
               category: dataProduct.category,
               accessRight: dataProduct.accessRight,
               image: await getDataProductImage(this.$axios, dataProduct.shortKey),
-              averageRating: await getDataProductAvgRatings(this.$axios, dataProduct.shortKey)
+              averageRating: await getDataProductAvgRatings(this.$axios, dataProduct.shortKey),
+              userName: dataProduct.userName
             });
           }
           this.dataProductsOverview = dataProductsOverview;

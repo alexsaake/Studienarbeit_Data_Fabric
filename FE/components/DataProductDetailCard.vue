@@ -17,6 +17,10 @@
           <v-col>{{ description }}</v-col>
         </v-row>
         <v-row class="mt-4" no-gutters>
+          <v-col cols="2">Ersteller</v-col>
+          <v-col>{{ userName }}</v-col>
+        </v-row>
+        <v-row class="mt-4" no-gutters>
           <v-col cols="2">Quelle</v-col>
           <v-col>{{ source }}</v-col>
         </v-row>

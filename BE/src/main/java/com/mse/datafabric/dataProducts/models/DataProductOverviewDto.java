@@ -17,6 +17,7 @@ public class DataProductOverviewDto implements Serializable
     protected String title;
     protected String shortDescription;
     protected Date lastUpdated;
+    protected String userName;
     protected DataProductAccessRights accessRight;
     private DataProductCategories category;
 
@@ -41,6 +42,9 @@ public class DataProductOverviewDto implements Serializable
             return false;
         }
         if (!Objects.equals(this.lastUpdated, other.lastUpdated)) {
+            return false;
+        }
+        if (!Objects.equals(this.userName, other.userName)) {
             return false;
         }
         if (!Objects.equals(this.category, other.category)) {

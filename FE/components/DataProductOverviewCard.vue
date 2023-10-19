@@ -19,6 +19,10 @@
           <v-col><pre>{{ averageRating.toFixed(2) }}</pre></v-col>
           <v-col><v-rating :value="averageRating" readonly half-increments></v-rating></v-col>
         </v-row>
+        <v-row class="mt-4" no-gutters>
+          <v-col>Ersteller</v-col>
+          <v-col>{{ userName }}</v-col>
+        </v-row>
       </v-container>
     </v-card-text>
   </v-card>
@@ -35,7 +39,8 @@
       shortDescription: String,
       lastUpdated: Date,
       accessRight: String,
-      averageRating: Number
+      averageRating: Number,
+      userName: String
     }
   }
 </script>
