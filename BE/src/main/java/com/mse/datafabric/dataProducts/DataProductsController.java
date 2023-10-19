@@ -1,6 +1,7 @@
 package com.mse.datafabric.dataProducts;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.mse.datafabric.auth.AuthenticationService;
@@ -162,6 +163,42 @@ public class DataProductsController {
         }
         return false;
     }
+    @PostMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/Insights",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @PreAuthorize("hasAuthority('USER')")
+    public boolean createDataProductInsights(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+        DataProductInsightDataDTO[] dto;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            dto = mapper.readValue(requestBodyJson, DataProductInsightDataDTO[].class);
+            return dataProductInsightRepository.insertInsights(dataproduct_key, dto);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return false;
+    }
+    @PostMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/Insights/Filter",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @PreAuthorize("hasAuthority('USER')")
+    public boolean createDataProductInsightsFilter(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+        InsightFilterDTO[] dto;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            dto = mapper.readValue(requestBodyJson, InsightFilterDTO[].class);
+            return dataProductInsightRepository.insertInsightsFilter(dataproduct_key, dto);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return false;
+    }
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
@@ -198,6 +235,36 @@ public class DataProductsController {
         }
 
         return "{}";
+    }
+    @GetMapping(
+            value = "/DataProducts/Insights/Types",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getInsightTypes(){
+        String jsonString = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            jsonString = mapper.writeValueAsString(dataProductInsightRepository.getInsightTypes());
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return jsonString;
+    }
+    @GetMapping(
+            value = "/DataProducts/Insights/FilterTypes",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getInsightFilterTypes(){
+        String jsonString = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            jsonString = mapper.writeValueAsString(dataProductInsightRepository.getFilterTypes());
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return jsonString;
     }
     @ShellMethod( "getDataProduct" )
     @GetMapping(

@@ -12,6 +12,14 @@ export async function insertDataProduct(axios, shortKey, data)
 {
   return await axios.$post(`api/Gateway/DataProduct/${shortKey}`, data);
 }
+export async function insertInsights(axios, shortKey, data)
+{
+  return await axios.$post(`api/Gateway/DataProduct/${shortKey}/Data/Insights`, data);
+}
+export async function insertInsightFilter(axios, shortKey, data)
+{
+  return await axios.$post(`api/Gateway/DataProduct/${shortKey}/Data/Insights/Filter`, data);
+}
 
 export async function getDataProductImage(axios, shortKey)
 {
@@ -46,6 +54,14 @@ export async function getDataProductInsights(axios, shortKey, param)
   {
     console.log(error);
   }
+}
+export async function getInsightTypes(axios)
+{
+  return await axios.$get(`api/Gateway/DataProducts/Insights/Types`);
+}
+export async function getInsightFilterTypes(axios)
+{
+  return await axios.$get(`api/Gateway/DataProducts/Insights/FilterTypes`);
 }
 export async function getDataProductInsightFilters(axios, shortKey)
 {
