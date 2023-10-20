@@ -8,9 +8,9 @@ export async function getDataProduct(axios, shortKey)
   return await axios.$get(`api/Gateway/DataProduct/${shortKey}`);
 }
 
-export async function insertDataProduct(axios, shortKey, data)
+export async function insertDataProduct(axios, data)
 {
-  return await axios.$post(`api/Gateway/DataProduct/${shortKey}`, data);
+  return await axios.$post(`api/Gateway/DataProduct`, data);
 }
 export async function insertInsights(axios, shortKey, data)
 {

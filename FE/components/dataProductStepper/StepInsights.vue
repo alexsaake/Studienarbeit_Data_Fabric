@@ -66,7 +66,6 @@
                         :ref="'unit'+insight.id"
                         v-model="insight.unit"
                         label="Einheit"
-                        :rules="form.generateInsights==='Ja'?[rules.required]:[]"
                         :disabled="insight.insightType===''"
                       ></v-text-field>
                     </v-col>

@@ -6,7 +6,9 @@ import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
@@ -42,29 +44,52 @@ public class DataProductRepository {
 
         }
     }
-    public boolean insertDataProduct(String shortKey, DataProductDTO dto){
-        final String STATEMENT = "INSERT INTO DATAPRODUCTS (shortKey, title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?))";
-        try {
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(STATEMENT);
-                ps.setString(1, shortKey);
-                ps.setString(2, dto.title);
-                ps.setString(3, dto.shortDescription);
-                ps.setString(4, dto.description);
-                ps.setString(5, dto.source);
-                ps.setString(6, dto.sourceLink);
-                ps.setInt(7, dto.categoryId);
-                ps.setInt(8, dto.accessRightId);
-                ps.setString(9, dto.data);
-                ps.setString(10, dto.username);
+    public String insertDataProduct(DataProductDTO dto){
+        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid,shortkey) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?),?) RETURNING id";
+        final String STATEMENT2 = "UPDATE DATAPRODUCTS SET shortkey = ? WHERE id = ?";
 
+        String shortKey = dto.title.replaceAll(" ","_");
+        try {
+            String finalShotKey1 = shortKey;
+            Integer id = jdbcTemplate.query(
+                    STATEMENT, new PreparedStatementSetter() {
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                                    ps.setString(1, dto.title);
+                                    ps.setString(2, dto.shortDescription);
+                                    ps.setString(3, dto.description);
+                                    ps.setString(4, dto.source);
+                                    ps.setString(5, dto.sourceLink);
+                                    ps.setInt(6, dto.categoryId);
+                                    ps.setInt(7, dto.accessRightId);
+                                    ps.setString(8, dto.data);
+                                    ps.setString(9, dto.username);
+                                    ps.setString(10, finalShotKey1);
+                        }
+                    },new ResultSetExtractor<>() {
+                        public Integer extractData(ResultSet rs) throws SQLException,
+                                DataAccessException {
+                            if (rs.next()) {
+                                return rs.getInt(1);
+                            }
+                            return null;
+                        }
+                    }
+            );
+            if(id == null)
+                return null;
+            shortKey = finalShotKey1 + "_" + id;
+            String finalShortKey = shortKey;
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(STATEMENT2);
+                ps.setString(1, finalShortKey);
+                ps.setInt(2,id);
                 return ps;
             });
         }
         catch (Exception e) {
-            return false;
+            return null;
         }
-        return true;
+        return shortKey;
     }
     public GoogleMapsAddressDTO getAddressColumns(String shortkey){
         final String STATEMENT = "SELECT maps_city_column, maps_street_column FROM dataproduct_maps_data " +

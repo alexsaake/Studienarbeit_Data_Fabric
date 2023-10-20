@@ -146,22 +146,21 @@ public class DataProductsController {
         return jsonString;
     }
     @PostMapping(
-            value = "/DataProduct/{dataproduct_key}",
+            value = "/DataProduct",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProduct(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+    public String createDataProduct(@RequestBody String requestBodyJson){
         DataProductDTO dto;
         try {
             ObjectMapper mapper = new ObjectMapper();
             dto = mapper.readValue(requestBodyJson, DataProductDTO.class);
-            dto.shortKey = dataproduct_key;
-            return dataProductRepository.insertDataProduct(dataproduct_key, dto);
+            return dataProductRepository.insertDataProduct(dto);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
         }
-        return false;
+        return null;
     }
     @PostMapping(
             value = "/DataProduct/{dataproduct_key}/Data/Insights",
