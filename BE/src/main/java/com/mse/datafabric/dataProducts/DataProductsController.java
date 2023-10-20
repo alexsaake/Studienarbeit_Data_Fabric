@@ -207,43 +207,6 @@ public class DataProductsController {
         myDataProductsService.softDeleteDataProduct(dataproduct_key, myAuthenticationService.getCurrentUserName());
     }
 
-    @PostMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/Insights",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProductInsights(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
-        DataProductInsightDataDTO[] dto;
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            dto = mapper.readValue(requestBodyJson, DataProductInsightDataDTO[].class);
-            return dataProductInsightRepository.insertInsights(dataproduct_key, dto);
-        }
-        catch (JsonProcessingException e) {
-            myLogger.error("Could not parse json " + e);
-        }
-        return false;
-    }
-    @PostMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/Insights/Filter",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProductInsightsFilter(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
-        InsightFilterDTO[] dto;
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            dto = mapper.readValue(requestBodyJson, InsightFilterDTO[].class);
-            return dataProductInsightRepository.insertInsightsFilter(dataproduct_key, dto);
-        }
-        catch (JsonProcessingException e) {
-            myLogger.error("Could not parse json " + e);
-        }
-        return false;
-    }
-
     @ShellMethod( "getDataProduct" )
     @GetMapping(
             value = "/DataProduct/{dataproduct_key}/Data",

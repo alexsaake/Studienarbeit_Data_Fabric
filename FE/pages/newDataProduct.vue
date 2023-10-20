@@ -12,13 +12,13 @@ import StepMetaData from "~/components/dataProductStepper/StepMetaData.vue";
 import StepProductData from "~/components/dataProductStepper/StepProductData.vue";
 import StepMapsData from "~/components/dataProductStepper/StepMapsData.vue";
 import StepInsights from "~/components/dataProductStepper/StepInsights.vue";
-import { insertDataProduct } from "~/middleware/dataProductService";
+import { insertDataProduct, insertInsightFilter, insertInsights } from "~/middleware/dataProductService";
 export default {
   name: "newDataProduct",
   components: {
     HorizontalStepper,
   },
-  data(){
+  data() {
     return {
       steps: [
         {
@@ -55,13 +55,23 @@ export default {
   },
   computed: {},
   mounted() {
-    if(!this.$auth.loggedIn)
+    if (!this.$auth.loggedIn)
       this.$router.push('/login?page=newDataProduct');
   },
   methods: {
-    async uploadDataProduct( data) {
+    async uploadDataProduct(data) {
       return await insertDataProduct(
-        this.$axios,  data
+        this.$axios, data
+      );
+    },
+    async uploadInsights(shortKey, data) {
+      return await insertInsights(
+        this.$axios, shortKey, data
+      );
+    },
+    async uploadInsightsFilter(shortKey, data) {
+      return await insertInsightFilter(
+        this.$axios, shortKey, data
       );
     },
     completeStep(payload) {
@@ -74,7 +84,7 @@ export default {
     isStepActive(payload) {
       this.steps.forEach((step) => {
         if (step.name === payload.name) {
-          if(step.completed === true) {
+          if (step.completed === true) {
             step.completed = false;
           }
         }
@@ -82,19 +92,20 @@ export default {
     },
     async uploadData(payload) {
       const shortKey = await this.uploadDataProduct(payload.product);
-      if(shortKey !== null){
+      if (shortKey !== null) {
         const ret2 = await this.uploadInsights(shortKey, payload.insights);
-        if(ret2 === true){
-          const ret3 = await this.uploadInsightFilter(shortKey, payload.filter);
-          if(ret3 === true){
+        if (ret2 === true) {
+          const ret3 = await this.uploadInsightsFilter(shortKey, payload.filter);
+          if (ret3 === true) {
             alert('Datenprodukt wurde erfolgreich angelegt!');
             window.location.href = "/marketplace?shortkey=" + shortKey;
-      }
+          }
 
+        }
+      }
     }
   }
-
-};
+}
 </script>
 
 <style scoped>

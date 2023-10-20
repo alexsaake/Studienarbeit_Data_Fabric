@@ -149,7 +149,7 @@ export default {
         this.dataProduct.filter = payload.filter;
       this.dataProduct.product.username = this.$auth.user.userName;
       //
-      console.log(JSON.stringify(this.dataProduct));
+      // console.log(JSON.stringify(this.dataProduct));
     },
     isStepActive(index, step) {
       if (this.currentStep.index === index) {
