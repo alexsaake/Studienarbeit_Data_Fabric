@@ -146,17 +146,52 @@ public class DataProductsController {
         return jsonString;
     }
     @PostMapping(
-            value = "/DataProduct/{dataproduct_key}",
+            value = "/DataProduct",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProduct(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+    public String createDataProduct(@RequestBody String requestBodyJson){
         DataProductDTO dto;
         try {
             ObjectMapper mapper = new ObjectMapper();
             dto = mapper.readValue(requestBodyJson, DataProductDTO.class);
-            dto.shortKey = dataproduct_key;
-            return dataProductRepository.insertDataProduct(dataproduct_key, dto);
+            return dataProductRepository.insertDataProduct(dto);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return null;
+    }
+    @PostMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/Insights",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @PreAuthorize("hasAuthority('USER')")
+    public boolean createDataProductInsights(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+        DataProductInsightDataDTO[] dto;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            dto = mapper.readValue(requestBodyJson, DataProductInsightDataDTO[].class);
+            return dataProductInsightRepository.insertInsights(dataproduct_key, dto);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return false;
+    }
+    @PostMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/Insights/Filter",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @PreAuthorize("hasAuthority('USER')")
+    public boolean createDataProductInsightsFilter(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+        InsightFilterDTO[] dto;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            dto = mapper.readValue(requestBodyJson, InsightFilterDTO[].class);
+            return dataProductInsightRepository.insertInsightsFilter(dataproduct_key, dto);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);

@@ -12,7 +12,7 @@ import StepMetaData from "~/components/dataProductStepper/StepMetaData.vue";
 import StepProductData from "~/components/dataProductStepper/StepProductData.vue";
 import StepMapsData from "~/components/dataProductStepper/StepMapsData.vue";
 import StepInsights from "~/components/dataProductStepper/StepInsights.vue";
-import { insertDataProduct, insertInsightFilter, insertInsights } from "~/middleware/dataProductService";
+import { insertDataProduct } from "~/middleware/dataProductService";
 export default {
   name: "newDataProduct",
   components: {
@@ -59,19 +59,9 @@ export default {
       this.$router.push('/login?page=newDataProduct');
   },
   methods: {
-    async uploadDataProduct(shortkey, data) {
+    async uploadDataProduct( data) {
       return await insertDataProduct(
-        this.$axios, shortkey, data
-      );
-    },
-    async uploadInsights(shortkey, data) {
-      return await insertInsights(
-        this.$axios, shortkey, data
-      );
-    },
-    async uploadInsightFilter(shortkey, data) {
-      return await insertInsightFilter(
-        this.$axios, shortkey, data
+        this.$axios,  data
       );
     },
     completeStep(payload) {
@@ -91,19 +81,16 @@ export default {
       })
     },
     async uploadData(payload) {
-      const ret = await this.uploadDataProduct(payload.product.title, payload.product);
-      if(ret === true){
-        const ret2 = await this.uploadInsights(payload.product.title, payload.insights);
+      const shortKey = await this.uploadDataProduct(payload.product);
+      if(shortKey !== null){
+        const ret2 = await this.uploadInsights(shortKey, payload.insights);
         if(ret2 === true){
-          const ret3 = await this.uploadInsightFilter(payload.product.title, payload.filter);
+          const ret3 = await this.uploadInsightFilter(shortKey, payload.filter);
           if(ret3 === true){
             alert('Datenprodukt wurde erfolgreich angelegt!');
-            window.location.href = "/marketplace?shortkey=" + payload.product.title;
-            return;
-          }
-        }
+            window.location.href = "/marketplace?shortkey=" + shortKey;
       }
-      alert('Datenprodukt konnte nicht angelegt werden!');
+
     }
   }
 

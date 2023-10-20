@@ -12,10 +12,17 @@ export async function deleteDataProduct(axios, shortKey)
 {
   return await axios.$delete(`api/Gateway/DataProduct/${shortKey}`);
 }
-
-export async function insertDataProduct(axios, shortKey, data)
+export async function insertDataProduct(axios, data)
 {
-  return await axios.$post(`api/Gateway/DataProduct/${shortKey}`, data);
+  return await axios.$post(`api/Gateway/DataProduct`, data);
+}
+export async function insertInsights(axios, shortKey, data)
+{
+  return await axios.$post(`api/Gateway/DataProduct/${shortKey}/Data/Insights`, data);
+}
+export async function insertInsightFilter(axios, shortKey, data)
+{
+  return await axios.$post(`api/Gateway/DataProduct/${shortKey}/Data/Insights/Filter`, data);
 }
 export async function insertInsights(axios, shortKey, data)
 {
