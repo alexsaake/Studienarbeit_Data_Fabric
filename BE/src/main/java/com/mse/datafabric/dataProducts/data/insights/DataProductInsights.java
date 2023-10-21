@@ -125,10 +125,14 @@ public class DataProductInsights {
     }
     public float getHighest(String columnName){
         List<Float> values =  getDataValues(columnName);
+        if(values.size() == 0)
+            return 0;
         return Collections.max(values);
     }
     public float getLowest(String columnName){
         List<Float> values =  getDataValues(columnName);
+        if(values.size() == 0)
+            return 0;
         return Collections.min(values);
     }
 

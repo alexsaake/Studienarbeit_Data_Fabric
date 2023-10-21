@@ -66,6 +66,8 @@
                         :ref="'unit'+insight.id"
                         v-model="insight.unit"
                         label="Einheit"
+                        counter
+                        maxlength="10"
                         :disabled="insight.insightType===''"
                       ></v-text-field>
                     </v-col>
@@ -74,7 +76,9 @@
                         :ref="'displayName'+insight.id"
                         v-model="insight.displayName"
                         label="Anzeigename des Insights"
-                        :rules="form.generateInsights==='Ja'?[rules.required]:[]"
+                        counter
+                        maxlength="50"
+                        :rules="form.generateInsights==='Ja'?[rules.required,rules.counter]:[]"
                         :disabled="insight.insightType===''"
                       ></v-text-field>
                     </v-col>
@@ -114,7 +118,9 @@
                         :ref="'displayName'+insightFilter.id"
                         v-model="insightFilter.displayName"
                         label="Anzeigename des Filters"
-                        :rules="form.generateInsights==='Ja'?[rules.required]:[]"
+                        counter
+                        maxlength="50"
+                        :rules="form.generateInsights==='Ja'?[rules.required, rules.counter]:[]"
                         :disabled="insightFilter.filterType===''"
                       ></v-text-field>
                     </v-col>

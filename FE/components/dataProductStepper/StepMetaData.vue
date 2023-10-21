@@ -46,12 +46,25 @@
       </v-row>
       <v-row justify="center">
         <v-col class="col" cols="12" md="6">
-          <v-text-field v-model="form.source" label="Quelle"></v-text-field>
+          <v-text-field
+              v-model="form.source"
+              :rules="[rules.counter]"
+              counter
+              label="Quelle"
+              maxlength="50"
+          ></v-text-field>
+
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col class="col" cols="12" md="6">
-          <v-text-field v-model="form.sourceLink" label="Quellen-Link"></v-text-field>
+          <v-text-field
+            v-model="form.sourceLink"
+            label="Quellen-Link"
+            :rules="[rules.counter]"
+            counter
+            maxlength="50"
+          ></v-text-field>
         </v-col>
       </v-row>
       <v-row justify="center">
