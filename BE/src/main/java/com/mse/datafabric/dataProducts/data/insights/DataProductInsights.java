@@ -181,7 +181,8 @@ public class DataProductInsights {
                 return;
             Double locationLat = (Double) mapsData.get("locationLat");
             Double locationLng = (Double) mapsData.get("locationLng");
-            dtoLlist.add(new GoogleMapsAddressDTO(locationLat, locationLng));
+            String placeId = (String) mapsData.get("placeId");
+            dtoLlist.add(new GoogleMapsAddressDTO(locationLat, locationLng, placeId));
         });
         return dtoLlist.toArray(new GoogleMapsAddressDTO[0]);
     }

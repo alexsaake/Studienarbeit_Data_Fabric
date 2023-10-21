@@ -58,6 +58,9 @@ export default {
       if(this.google == null)
         return;
       for (let i = 0; i < this.mapsData.length; i++){
+        console.log(this.mapsData[i]);
+        if(this.mapsData[i].placeId == null)
+          continue;
         const markerLocation = { lat: this.mapsData[i].locationLat, lng: this.mapsData[i].locationLng };
         markers.push(new this.google.maps.Marker({
           position: markerLocation,

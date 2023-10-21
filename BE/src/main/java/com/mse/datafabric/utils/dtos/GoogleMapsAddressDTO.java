@@ -20,8 +20,9 @@ public class GoogleMapsAddressDTO {
         this.street = street;
         this.dataId = -1;
     }
-    public GoogleMapsAddressDTO(double locationLat, double locationLng){
+    public GoogleMapsAddressDTO(double locationLat, double locationLng, String placeId){
         this.locationLat = locationLat;
         this.locationLng = locationLng;
+        this.placeId = placeId;
     }
 }
