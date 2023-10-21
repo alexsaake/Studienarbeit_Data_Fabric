@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mse.datafabric.dataProducts.DataProductRepository;
+import com.mse.datafabric.dataProducts.data.insights.DataProductInsightRepository;
+import com.mse.datafabric.dataProducts.models.DataProductAllDTO;
 import com.mse.datafabric.utils.GoogleMapsAPI;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import java.util.Map;
 public class DataProductData {
     @Autowired
     private DataProductRepository dataProductRepository;
+    @Autowired
+    private DataProductInsightRepository dataProductInsightRepository;
     private String shortkey;
     @Autowired
     private ObjectMapper objectMapper;
@@ -62,6 +66,22 @@ public class DataProductData {
         }
         return count;
     }
+    public String createDataProduct(DataProductAllDTO dto){
+        String shortKey = dataProductRepository.insertDataProduct(dto.dataProductData);
+        //
+        dataProductInsightRepository.insertInsights(shortKey,dto.insights);
+        //
+        dataProductInsightRepository.insertInsightsFilter(shortKey,dto.insightFilters);
+        //
+        if(dto.mapsData.city != null && !dto.mapsData.city.equals("") && dto.mapsData.street != null && !dto.mapsData.street.equals("")) {
+            dataProductRepository.setAddressColumns(shortKey, dto.mapsData);
+            setShortkey(shortKey);
+            dataProductAddMapsData();
+        }
+        //
+        return shortKey;
+    }
+
     private boolean dataContainsMapsData(Map<String, Object> dataRow){
         if(dataRow.containsKey("_mapsData"))
             return true;

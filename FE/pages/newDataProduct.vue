@@ -101,28 +101,13 @@ export default {
       })
     },
     async uploadData(payload) {
-      const shortKey = await this.uploadDataProduct(payload.metaData);
-      if (shortKey !== null) {
-        const ret2 = await this.uploadInsights(shortKey, payload.insights);
-        if (ret2 === true) {
-          const ret3 = await this.uploadInsightsFilter(shortKey, payload.filter);
-          if (ret3 === true) {
-            if(payload.mapsData.linkToMaps !== 'Ja'){
-              alert('Datenprodukt wurde erfolgreich angelegt!');
-              window.location.href = "/marketplace?shortkey=" + shortKey;
-              return 1;
-            }else{
-              const ret4 = await this.uploadMapsData(shortKey, payload.mapsData);
-              if (ret4 === true) {
-                alert('Datenprodukt wurde erfolgreich angelegt!');
-                window.location.href = "/marketplace?shortkey=" + shortKey;
-                return 1;
-              }
-            }
-          }
-        }
+      const shortKey = await this.uploadDataProduct(payload);
+      if(shortKey){
+          alert('Datenprodukt wurde erfolgreich angelegt!');
+          window.location.href = "/marketplace?shortkey=" + shortKey;
+      }else{
+        alert('Datenprodukt wurde nicht angelegt!');
       }
-      alert('Datenprodukt wurde nicht angelegt!');
     }
   }
 }
