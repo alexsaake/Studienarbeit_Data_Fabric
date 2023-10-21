@@ -142,13 +142,15 @@ export default {
       handler: function (val) {
         this.setValidation();
         this.$emit('data', {
-          title: this.form.title,
-          description: this.form.description,
-          shortDescription: this.form.shortDescription,
-          source: this.form.source,
-          sourceLink: this.form.sourceLink,
-          category: this.form.category,
-          accessRight: this.form.accessRight
+          metaData:{
+            title: this.form.title,
+            description: this.form.description,
+            shortDescription: this.form.shortDescription,
+            source: this.form.source,
+            sourceLink: this.form.sourceLink,
+            category: this.form.category,
+            accessRight: this.form.accessRight
+          }
         });
       },
       deep: true

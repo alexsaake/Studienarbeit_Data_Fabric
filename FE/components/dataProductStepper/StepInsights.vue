@@ -213,8 +213,9 @@ export default {
   mounted() {
     this.setValidation();
   },
-  activated() {
+  async activated() {
     this.setValidation();
+    this.insightFilterTypes = await this.fetchInsightFilterTypes();
   },
   methods:{
     async fetchInsightTypes() {
@@ -230,8 +231,16 @@ export default {
         this.$axios,
       );
       return {
-        types: this.appendAllInput(rawData),
+        types: this.appendAllInput(this.checkForMapsLink(rawData)),
       };
+    },
+    checkForMapsLink(data){
+      if(this.dataProduct.mapsData !== null && this.dataProduct.mapsData.linkToMaps !== 'Ja')
+        for(let i=0;i<data.length;i++){
+          if(data[i].key === "2")
+            data.splice(i,1);
+        }
+      return data;
     },
     appendAllInput(data){
       data.unshift('');
@@ -274,8 +283,8 @@ export default {
       switch (filterType){
         case "1":
         case "3":
-          if(this.dataProduct !==null && this.dataProduct.product.data !==null && this.dataProduct.product.data.length > 0)
-            return Object.keys(this.dataProduct.product.data[0]);
+          if(this.dataProduct !==null && this.dataProduct.data  !==null  && this.dataProduct.data.length > 0)
+            return Object.keys(this.dataProduct.data[0]);
           break;
         case "2":
           return ['postalCode'];
@@ -283,10 +292,10 @@ export default {
 
     },
     getNumericDataColumns(){
-      if(this.dataProduct ===null || this.dataProduct.product.data ===null || this.dataProduct.product.data.length <= 0)
+      if(this.dataProduct ===null || this.dataProduct.data ===null || this.dataProduct.data.length <= 0)
         return [];
       const keys = [];
-      for (const [key, value] of Object.entries(this.dataProduct.product.data[0])) {
+      for (const [key, value] of Object.entries(this.dataProduct.data[0])) {
         if(typeof value === 'number')
           keys.push(key);
       }

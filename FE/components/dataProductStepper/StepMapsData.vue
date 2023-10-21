@@ -61,6 +61,13 @@ export default {
     form: {
       handler: function (val) {
         this.setValidation();
+        this.$emit('data', {
+          mapsData:{
+            city: this.form.mapsAddressCity,
+            street: this.form.mapsAddressStreet,
+            linkToMaps: this.form.linkToMaps,
+          }
+        });
       },
       deep: true
     },
@@ -101,8 +108,8 @@ export default {
       return valid;
     },
     getDataColumns(){
-      if(this.dataProduct !==null && this.dataProduct.product.data !==null && this.dataProduct.product.data.length > 0)
-      return Object.keys(this.dataProduct.product.data[0]);
+      if(this.dataProduct !==null && this.dataProduct.data !==null && this.dataProduct.data.length > 0)
+      return Object.keys(this.dataProduct.data[0]);
     }
   }
 }

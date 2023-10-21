@@ -198,6 +198,28 @@ public class DataProductsController {
         }
         return false;
     }
+    @PostMapping(
+            value = "/DataProduct/{dataproduct_key}/Data/MapsData/Filter",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @PreAuthorize("hasAuthority('USER')")
+    public boolean createDataProductMapsData(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+        GoogleMapsAddressDTO dto;
+        boolean tRet = false;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            dto = mapper.readValue(requestBodyJson, GoogleMapsAddressDTO.class);
+            if(dto.city == null || dto.city.equals("")||dto.street == null || dto.street.equals(""))
+                return false;
+            tRet = dataProductRepository.setAddressColumns(dataproduct_key, dto);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        setDataProductMapsData(dataproduct_key);
+        return tRet;
+    }
 
     @DeleteMapping(
             value = "/DataProduct/{dataproduct_key}"

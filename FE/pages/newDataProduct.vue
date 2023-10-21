@@ -12,7 +12,12 @@ import StepMetaData from "~/components/dataProductStepper/StepMetaData.vue";
 import StepProductData from "~/components/dataProductStepper/StepProductData.vue";
 import StepMapsData from "~/components/dataProductStepper/StepMapsData.vue";
 import StepInsights from "~/components/dataProductStepper/StepInsights.vue";
-import { insertDataProduct, insertInsightFilter, insertInsights } from "~/middleware/dataProductService";
+import {
+  insertDataProduct,
+  insertInsightFilter,
+  insertInsights,
+  insertMapsData
+} from "~/middleware/dataProductService";
 export default {
   name: "newDataProduct",
   components: {
@@ -74,6 +79,11 @@ export default {
         this.$axios, shortKey, data
       );
     },
+    async uploadMapsData(shortKey, data) {
+      return await insertMapsData(
+        this.$axios, shortKey, data
+      );
+    },
     completeStep(payload) {
       this.steps.forEach((step) => {
         if (step.name === payload.name) {
@@ -91,18 +101,28 @@ export default {
       })
     },
     async uploadData(payload) {
-      const shortKey = await this.uploadDataProduct(payload.product);
+      const shortKey = await this.uploadDataProduct(payload.metaData);
       if (shortKey !== null) {
         const ret2 = await this.uploadInsights(shortKey, payload.insights);
         if (ret2 === true) {
           const ret3 = await this.uploadInsightsFilter(shortKey, payload.filter);
           if (ret3 === true) {
-            alert('Datenprodukt wurde erfolgreich angelegt!');
-            window.location.href = "/marketplace?shortkey=" + shortKey;
+            if(payload.mapsData.linkToMaps !== 'Ja'){
+              alert('Datenprodukt wurde erfolgreich angelegt!');
+              window.location.href = "/marketplace?shortkey=" + shortKey;
+              return 1;
+            }else{
+              const ret4 = await this.uploadMapsData(shortKey, payload.mapsData);
+              if (ret4 === true) {
+                alert('Datenprodukt wurde erfolgreich angelegt!');
+                window.location.href = "/marketplace?shortkey=" + shortKey;
+                return 1;
+              }
+            }
           }
-
         }
       }
+      alert('Datenprodukt wurde nicht angelegt!');
     }
   }
 }

@@ -86,9 +86,10 @@ export default {
       finalStep: false,
       keepAliveData: this.keepAlive,
       dataProduct: {
-        product: {},
+        metaData: {},
         insights: [],
-        filter: []
+        filter: [],
+        mapsData: {},
       },
     };
   },
@@ -127,29 +128,22 @@ export default {
   },
   methods: {
     setData(payload){
-      if(payload.data !== undefined)
-        this.dataProduct.product.data = payload.data;
-      if(payload.title !== undefined)
-        this.dataProduct.product.title = payload.title;
-      if(payload.description !== undefined)
-        this.dataProduct.product.description = payload.description;
-      if(payload.shortDescription !== undefined)
-        this.dataProduct.product.shortDescription = payload.shortDescription;
-      if(payload.source !== undefined)
-        this.dataProduct.product.source = payload.source;
-      if(payload.sourceLink !== undefined)
-        this.dataProduct.product.sourceLink = payload.sourceLink;
-      if(payload.category !== undefined)
-        this.dataProduct.product.category = payload.category;
-      if(payload.accessRight !== undefined)
-        this.dataProduct.product.accessRight = payload.accessRight;
+      if(payload.metaData !== undefined){
+        this.dataProduct.metaData = payload.metaData;
+        this.dataProduct.metaData.username = this.$auth.user.userName;
+      }
+      if(payload.data !== undefined){
+        this.dataProduct.data = payload.data;
+        this.dataProduct.metaData.data = payload.data;
+      }
       if(payload.insights !== undefined)
         this.dataProduct.insights = payload.insights;
       if(payload.filter !== undefined)
         this.dataProduct.filter = payload.filter;
-      this.dataProduct.product.username = this.$auth.user.userName;
-      //
-      // console.log(JSON.stringify(this.dataProduct));
+      if(payload.mapsData !== undefined)
+        this.dataProduct.mapsData = payload.mapsData;
+
+      console.log(JSON.stringify(this.dataProduct));
     },
     isStepActive(index, step) {
       if (this.currentStep.index === index) {

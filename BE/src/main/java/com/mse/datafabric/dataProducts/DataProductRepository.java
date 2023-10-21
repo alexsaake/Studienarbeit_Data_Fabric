@@ -93,6 +93,22 @@ public class DataProductRepository {
         }
         return shortKey;
     }
+    public boolean setAddressColumns(String shortKey, GoogleMapsAddressDTO dto) {
+        final String STATEMENT = "INSERT INTO dataproduct_maps_data (maps_city_column, maps_street_column, dataproduct_id) VALUES (?, ?, (SELECT id FROM dataproducts WHERE shortkey = ?))";
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(STATEMENT);
+                ps.setString(1, dto.city);
+                ps.setString(2, dto.street);
+                ps.setString(3, shortKey);
+                return ps;
+            });
+        }
+        catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
     public GoogleMapsAddressDTO getAddressColumns(String shortkey){
         final String STATEMENT = "SELECT maps_city_column, maps_street_column FROM dataproduct_maps_data " +
                 "JOIN dataproducts ON dataproducts.id = dataproduct_maps_data.dataproduct_id WHERE dataproducts.shortkey = ?";

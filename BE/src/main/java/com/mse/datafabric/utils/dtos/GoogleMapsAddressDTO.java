@@ -1,5 +1,8 @@
 package com.mse.datafabric.utils.dtos;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GoogleMapsAddressDTO {
     public int dataId;
 
@@ -9,7 +12,10 @@ public class GoogleMapsAddressDTO {
     public String postalCode;
     public double locationLat;
     public double locationLng;
-    public GoogleMapsAddressDTO(String city, String street){
+
+
+    @JsonCreator
+    public GoogleMapsAddressDTO(@JsonProperty("city")String city, @JsonProperty("street")String street){
         this.city = city;
         this.street = street;
         this.dataId = -1;
