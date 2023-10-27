@@ -9,7 +9,7 @@
           <v-text-field v-model="search" label="Suche"></v-text-field>
         </v-col>
         <v-col cols="12" md="4">
-          <v-select v-model="filter" :items="filters" label="Filter"></v-select>
+          <v-select v-model="filter" :items="filters" label="Kategorie"></v-select>
         </v-col>
         <v-col cols="12" md="4">
           <v-select v-model="sortOrder" :items="sortOrders" label="Sortierung"></v-select>

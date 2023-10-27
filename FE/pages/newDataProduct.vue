@@ -103,7 +103,6 @@ export default {
     async uploadData(payload) {
       const shortKey = await this.uploadDataProduct(payload);
       if(shortKey){
-          alert('Datenprodukt wurde erfolgreich angelegt!');
           window.location.href = "/marketplace?shortkey=" + shortKey;
       }else{
         alert('Datenprodukt wurde nicht angelegt!');
