@@ -18,6 +18,7 @@
         :image="dataProductDetail.image"
         :user-name="dataProductDetail.userName"
         @on-data-product-deleted="$emit('on-data-product-deleted');"
+        @on-edit-data-product="$emit('on-edit-data-product')"
       />
       <v-card-actions>
         <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>

@@ -14,7 +14,7 @@
         ></v-file-input>
       </v-col>
     </v-row>
-    <v-row v-if="form.file" justify="center">
+    <v-row v-if="(jsonData !== null && jsonData.length > 0)" justify="center">
       <v-col class="col" cols="12" md="6">
         <v-card>
           <v-card-text class="v-card-text">Anzahl an Datensätzen: {{form.rowCount}}</v-card-text>
@@ -27,7 +27,7 @@
 
 <script>
 export default {
-  props: ['clickedNext', 'currentStep'],
+  props: ['clickedNext', 'currentStep','dataProductPreselect'],
   data() {
     return {
       jsonData: null,
@@ -37,7 +37,7 @@ export default {
         rowCount: null
       },
       rules: {
-        required: value => !!value || 'Notwendig',
+        required: value => !!value || (this.jsonData !== null && this.jsonData.length > 0) || 'Notwendig',
         counter: value => value.length <= 50 || 'Max. 50 Zeichen',
         file: value => this.checkFileType(value)
       }
@@ -57,12 +57,21 @@ export default {
     }
   },
   mounted() {
+    this.presetJsonData();
     this.setValidation();
   },
   activated() {
     this.setValidation();
   },
   methods:{
+    presetJsonData(){
+      if (this.dataProductPreselect.metaData.data === undefined)
+        return;
+      this.jsonData = this.parseJson(this.parseJson(this.dataProductPreselect.metaData.data));
+      this.setCountData(this.jsonData);
+      //
+      this.$emit('data', {data: this.jsonData});
+    },
     async handleFileUpload() {
       if (this.form.file) {
         const fileContent = await this.readFileAsync(this.form.file);
@@ -127,6 +136,8 @@ export default {
         this.form.columnCount = 0;
     },
     checkFileType(val){
+      if (this.jsonData !== null && this.jsonData.length > 0)
+        return true;
       if(val === null)
         return 'Notwendig';
       return val.type === 'application/vnd.ms-excel' || val.type === 'application/json' || 'Ungültiger Dateientyp'

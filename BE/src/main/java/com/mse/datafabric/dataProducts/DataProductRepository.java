@@ -93,6 +93,62 @@ public class DataProductRepository {
         }
         return shortKey;
     }
+    public void updateDataProduct(DataProductDTO dto, String shortKey){
+        final String STATEMENT = "UPDATE dataproducts SET title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE shortkey = ?";
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(STATEMENT);
+                ps.setString(1, dto.title);
+                ps.setString(2, dto.shortDescription);
+                ps.setString(3, dto.description);
+                ps.setString(4, dto.source);
+                ps.setString(5, dto.sourceLink);
+                ps.setInt(6, dto.categoryId);
+                ps.setInt(7, dto.accessRightId);
+                ps.setString(8, dto.data);
+                ps.setString(9, dto.username);
+                ps.setString(10, shortKey);
+                return ps;
+            });
+        }
+        catch (Exception e){
+            return;
+        }
+    }
+    public DataProductDTO getDataProduct(String shortkey){
+        final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username FROM dataproducts JOIN users ON users.id = dataproducts.userid WHERE shortkey = ?";
+        try {
+            return jdbcTemplate.query(
+                    STATEMENT, new PreparedStatementSetter() {
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                            ps.setString(1, shortkey);
+                        }
+                    },new ResultSetExtractor<>() {
+                        public DataProductDTO extractData(ResultSet rs) throws SQLException,
+                                DataAccessException {
+                            if (rs.next()) {
+                                return new DataProductDTO(
+                                        shortkey,
+                                        rs.getString(1),
+                                        rs.getString(2),
+                                        rs.getString(3),
+                                        rs.getString(4),
+                                        rs.getString(5),
+                                        rs.getInt(6),
+                                        rs.getInt(7),
+                                        rs.getString(8),
+                                        rs.getString(9)
+                                );
+                            }
+                            return null;
+                        }
+                    }
+            );
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
     public boolean setAddressColumns(String shortKey, GoogleMapsAddressDTO dto) {
         final String STATEMENT = "INSERT INTO dataproduct_maps_data (maps_city_column, maps_street_column, dataproduct_id) VALUES (?, ?, (SELECT id FROM dataproducts WHERE shortkey = ?))";
         try {
@@ -108,6 +164,46 @@ public class DataProductRepository {
             return false;
         }
         return true;
+    }
+    public boolean deleteAddressColumns(String shortKey) {
+        final String STATEMENT = "DELETE FROM dataproduct_maps_data USING dataproducts WHERE dataproducts.id = dataproduct_maps_data.dataproduct_id AND dataproducts.shortkey = ?";
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(STATEMENT);
+                ps.setString(1, shortKey);
+                return ps;
+            });
+        }
+        catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+    public GoogleMapsAddressDTO getMapsData(String shortkey){
+        final String STATEMENT = "SELECT maps_city_column, maps_street_column, dataproduct_id FROM dataproduct_maps_data JOIN dataproducts ON dataproduct_maps_data.dataproduct_id = dataproducts.id WHERE dataproducts.shortkey = ?";
+        try {
+            return jdbcTemplate.query(
+                    STATEMENT, new PreparedStatementSetter() {
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                            ps.setString(1, shortkey);
+                        }
+                    },new ResultSetExtractor<>() {
+                        public GoogleMapsAddressDTO extractData(ResultSet rs) throws SQLException,
+                                DataAccessException {
+                            if (rs.next()) {
+                                return new GoogleMapsAddressDTO(
+                                        rs.getString(1),
+                                        rs.getString(2)
+                                );
+                            }
+                            return null;
+                        }
+                    }
+            );
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
     public GoogleMapsAddressDTO getAddressColumns(String shortkey){
         final String STATEMENT = "SELECT maps_city_column, maps_street_column FROM dataproduct_maps_data " +

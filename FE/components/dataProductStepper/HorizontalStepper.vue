@@ -30,10 +30,10 @@
       <transition :enter-active-class="enterAnimation" :leave-active-class="leaveAnimation" mode="out-in">
         <!--If keep alive-->
         <keep-alive v-if="keepAliveData">
-          <component :is="steps[currentStep.index].component" :clicked-next="nextButton[currentStep.name]" :current-step="currentStep" :data-product="dataProduct" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData"></component>
+          <component :is="steps[currentStep.index].component" :clicked-next="nextButton[currentStep.name]" :current-step="currentStep" :data-product="dataProduct" :data-product-preselect="dataProductPreselect" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData"></component>
         </keep-alive>
         <!--If not show component and destroy it in each step change-->
-        <component  :is="steps[currentStep.index].component" v-else :clicked-next="nextButton[currentStep.name]"   :current-step="currentStep" :data-product="dataProduct" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData"></component>
+        <component  :is="steps[currentStep.index].component" v-else :clicked-next="nextButton[currentStep.name]"   :current-step="currentStep" :data-product="dataProduct" :data-product-preselect="dataProductPreselect" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData"></component>
       </transition>
     </div>
     <div :class="['bottom', (currentStep.index > 0) ? '' : 'only-next']">
@@ -42,7 +42,7 @@
         <span>{{ 'Zurück' }}</span>
       </div>
       <div :class="['stepper-button next', !canContinue ? 'deactivated' : '']" @click="nextStep()">
-        <span>{{ (finalStep) ? 'Datenprodukt erstellen' : 'Weiter' }}</span>
+        <span>{{ (finalStep) ? (dataProductPreselect.state ? 'Änderungen speichern' : 'Datenprodukt erstellen') : 'Weiter' }}</span>
         <i class="material-icons">keyboard_arrow_right</i>
       </div>
     </div>
@@ -75,7 +75,19 @@ export default {
     reset: {
       type: Boolean,
       default: false
-    }
+    },
+    dataProductPreselect: {
+      type: Object,
+      default: () => {
+        return  {
+          state: false,
+          metaData: {},
+          insights: [],
+          filter: [],
+          mapsData: {},
+          }
+      }
+    },
   },
   data() {
     return {
@@ -85,12 +97,12 @@ export default {
       canContinue: false,
       finalStep: false,
       keepAliveData: this.keepAlive,
-      dataProduct: {
+      dataProduct:{
         metaData: {},
         insights: [],
         filter: [],
         mapsData: {},
-      },
+      }
     };
   },
   computed: {

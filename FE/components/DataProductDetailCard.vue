@@ -101,7 +101,8 @@ import {deleteDataProduct} from "~/middleware/dataProductService";
       onCloseConfirmDeleteRating()
       {
         this.showConfirmDeleteDialog = false;
-      }
+      },
+
     }
   }
 </script>

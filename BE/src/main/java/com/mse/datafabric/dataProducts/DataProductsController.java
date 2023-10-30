@@ -163,6 +163,39 @@ public class DataProductsController {
         }
         return null;
     }
+    @PatchMapping(
+            value = "/DataProduct/{dataproduct_key}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @PreAuthorize("hasAuthority('USER')")
+    public boolean editDataProduct(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+        DataProductAllDTO dto;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            dto = mapper.readValue(requestBodyJson, DataProductAllDTO.class);
+            return productData.editDataProduct(dto, dataproduct_key);
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return false;
+    }
+    @GetMapping(
+            value = "/DataProduct/{dataproduct_key}/DataAll",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @PreAuthorize("hasAuthority('USER')")
+    public String getDataProductDataAll(@PathVariable String dataproduct_key){
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(productData.getDataProductAll(dataproduct_key));
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+            return null;
+        }
+    }
     @DeleteMapping(
             value = "/DataProduct/{dataproduct_key}"
     )

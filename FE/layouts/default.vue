@@ -50,13 +50,16 @@
       <v-btn text to="/impressum">Impressum</v-btn>
       <v-btn text to="/datenschutzerklaerung">Datenschutz</v-btn>
     </v-footer>
+    <VToast ref="VToast"/>
   </v-app>
 </template>
 
 <script>
+import VToast from '~/components/VToast.vue'
   export default
   {
     name: 'DefaultLayout',
+    components: { VToast },
     data()
     {
       return{
@@ -87,10 +90,12 @@
         handler: function (val) {
           if(this.easterEggCount >= 6)
             this.easterEggCount = 0;
-          console.log(this.easterEggCount);
-        },
+          },
         deep: true
       }
+    },
+    mounted() {
+      this.$root.VToast = this.$refs.VToast
     },
     methods: {
       getLoggedInUserName()

@@ -40,9 +40,9 @@
       <p>No data products found.</p>
     </v-card>
     <v-overlay v-if="shortKey !== ''" class="my-overlay">
-      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct" :short-key="shortKey" @on-close-data-product="onCloseDataProduct" @on-data-product-deleted="onDataProductDeleted" />
+      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct" :short-key="shortKey" @on-close-data-product="onCloseDataProduct" @on-data-product-deleted="onDataProductDeleted" @on-edit-data-product="onEditDataProduct" />
     </v-overlay>
-    <overlay-button @custom-click="$auth.loggedIn?$router.push('/newDataProduct'):$router.push('/login?page=newDataProduct');"></overlay-button>
+    <overlay-button @custom-click="$auth.loggedIn?$router.push('/dataProduct'):$router.push('/login?page=dataProduct');"></overlay-button>
   </v-card>
 </template>
 
@@ -56,12 +56,15 @@
     name: 'Marketplace',
     components: {OverlayButton, DataProductDetailWrapperCard, DataProductOverviewCard},
     beforeRouteLeave (to, from, next) {
-      if(!this.shortKey) {
-        next()
-      } else {
-        this.shortKey = '';
-        next(false)
-      }
+      if(to.fullPath === '/login') {
+        if (!this.shortKey) {
+          next();
+        } else {
+          this.shortKey = "";
+          next(false);
+        }
+      }else
+        next();
     },
     data() {
       return {
@@ -164,6 +167,10 @@
       {
         this.onCloseDataProduct();
         await this.fetchData();
+      },
+      onEditDataProduct()
+      {
+        this.$router.push('/dataProduct?shortkey='+this.shortKey);
       }
     },
   }

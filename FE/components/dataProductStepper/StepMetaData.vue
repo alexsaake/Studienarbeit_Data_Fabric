@@ -101,7 +101,7 @@
 import { getDataProductCategories, getDataProductAccessRights  } from "~/middleware/dataProductService";
 
 export default {
-  props: ['clickedNext', 'currentStep'],
+  props: ['clickedNext', 'currentStep','dataProductPreselect'],
   data() {
     return {
       dataProductCategories: null,
@@ -128,6 +128,20 @@ export default {
     this.setValidation();
   },
   watch: {
+    dataProductPreselect:{
+      handler: function (val) {
+        console.log(this.dataProductPreselect.metaData);
+        this.form.title = this.dataProductPreselect.metaData.title;
+        this.form.shortDescription = this.dataProductPreselect.metaData.shortDescription;
+        this.form.description = this.dataProductPreselect.metaData.description;
+        this.form.source = this.dataProductPreselect.metaData.source;
+        this.form.sourceLink = this.dataProductPreselect.metaData.sourceLink;
+        this.form.lastUpdate = this.dataProductPreselect.metaData.lastUpdate;
+        this.form.category = this.dataProductPreselect.metaData.categoryId + "";
+        this.form.accessRight = this.dataProductPreselect.metaData.accessRightId + "";
+      },
+      deep: true
+    },
     async dataProductCategories() {
       if (this.dataProductCategories === null) {
         this.dataProductCategories = await this.fetchDataProductCategories();

@@ -139,7 +139,7 @@
 import { getInsightFilterTypes, getInsightTypes } from "~/middleware/dataProductService";
 
 export default {
-  props: ['clickedNext', 'currentStep','dataProduct'],
+  props: ['clickedNext', 'currentStep','dataProduct','dataProductPreselect'],
   data() {
     return {
       tabs: null,
@@ -211,6 +211,7 @@ export default {
     }
   },
   mounted() {
+    this.preset();
     this.setValidation();
   },
   async activated() {
@@ -218,6 +219,32 @@ export default {
     this.insightFilterTypes = await this.fetchInsightFilterTypes();
   },
   methods:{
+    preset(){
+      if(this.dataProductPreselect.insights.length > 0){
+        this.form.generateInsights = 'Ja';
+        this.dataProductPreselect.insights.forEach(element => {
+          this.form.insights.push({
+            id: this.form.insights.length,
+            insightType: element.type+"",
+            dataProductColumn: element.dataProductColumn,
+            displayName: element.displayName,
+            unit: element.unit
+          });
+        })
+        this.updateInsightRows();
+        if(this.dataProductPreselect.insightFilters.length > 0){
+          this.dataProductPreselect.insightFilters.forEach(element => {
+            this.form.insightFilters.push({
+              id: this.form.insightFilters.length,
+              filterType: element.filterType+"",
+              dataProductColumn: element.filterColumn,
+              displayName: element.displayName,
+            });
+          });
+        }
+        this.updateInsightFilterRows();
+      }
+    },
     async fetchInsightTypes() {
       const rawData = await getInsightTypes(
         this.$axios,
@@ -268,11 +295,12 @@ export default {
         }
       })
       this.form.insights.forEach(insight => {
-        if(insight.insightType !== '' && (insight.displayName === '' || insight.dataProductColumn === ''))
+        if(insight.insightType !== '' && (insight.displayName === '' || !(this.getNumericDataColumns().includes(insight.dataProductColumn))))
           valid = false;
       });
+      console.log(this.getDataColumns(1));
       this.form.insightFilters.forEach(insightFilter => {
-        if(insightFilter.filterType !== '' && (insightFilter.displayName === '' || insightFilter.dataProductColumn === ''))
+        if(insightFilter.filterType !== '' && (insightFilter.displayName === '' || !(this.getDataColumns('1').includes(insightFilter.dataProductColumn) || this.getDataColumns('2').includes(insightFilter.dataProductColumn))))
           valid = false;
       });
       if(this.form.insights.length <= 1 && this.form.generateInsights === 'Ja')
@@ -289,7 +317,7 @@ export default {
         case "2":
           return ['postalCode'];
       }
-
+      return [];
     },
     getNumericDataColumns(){
       if(this.dataProduct ===null || this.dataProduct.data ===null || this.dataProduct.data.length <= 0)
@@ -321,7 +349,8 @@ export default {
           id: this.form.insights.length,
           insightType: '',
           dataProductColumn: '',
-          displayName: ''
+          displayName: '',
+          unit: ''
         });
     },
     updateInsightFilterRows(){
@@ -336,7 +365,7 @@ export default {
           id: this.form.insightFilters.length,
           filterType: '',
           dataProductColumn: '',
-          displayName: ''
+          displayName: '',
         });
     }
   }

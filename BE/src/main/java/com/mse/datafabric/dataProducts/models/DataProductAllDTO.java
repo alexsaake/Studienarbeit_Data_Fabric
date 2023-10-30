@@ -11,14 +11,14 @@ import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
 import java.util.Date;
 
 public class DataProductAllDTO {
-    public DataProductDTO dataProductData;
+    public DataProductDTO metaData;
     public DataProductInsightDataDTO[] insights;
     public InsightFilterDTO[] insightFilters;
     public GoogleMapsAddressDTO mapsData;
     @JsonCreator
     public DataProductAllDTO(@JsonProperty("metaData")DataProductDTO dataProductData, @JsonProperty("insights")DataProductInsightDataDTO[] insights,
                              @JsonProperty("filter")InsightFilterDTO[] insightFilters, @JsonProperty("mapsData")GoogleMapsAddressDTO mapsData) {
-        this.dataProductData = dataProductData;
+        this.metaData = dataProductData;
         this.insights = insights;
         this.insightFilters = insightFilters;
         this.mapsData = mapsData;

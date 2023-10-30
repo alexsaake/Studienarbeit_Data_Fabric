@@ -38,7 +38,7 @@
 
 <script>
 export default {
-  props: ['clickedNext', 'currentStep','dataProduct'],
+  props: ['clickedNext', 'currentStep','dataProduct','dataProductPreselect'],
   data() {
     return {
       form: {
@@ -78,12 +78,22 @@ export default {
     },
   },
   mounted() {
+    this.preset();
     this.setValidation();
   },
   activated() {
     this.setValidation();
   },
   methods:{
+    preset(){
+      if (this.dataProductPreselect.mapsData === null)
+        return;
+      if(this.dataProductPreselect.mapsData.city !== undefined || this.dataProductPreselect.mapsData.street !== undefined){
+        this.form.linkToMaps = 'Ja';
+        this.form.mapsAddressCity = this.dataProductPreselect.mapsData.city;
+        this.form.mapsAddressStreet = this.dataProductPreselect.mapsData.street;
+      }
+    },
     setValidation(){
       this.$nextTick(() => {
         if(this.checkFormValidation()) {

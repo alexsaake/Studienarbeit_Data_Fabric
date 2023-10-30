@@ -16,12 +16,9 @@ export async function insertDataProduct(axios, data)
 {
   return await axios.$post(`api/Gateway/DataProduct`, data);
 }
-export async function insertInsights(axios, shortKey, data)
+export async function updateDataProduct(axios, data, shortKey)
 {
-  return await axios.$post(`api/Gateway/DataProduct/${shortKey}/Data/Insights`, data);
-}
-export async function insertInsightFilter(axios, shortKey, data) {
-  return await axios.$post(`api/Gateway/DataProduct/${shortKey}/Data/Insights/Filter`, data);
+  return await axios.$patch(`api/Gateway/DataProduct/${shortKey}`, data);
 }
 export async function insertMapsData(axios, shortKey, data) {
   return await axios.$post(`api/Gateway/DataProduct/${shortKey}/Data/MapsData/Filter`, data);
@@ -34,6 +31,10 @@ export async function getDataProductImage(axios, shortKey)
 export async function getDataProductData(axios, shortKey)
 {
   return await axios.$get(`api/Gateway/DataProduct/${shortKey}/Data`);
+}
+export async function getDataProductDataAll(axios, shortKey)
+{
+  return await axios.$get(`api/Gateway/DataProduct/${shortKey}/DataAll`);
 }
 
 export async function getDataProductCategories(axios)
