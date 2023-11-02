@@ -112,7 +112,7 @@
             </v-container>
           </v-col>
           <v-col  v-if="dataProductInsights.mapsData !== undefined && dataProductInsights.mapsData.length > 0" cols="12" md="6" >
-            <insights-map-card :short-key="shortKey" :maps-data="dataProductInsights.mapsData"/>
+            <insights-map-card :id="id" :maps-data="dataProductInsights.mapsData"/>
           </v-col>
         </v-row>
       </v-container>
@@ -128,10 +128,10 @@ import {
 
 export default {
   props: {
-    shortKey: {
-      type: String,
+    id: {
+      type: Number,
       required: false,
-      default: '',
+      default: -1,
     }
   },
   data() {
@@ -167,8 +167,8 @@ export default {
     },
   },
   watch: {
-    shortKey() {
-      this.dataProductInsights = null // Reset to null when shortKey changes to indicate data is not yet loaded
+    id() {
+      this.dataProductInsights = null // Reset to null when id changes to indicate data is not yet loaded
     },
     async dataProductInsights() {
       // Load data when dataProductDetail changes from null to an object
@@ -200,10 +200,10 @@ export default {
   },
   fetchOnServer: false,
   methods: {
-    async fetchDataProductInsights(shortKey) {
+    async fetchDataProductInsights(id) {
       const rawDataProductInsights = await getDataProductInsights(
         this.$axios,
-        shortKey,
+        id,
         {
           filterKeys: this.setFilterKeys(),
           filterValues: this.setFilterValues()
@@ -215,18 +215,18 @@ export default {
         mapsData: rawDataProductInsights.mapsData,
       };
     },
-    async fetchDataProductInsightFilters(shortKey) {
+    async fetchDataProductInsightFilters(id) {
       const rawDataProductInsightFilters = await getDataProductInsightFilters(
         this.$axios,
-        shortKey);
+        id);
       return {
         filters: rawDataProductInsightFilters
       };
     },
-    async fetchDataProductInsightFilterValues(shortKey, filterId) {
+    async fetchDataProductInsightFilterValues(id, filterId) {
       const rawDataProductInsightFilterValues = await getDataProductInsightFilterValues(
         this.$axios,
-        shortKey,
+        id,
         filterId,
         {
           areaFilter: this.parseSelectData(this.newEvent.city)
@@ -237,12 +237,12 @@ export default {
     },
     async loadInsights(){
       this.dataProductInsights = await this.fetchDataProductInsights(
-        this.shortKey
+        this.id
       )
     },
     async loadFilters(){
       const array = await this.fetchDataProductInsightFilters(
-        this.shortKey
+        this.id
       );
       this.filterData = [];
       for (const filter of array.filters) {
@@ -262,7 +262,7 @@ export default {
       if(filterId === undefined)
         return null;
       return await this.fetchDataProductInsightFilterValues(
-        this.shortKey,
+        this.id,
         filterId
       );
     },

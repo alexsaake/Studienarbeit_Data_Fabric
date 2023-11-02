@@ -37,12 +37,12 @@ export default
   name: 'UserRatingCard',
   props:
       {
+        id: Number,
         title: String,
         comment: String,
         rating: Number,
         submitted: String,
-        isEdited: Boolean,
-        shortKey: String,
+        isEdited: Boolean
       },
   data()
   {
@@ -51,16 +51,16 @@ export default
     }
   },
   async fetch() {
-    this.dataProductTitle = await this.getDataProductTitle(this.shortKey);
+    this.dataProductTitle = await this.getDataProductTitle(this.id);
   },
   methods:
       {
-        async getDataProductTitle(shortKey) {
-          const dataProductTitle = await getDataProduct(this.$axios, shortKey);
+        async getDataProductTitle(id) {
+          const dataProductTitle = await getDataProduct(this.$axios, id);
           return dataProductTitle.title;
         },
         navigateToMarketplace() {
-          this.$router.push({ path: '/marketplace', query: { shortKey: this.shortKey } });
+          this.$router.push({ path: '/marketplace', query: { id: this.id } });
         },
       }
 }

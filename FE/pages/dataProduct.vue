@@ -48,7 +48,7 @@ export default {
     return {
       snackbarText: '',
       snackbar: false,
-      shortKey: '',
+      id: -1,
       steps: [
         {
           name: 'metaData',
@@ -91,9 +91,9 @@ export default {
   },
   computed: {},
   created() {
-    if(this.$route.query !== undefined && this.$route.query.shortkey !== undefined) {
-      this.shortKey = this.$route.query.shortkey;
-      this.preselectData(this.shortKey);
+    if(this.$route.query !== undefined && this.$route.query.id !== undefined) {
+      this.id = this.$route.query.id;
+      this.preselectData(this.id);
     }
   },
   mounted() {
@@ -106,18 +106,18 @@ export default {
         this.$axios, data
       );
     },
-    async editDataProduct(data, shortKey) {
+    async editDataProduct(data, id) {
       return await updateDataProduct(
-        this.$axios, data, shortKey
+        this.$axios, data, id
       );
     },
-    async loadDataProduct(shortKey) {
+    async loadDataProduct(id) {
       return await getDataProductDataAll(
-        this.$axios, shortKey
+        this.$axios, id
       );
     },
-    async preselectData(shortKey){
-      const data = await this.loadDataProduct(shortKey);
+    async preselectData(id){
+      const data = await this.loadDataProduct(id);
       if(data !== undefined){
         this.dataProductPreselect.state = true;
         if(data.metaData !== undefined) {
@@ -157,19 +157,19 @@ export default {
         await this.createData(payload);
     },
     async createData(payload) {
-      const shortKey = await this.uploadDataProduct(payload);
-      if(shortKey){
+      const id = await this.uploadDataProduct(payload);
+      if(id !== -1){
         this.$root.VToast.show({message: 'Datenprodukt wurde erfolgreich erstellt!'});
-        await this.$router.push('/marketplace?shortkey='+ shortKey);
+        await this.$router.push('/marketplace?id='+ id);
       }else{
         this.$root.VToast.show({message: 'Datenprodukt konnte nicht angelegt werden!', color: 'error', icon: 'mdi-close'});
       }
     },
     async editData(payload) {
-      const ret = await this.editDataProduct(payload, this.shortKey);
+      const ret = await this.editDataProduct(payload, this.id);
       if(ret){
         this.$root.VToast.show({message: 'Datenprodukt wurde erfolgreich gespeichert!'});
-        await this.$router.push('/marketplace?shortkey='+this.shortKey);
+        await this.$router.push('/marketplace?id='+this.id);
       }else{
         this.$root.VToast.show({message: 'Datenprodukt konnte nicht gespeichert werden!', color: 'error', icon: 'mdi-close'});
       }

@@ -64,7 +64,7 @@ import {deleteDataProduct} from "~/middleware/dataProductService";
     props:
     {
       image: String,
-      shortKey: String,
+      id: Number,
       title: String,
       shortDescription: String,
       description: String,
@@ -87,7 +87,7 @@ import {deleteDataProduct} from "~/middleware/dataProductService";
       {
         if(this.$auth.loggedIn)
         {
-          await deleteDataProduct(this.$axios, this.shortKey)
+          await deleteDataProduct(this.$axios, this.id)
               .then(() => {
                 this.showConfirmDeleteDialog = false;
                 this.$emit('on-data-product-deleted');

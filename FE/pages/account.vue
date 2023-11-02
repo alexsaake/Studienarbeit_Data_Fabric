@@ -21,12 +21,12 @@
         <v-row no-gutters>
           <v-col v-for="(rating, index) in userRatings" :key="index" cols="12">
             <user-rating-card
+                :id="rating.id"
                 :title="rating.title"
                 :comment="rating.comment"
                 :rating="rating.rating"
                 :submitted="rating.submitted"
                 :is-edited="rating.isEdited"
-                :short-key="rating.dataProductShortKey"
             />
           </v-col>
           <v-row v-if="userRatings.length==0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
@@ -67,7 +67,7 @@ import { updateUser, getUserRatings } from "~/middleware/userService";
         const formattedUserRatings = [];
         for (const rawRating of userRatings) {
           const formattedRating = {
-            dataProductShortKey: rawRating.shortKey,
+            id: rawRating.id,
             title: rawRating.title,
             comment: rawRating.comment,
             rating: rawRating.rating,

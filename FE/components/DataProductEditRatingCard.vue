@@ -21,10 +21,10 @@ import {
   export default {
     name: 'DataProductEditRatingForm',
     props: {
-      shortKey: {
-        type: String,
+      id: {
+        type: Number,
         required: true,
-        default: ''
+        default: -1
       },
       isUpdate: {
         type: Boolean,
@@ -67,7 +67,7 @@ import {
       async onSubmitRating() {
         if(!this.isUpdate)
         {
-          await setDataProductRating(this.$axios, this.shortKey, this.title, this.comment, this.rating)
+          await setDataProductRating(this.$axios, this.id, this.title, this.comment, this.rating)
               .then(() => {
                 this.cancelRating();
                 this.$emit('on-rating-added');
@@ -75,7 +75,7 @@ import {
         }
         else
         {
-          await updateDataProductRating(this.$axios, this.shortKey, this.title, this.comment, this.rating)
+          await updateDataProductRating(this.$axios, this.id, this.title, this.comment, this.rating)
               .then(() => {
                 this.cancelRating();
                 this.$emit('on-rating-added');

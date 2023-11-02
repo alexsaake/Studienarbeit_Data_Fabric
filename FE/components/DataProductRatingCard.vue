@@ -44,13 +44,13 @@
     name: 'DataProductRatingCard',
     props:
     {
+      id: Number,
       title: String,
       comment: String,
       rating: Number,
       userName: String,
       submitted: String,
-      isEdited: Boolean,
-      shortKey: String
+      isEdited: Boolean
     },
     data()
     {
@@ -64,7 +64,7 @@
       {
         if(this.$auth.loggedIn)
         {
-          await deleteDataProductRating(this.$axios, this.shortKey)
+          await deleteDataProductRating(this.$axios, this.id)
               .then(() => {
                 this.showConfirmDeleteDialog = false;
                 this.$emit('on-rating-deleted');

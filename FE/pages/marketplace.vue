@@ -18,10 +18,10 @@
       <v-row>
         <v-col
           v-for="dataProductOverview in filteredDataProductsOverview"
-          :key="dataProductOverview.shortKey"
+          :key="dataProductOverview.id"
           cols="12" md="4"
         >
-          <v-card style="height: 100%" @click="onShowDataProduct(dataProductOverview.shortKey)">
+          <v-card style="height: 100%" @click="onShowDataProduct(dataProductOverview.id)">
             <data-product-overview-card
               style="height: 100%"
               :image="dataProductOverview.image"
@@ -39,8 +39,8 @@
     <v-card v-else>
       <p>No data products found.</p>
     </v-card>
-    <v-overlay v-if="shortKey !== ''" class="my-overlay">
-      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct" :short-key="shortKey" @on-close-data-product="onCloseDataProduct" @on-data-product-deleted="onDataProductDeleted" @on-edit-data-product="onEditDataProduct" />
+    <v-overlay v-if="id !== -1" class="my-overlay">
+      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct" :id="id" @on-close-data-product="onCloseDataProduct" @on-data-product-deleted="onDataProductDeleted" @on-edit-data-product="onEditDataProduct" />
     </v-overlay>
     <overlay-button @custom-click="$auth.loggedIn?$router.push('/dataProduct'):$router.push('/login?page=dataProduct');"></overlay-button>
   </v-card>
@@ -57,10 +57,10 @@
     components: {OverlayButton, DataProductDetailWrapperCard, DataProductOverviewCard},
     beforeRouteLeave (to, from, next) {
       if(to.fullPath === '/login') {
-        if (!this.shortKey) {
+        if (!this.id) {
           next();
         } else {
-          this.shortKey = "";
+          this.id = -1;
           next(false);
         }
       }else
@@ -75,7 +75,7 @@
         sortOrders: ['Bewertung (abst.)', 'Bewertung (aufst.)', 'Neueste (abst.)', 'Neueste (aufst.)'],
         dataProductsOverview: [],
         isLoading: true, // Initialize the loading state to true
-        shortKey: ''
+        id: -1
       }
     },
     computed: {
@@ -109,9 +109,9 @@
 
     async created() {
       await this.fetchData() // Call the fetchData method on component creation
-      if(this.$route.query !== undefined && this.$route.query.shortkey !== undefined) {
-        const shortKey = this.$route.query.shortkey;
-        this.onShowDataProduct(shortKey);
+      if(this.$route.query !== undefined && this.$route.query.id !== undefined) {
+        const id = this.$route.query.id;
+        this.onShowDataProduct(id);
       }
     },
 
@@ -126,14 +126,14 @@
           const dataProductsOverview = [];
           for (const dataProduct of rawDataProductsOverview) {
             dataProductsOverview.push({
-              shortKey: dataProduct.shortKey,
+              id: dataProduct.id,
               title: dataProduct.title,
               shortDescription: dataProduct.shortDescription,
               lastUpdated: new Date(dataProduct.lastUpdated),
               category: dataProduct.category,
               accessRight: dataProduct.accessRight,
-              image: await getDataProductImage(this.$axios, dataProduct.shortKey),
-              averageRating: await getDataProductAvgRatings(this.$axios, dataProduct.shortKey),
+              image: await getDataProductImage(this.$axios, dataProduct.id),
+              averageRating: await getDataProductAvgRatings(this.$axios, dataProduct.id),
               userName: dataProduct.userName
             });
           }
@@ -152,15 +152,15 @@
           Array.from(new Set(categories.map((category) => category)))
         )
       },
-      onShowDataProduct(shortKey)
+      onShowDataProduct(id)
       {
-        this.shortKey = shortKey;
+        this.id = id;
       },
       onCloseDataProduct()
       {
         if(document.activeElement.tagName === 'BODY' && sessionStorage.getItem("datePickerOpen") !== "true")
         {
-          this.shortKey = '';
+          this.id = -1;
         }
       },
       async onDataProductDeleted()
@@ -170,7 +170,7 @@
       },
       onEditDataProduct()
       {
-        this.$router.push('/dataProduct?shortkey='+this.shortKey);
+        this.$router.push('/dataProduct?id='+this.id);
       }
     },
   }

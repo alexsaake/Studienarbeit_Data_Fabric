@@ -8,12 +8,12 @@
       </v-row>
       <v-row>
         <v-col cols="12" md="6">
-          <v-card :to="'/api/Gateway/DataProduct/' + shortKey + '/Data'" target="_blank" class="d-flex flex-column fill-height">
+          <v-card :to="'/api/Gateway/DataProduct/' + id + '/Data'" target="_blank" class="d-flex flex-column fill-height">
             <v-card-subtitle>RESTful API</v-card-subtitle>
           </v-card>
         </v-col>
         <v-col cols="12" md="6">
-          <v-card :to="'/dataTableView?shortKey=' + shortKey" target="_blank" class="d-flex flex-column fill-height">
+          <v-card :to="'/dataTableView?id=' + id" target="_blank" class="d-flex flex-column fill-height">
             <v-card-subtitle>Vorschau (in Tabelle)</v-card-subtitle>
           </v-card>
         </v-col>
@@ -25,7 +25,7 @@
       </v-row>
       <v-row>
         <v-col cols="12" md="12">
-          <data-product-insights-card :short-key="shortKey" />
+          <data-product-insights-card :id="id" />
         </v-col>
       </v-row>
     </v-container>
@@ -39,10 +39,10 @@
   export default {
     name: 'DataProductUseDataCard',
     props: {
-      shortKey: {
-        type: String,
+      id: {
+        type: Number,
         required: false,
-        default: ''
+        default: -1
       }
     }
   }

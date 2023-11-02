@@ -5,7 +5,7 @@
   <v-card v-else class="my-details">
     <v-card>
       <data-product-detail-card
-        :short-key="dataProductDetail.shortKey"
+        :short-key="dataProductDetail.id"
         :title="dataProductDetail.title"
         :short-description="dataProductDetail.shortDescription"
         :description="dataProductDetail.description"
@@ -38,7 +38,7 @@
                 :user-name="rating.userName"
                 :submitted="rating.submitted"
                 :is-edited="rating.isEdited"
-                :short-key="dataProductDetail.shortKey"
+                :short-key="dataProductDetail.id"
                 @on-rating-deleted="refreshRatings"
                 @on-edit-rating="onUpdateRating(rating)"
             />
@@ -47,10 +47,10 @@
       </v-container>
     </v-card>
     <v-card v-if="showUseDataDialog" class="my-dialog">
-      <data-product-use-data-card :short-key="dataProductDetail.shortKey" @on-close-dialog="onCloseUseData" />
+      <data-product-use-data-card :short-key="dataProductDetail.id" @on-close-dialog="onCloseUseData" />
     </v-card>
     <v-card v-if="showRatingDialog" class="my-dialog">
-      <data-product-edit-rating-card :short-key="dataProductDetail.shortKey" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
+      <data-product-edit-rating-card :short-key="dataProductDetail.id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
     </v-card>
   </v-card>
 </template>
@@ -70,10 +70,10 @@ import {
     components: {
       DataProductUseDataCard, DataProductEditRatingCard, DataProductDetailCard, DataProductRatingCard},
     props: {
-      shortKey: {
-        type: String,
+      id: {
+        type: Number,
         required: true,
-        default: ''
+        default: -1
       }
     },
     data() {
@@ -89,17 +89,17 @@ import {
       }
     },
     async fetch() {
-      if(this.shortKey !== '')
+      if(this.id !== -1)
       {
-        this.dataProductDetail = await this.fetchDataProductDetail(this.shortKey);
+        this.dataProductDetail = await this.fetchDataProductDetail(this.id);
         if(this.$auth.loggedIn)
         {
-          this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.shortKey);
+          this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.id);
         }
       }
       else
       {
-        this.dataProductDetail = null // Reset to null when shortKey changes to indicate data is not yet loaded
+        this.dataProductDetail = null // Reset to null when id changes to indicate data is not yet loaded
       }
     },
     mounted() {
@@ -107,9 +107,9 @@ import {
       this.onScreenResize();
     },
     methods: {
-      async fetchDataProductDetail(shortKey) {
-        const rawDataProductDetail = await getDataProduct(this.$axios, shortKey);
-        const rawDataProductRatings = await getDataProductRatings(this.$axios, shortKey);
+      async fetchDataProductDetail(id) {
+        const rawDataProductDetail = await getDataProduct(this.$axios, id);
+        const rawDataProductRatings = await getDataProductRatings(this.$axios, id);
         const dataProductRatings = [];
         for (const rawDataProductRating of rawDataProductRatings) {
           dataProductRatings.push({
@@ -122,7 +122,7 @@ import {
           });
         }
         return {
-          shortKey: rawDataProductDetail.shortKey,
+          id: rawDataProductDetail.id,
           title: rawDataProductDetail.title,
           shortDescription: rawDataProductDetail.shortDescription,
           description: rawDataProductDetail.description,
@@ -131,9 +131,9 @@ import {
           lastUpdated: new Date(rawDataProductDetail.lastUpdated).toLocaleDateString('ge-GE'),
           category: rawDataProductDetail.category,
           accessRight: rawDataProductDetail.accessRight,
-          image: await getDataProductImage(this.$axios, rawDataProductDetail.shortKey),
+          image: await getDataProductImage(this.$axios, rawDataProductDetail.id),
           ratings: dataProductRatings,
-          avgRating: await getDataProductAvgRatings(this.$axios, rawDataProductDetail.shortKey),
+          avgRating: await getDataProductAvgRatings(this.$axios, rawDataProductDetail.id),
           userName: rawDataProductDetail.userName
         };
       },
@@ -147,10 +147,10 @@ import {
       },
       async refreshRatings()
       {
-        this.dataProductDetail = await this.fetchDataProductDetail(this.shortKey);
+        this.dataProductDetail = await this.fetchDataProductDetail(this.id);
         if(this.$auth.loggedIn)
         {
-          this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.shortKey);
+          this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.id);
         }
       },
       onCreateRating()
