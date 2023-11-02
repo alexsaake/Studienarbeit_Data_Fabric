@@ -46,8 +46,7 @@ CREATE TABLE DataProduct_Categories
 CREATE TABLE DataProducts
 (
     id               BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    shortKey         VARCHAR(32) UNIQUE  NOT NULL,
-    title            VARCHAR(128) UNIQUE NOT NULL,
+    title            VARCHAR(128)        NOT NULL,
     shortDescription VARCHAR(1024)       NOT NULL,
     description      VARCHAR(4096)       NOT NULL,
     source           VARCHAR(128)        NOT NULL,
