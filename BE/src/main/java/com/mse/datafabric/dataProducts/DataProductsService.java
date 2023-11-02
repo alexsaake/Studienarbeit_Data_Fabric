@@ -48,7 +48,7 @@ class DataProductsService implements IDataProductsService
         return dataProducts;
     }
 
-    public DataProductDetailDto getDataProductDetail(int id) {
+    public DataProductDetailDto getDataProductDetail(long id) {
         String dataProductSql = "SELECT dp.title, dp.shortDescription, dp.description, dp.source, dp.sourceLink, dp.lastUpdated, dpc.category, dpar.accessRight, users.username FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id JOIN users ON dp.userId = users.id WHERE dp.id = '%s' AND dp.isDeleted = FALSE".formatted(id);
         Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
 
@@ -66,17 +66,17 @@ class DataProductsService implements IDataProductsService
         );
     }
 
-    public void softDeleteDataProduct(int id, String userName) {
+    public void softDeleteDataProduct(long id, String userName) {
         String SOFT_DELETE_DATA_PRODUCT = "UPDATE DataProducts SET isDeleted = TRUE WHERE id = ? AND isDeleted = FALSE AND (SELECT usr.username FROM users usr WHERE userId = usr.id) = ?";
         myJdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SOFT_DELETE_DATA_PRODUCT);
-            ps.setInt(1, id);
+            ps.setLong(1, id);
             ps.setString(2, userName);
             return ps;
         });
     }
 
-    public List<RatingDto> getDataProductRatings(int id)
+    public List<RatingDto> getDataProductRatings(long id)
     {
         String dataProductsSql = "SELECT dp.id, usr.userName, rate.title, rate.comment, rate.rating, rate.submitted, rate.isEdited FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN Users usr ON rate.id_users = usr.id WHERE dp.id = '%s' AND rate.isDeleted = FALSE AND dp.isDeleted = FALSE".formatted(id);
         List<Map<String, Object>> databaseDataProductsRating = myJdbcTemplate.queryForList(dataProductsSql);
@@ -108,7 +108,7 @@ class DataProductsService implements IDataProductsService
         return new DataProductRatingMaxLengths(metaData.getPrecision(1), metaData.getPrecision(2));
     }
 
-    public boolean getDataProductRatingCanSubmit(int id, String userName)
+    public boolean getDataProductRatingCanSubmit(long id, String userName)
     {
         String dataProductsSql = "SELECT * FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN Users usr ON rate.id_users = usr.id WHERE dp.id = '%s' AND usr.userName = '%s' AND rate.isDeleted = FALSE and dp.isDeleted = FALSE".formatted(id, userName);
         List<Map<String, Object>> databaseDataProductsRating = myJdbcTemplate.queryForList(dataProductsSql);
@@ -126,7 +126,7 @@ class DataProductsService implements IDataProductsService
         myJdbcTemplate.update(dataProductsSql);
     }
 
-    public void markAsDeletedDataProductRating(int id, String userName) {
+    public void markAsDeletedDataProductRating(long id, String userName) {
         String dataProductsSql = "UPDATE DataProduct_Ratings SET isDeleted = TRUE WHERE id_dataProducts = (SELECT id FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE) AND id_users = (SELECT id FROM Users WHERE userName = '%s')".formatted(id, userName);
         myJdbcTemplate.update(dataProductsSql);
     }

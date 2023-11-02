@@ -48,7 +48,7 @@ export default {
     fetchOnServer: false,
     methods: {
         async fetchData() {
-            const rawScraperData = await getDataProductData(this.$axios,this.$route.query.shortKey)
+            const rawScraperData = await getDataProductData(this.$axios,this.$route.query.id)
             return {
                 data: this.jsonMapTable(rawScraperData)
             }

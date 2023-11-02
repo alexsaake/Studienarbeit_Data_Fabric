@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 class DataProductsServiceTest
 {
-    private static final int Id = 1;
+    private static final long Id = 1;
     private DataProductsService myDataProductsService;
     private JdbcTemplate myJdbcTemplateMock;
 

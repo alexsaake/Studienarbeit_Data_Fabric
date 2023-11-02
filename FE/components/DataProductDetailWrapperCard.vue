@@ -5,7 +5,7 @@
   <v-card v-else class="my-details">
     <v-card>
       <data-product-detail-card
-        :short-key="dataProductDetail.id"
+        :id="dataProductDetail.id"
         :title="dataProductDetail.title"
         :short-description="dataProductDetail.shortDescription"
         :description="dataProductDetail.description"
@@ -32,13 +32,13 @@
         <v-row no-gutters>
           <v-col v-for="(rating, index) in dataProductDetail.ratings" :key="index" cols="12">
             <data-product-rating-card
+                :id="dataProductDetail.id"
                 :title="rating.title"
                 :comment="rating.comment"
                 :rating="rating.rating"
                 :user-name="rating.userName"
                 :submitted="rating.submitted"
                 :is-edited="rating.isEdited"
-                :short-key="dataProductDetail.id"
                 @on-rating-deleted="refreshRatings"
                 @on-edit-rating="onUpdateRating(rating)"
             />
@@ -47,10 +47,10 @@
       </v-container>
     </v-card>
     <v-card v-if="showUseDataDialog" class="my-dialog">
-      <data-product-use-data-card :short-key="dataProductDetail.id" @on-close-dialog="onCloseUseData" />
+      <data-product-use-data-card :id="dataProductDetail.id" @on-close-dialog="onCloseUseData" />
     </v-card>
     <v-card v-if="showRatingDialog" class="my-dialog">
-      <data-product-edit-rating-card :short-key="dataProductDetail.id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
+      <data-product-edit-rating-card :id="dataProductDetail.id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
     </v-card>
   </v-card>
 </template>

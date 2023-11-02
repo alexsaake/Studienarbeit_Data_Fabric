@@ -10,12 +10,12 @@ import java.util.List;
 public interface IDataProductsService
 {
     List<DataProductOverviewDto> getDataProductsOverview();
-    DataProductDetailDto getDataProductDetail(int id);
-    void softDeleteDataProduct(int id, String userName);
-    List<RatingDto> getDataProductRatings(int id);
+    DataProductDetailDto getDataProductDetail(long id);
+    void softDeleteDataProduct(long id, String userName);
+    List<RatingDto> getDataProductRatings(long id);
     DataProductRatingMaxLengths getDataProductRatingMaxLengths();
-    boolean getDataProductRatingCanSubmit(int id, String userName);
+    boolean getDataProductRatingCanSubmit(long id, String userName);
     void setDataProductsRating(RatingDto dataProductRating);
     void updateDataProductsRating(RatingDto dataProductRating);
-    void markAsDeletedDataProductRating(int id, String userName);
+    void markAsDeletedDataProductRating(long id, String userName);
 }

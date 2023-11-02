@@ -15,7 +15,7 @@ public class DataProductDetailDto extends DataProductOverviewDto implements Seri
     private final String source;
     private final String sourceLink;
 
-    public DataProductDetailDto(int id, String title, String shortDescription, Date lastUpdated, DataProductAccessRights accessRight, DataProductCategories category, String description, String source, String sourceLink, String userName) {
+    public DataProductDetailDto(long id, String title, String shortDescription, Date lastUpdated, DataProductAccessRights accessRight, DataProductCategories category, String description, String source, String sourceLink, String userName) {
         super(id, title, shortDescription, lastUpdated, userName, accessRight, category);
         this.description = description;
         this.source = source;

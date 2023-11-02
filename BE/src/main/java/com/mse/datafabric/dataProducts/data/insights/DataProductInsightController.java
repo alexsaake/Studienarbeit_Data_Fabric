@@ -46,7 +46,7 @@ public class DataProductInsightController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProductInsights(@PathVariable int id, @RequestBody String requestBodyJson){
+    public boolean createDataProductInsights(@PathVariable long id, @RequestBody String requestBodyJson){
         DataProductInsightDataDTO[] dto;
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -64,7 +64,7 @@ public class DataProductInsightController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProductInsightsFilter(@PathVariable int id, @RequestBody String requestBodyJson){
+    public boolean createDataProductInsightsFilter(@PathVariable long id, @RequestBody String requestBodyJson){
         InsightFilterDTO[] dto;
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -82,7 +82,7 @@ public class DataProductInsightController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProductMapsData(@PathVariable int id, @RequestBody String requestBodyJson){
+    public boolean createDataProductMapsData(@PathVariable long id, @RequestBody String requestBodyJson){
         GoogleMapsAddressDTO dto;
         boolean tRet = false;
         try {
@@ -105,7 +105,7 @@ public class DataProductInsightController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getDataProductInsights(@PathVariable int id, @PathParam(value="filterKeys") String filterKeys,
+    public String getDataProductInsights(@PathVariable long id, @PathParam(value="filterKeys") String filterKeys,
                                          @PathParam(value="filterValues") String filterValues){
 
         DataProductInsightFilter filter = new DataProductInsightFilter(filterKeys,filterValues,id,dataProductInsightRepository);
@@ -162,7 +162,7 @@ public class DataProductInsightController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getInsightFilters(@PathVariable int id){
+    public String getInsightFilters(@PathVariable long id){
         InsightFilterDTO[] filter =  dataProductInsightRepository.getInsightFilters(id);
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -179,7 +179,7 @@ public class DataProductInsightController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getInsightFilterValues(@PathVariable int id,@PathVariable int filter_id){
+    public String getInsightFilterValues(@PathVariable long id,@PathVariable int filter_id){
         String[] values =  insights.getDifferentColumnValues(id, filter_id);
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -197,7 +197,7 @@ public class DataProductInsightController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public String setDataProductMapsData(@PathVariable int id){
+    public String setDataProductMapsData(@PathVariable long id){
         productData.setId(id);
         int count = productData.dataProductAddMapsData();
 

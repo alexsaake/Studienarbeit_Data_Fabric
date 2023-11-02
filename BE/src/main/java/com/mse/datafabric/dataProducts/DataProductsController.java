@@ -105,7 +105,7 @@ public class DataProductsController {
             value = "/DataProduct/{id}/Image",
             produces = MediaType.TEXT_PLAIN_VALUE
     )
-    public @ResponseBody byte[] getDataProductImage(@PathVariable int id) {
+    public @ResponseBody byte[] getDataProductImage(@PathVariable long id) {
         byte[]  file = null;
         try {
             file = Base64.getEncoder().encode((new ClassPathResource(id+".jpg")).getInputStream().readAllBytes());
@@ -126,7 +126,7 @@ public class DataProductsController {
             value = "/DataProduct/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String getDataProductDetail(@PathVariable int id){
+    public String getDataProductDetail(@PathVariable long id){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -161,7 +161,7 @@ public class DataProductsController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean editDataProduct(@PathVariable int id, @RequestBody String requestBodyJson){
+    public boolean editDataProduct(@PathVariable long id, @RequestBody String requestBodyJson){
         DataProductAllDTO dto;
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -179,7 +179,7 @@ public class DataProductsController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public String getDataProductDataAll(@PathVariable int id){
+    public String getDataProductDataAll(@PathVariable long id){
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.writeValueAsString(productData.getDataProductAll(id));
@@ -193,7 +193,7 @@ public class DataProductsController {
             value = "/DataProduct/{id}"
     )
     @PreAuthorize("hasAuthority('USER')")
-    public void deleteDataProduct(@PathVariable int id){
+    public void deleteDataProduct(@PathVariable long id){
         myDataProductsService.softDeleteDataProduct(id, myAuthenticationService.getCurrentUserName());
     }
 
@@ -202,7 +202,7 @@ public class DataProductsController {
             value = "/DataProduct/{id}/Data",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String getDataProductDetailData(@PathVariable int id){
+    public String getDataProductDetailData(@PathVariable long id){
         return dataProductRepository.getData(id);
 
     }
@@ -212,7 +212,7 @@ public class DataProductsController {
             value = "/DataProduct/{id}/Ratings",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String getDataProductRatings(@PathVariable int id){
+    public String getDataProductRatings(@PathVariable long id){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -230,7 +230,7 @@ public class DataProductsController {
             value = "/DataProduct/{id}/Ratings/Averages",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Float getAvgRatings(@PathVariable int id){
+    public Float getAvgRatings(@PathVariable long id){
         return dataProductRepository.getAvgRatings(id);
     }
 
@@ -239,7 +239,7 @@ public class DataProductsController {
     @PostMapping(
             value = "/DataProduct/{id}/Rating"
     )
-    public void setDataProductRatings(@PathVariable int id, @RequestBody String requestBodyJson){
+    public void setDataProductRatings(@PathVariable long id, @RequestBody String requestBodyJson){
         if(!myDataProductsService.getDataProductRatingCanSubmit(id, myAuthenticationService.getCurrentUserName())){
             return;
         }
@@ -263,7 +263,7 @@ public class DataProductsController {
     @PutMapping(
             value = "/DataProduct/{id}/Rating"
     )
-    public void updateDataProductRatings(@PathVariable int id, @RequestBody String requestBodyJson){
+    public void updateDataProductRatings(@PathVariable long id, @RequestBody String requestBodyJson){
         if(myDataProductsService.getDataProductRatingCanSubmit(id, myAuthenticationService.getCurrentUserName())){
             return;
         }
@@ -287,7 +287,7 @@ public class DataProductsController {
     @DeleteMapping(
             value = "/DataProduct/{id}/Rating"
     )
-    public void deleteDataProductRating(@PathVariable int id){
+    public void deleteDataProductRating(@PathVariable long id){
         if(myDataProductsService.getDataProductRatingCanSubmit(id, myAuthenticationService.getCurrentUserName())){
             return;
         }
@@ -300,7 +300,7 @@ public class DataProductsController {
             value = "/DataProduct/{id}/Rating/CanSubmit"
     )
 
-    public String getDataProductRatingCanSubmit(@PathVariable int id){
+    public String getDataProductRatingCanSubmit(@PathVariable long id){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();

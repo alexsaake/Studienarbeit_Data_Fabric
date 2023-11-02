@@ -17,7 +17,7 @@ public class DataProductInsights {
     @Autowired
     private DataProductInsightRepository insightsRepo;
 
-    public void getData(int id, DataProductInsightFilter filter){
+    public void getData(long id, DataProductInsightFilter filter){
         this.filter = filter;
         //
         dataProductData.setId(id);
@@ -48,7 +48,7 @@ public class DataProductInsights {
         });
         return values;
     }
-    public String[] getDifferentColumnValues(int id, int filterId) {
+    public String[] getDifferentColumnValues(long id, int filterId) {
         InsightFilterDTO filterData = insightsRepo.getFilterById(id, filterId);
         if(filterData == null)
             return null;
@@ -71,7 +71,7 @@ public class DataProductInsights {
         }
         return differentValues.toArray(new String[0]);
     }
-    public DataProductInsightDataDTO[] getInsights(int id){
+    public DataProductInsightDataDTO[] getInsights(long id){
         DataProductInsightDataDTO[] dtoList = insightsRepo.getDataProductInsights(id);
         for (DataProductInsightDataDTO dto : dtoList) {
             dto.setValue(getInsightValue(dto.type,dto.dataProductColumn));
