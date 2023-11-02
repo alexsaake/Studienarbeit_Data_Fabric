@@ -1,0 +1,12 @@
+pipeline {
+    agent any
+    stages {
+        stage('Backup database') {
+            steps {
+                sh 'docker exec -i pg_container /usr/bin/pg_dumpall -U msedfdb > postgres-backup$BUILD_NUMBER.sql'
+                sh 'mkdir -p backups'
+                sh 'mv postgres-backup$BUILD_NUMBER.sql backups/'
+            }
+        }
+    }
+}
