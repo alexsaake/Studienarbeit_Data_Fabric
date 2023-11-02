@@ -13,7 +13,7 @@ import org.springframework.util.Assert;
 
 import java.util.*;
 
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 class DataProductsControllerTest
 {
@@ -48,7 +48,7 @@ class DataProductsControllerTest
     void getDataProductDetail_ValidDataProducts_ReturnValidJSON()
     {
         DataProductDetailDto dataProductDetailBean = new DataProductDetailDto(1, "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft, "description", "source", "sourceLink","schne");
-        Mockito.when(myDataProductsProviderMock.getDataProductDetail(anyInt())).thenReturn(dataProductDetailBean);
+        Mockito.when(myDataProductsProviderMock.getDataProductDetail(anyLong())).thenReturn(dataProductDetailBean);
         String expectedResponseJSON = "{\"id\":1,\"title\":\"title\",\"shortDescription\":\"shortDescription\",\"description\":\"description\",\"userName\":\"schne\",\"source\":\"source\",\"sourceLink\":\"sourceLink\",\"lastUpdated\":0,\"category\":\"Wirtschaft\",\"accessRight\":\"gratis\"}";
 
         String actualResponseJSON = myDataProductsController.getDataProductDetail(1);
