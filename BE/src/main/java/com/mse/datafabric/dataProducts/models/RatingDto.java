@@ -16,7 +16,7 @@ import java.util.Date;
 public class RatingDto implements Serializable
 {
     @Setter
-    private int id;
+    private long id;
     @Setter
     private String userName;
     private String title;

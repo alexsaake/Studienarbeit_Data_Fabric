@@ -143,7 +143,7 @@ public class DataProductsController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public int createDataProduct(@RequestBody String requestBodyJson){
+    public long createDataProduct(@RequestBody String requestBodyJson){
         DataProductAllDTO dto;
         try {
             ObjectMapper mapper = new ObjectMapper();

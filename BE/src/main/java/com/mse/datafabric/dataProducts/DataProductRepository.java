@@ -29,13 +29,13 @@ public class DataProductRepository {
 
     }
 
-    public void updateDataProductDate(int id, Date date) {
+    public void updateDataProductDate(long id, Date date) {
         final String UPDATE_DATE_DATA_PRODUCT = "UPDATE DATAPRODUCTS SET LASTUPDATED = ? WHERE id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(UPDATE_DATE_DATA_PRODUCT);
                 ps.setDate(1, date);
-                ps.setInt(2, id);
+                ps.setLong(2, id);
                 return ps;
             });
         }
@@ -43,9 +43,9 @@ public class DataProductRepository {
 
         }
     }
-    public int insertDataProduct(DataProductDTO dto){
+    public long insertDataProduct(DataProductDTO dto){
         final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?)) RETURNING id";
-        Integer id;
+        Long id;
         try {
             id = jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
@@ -61,10 +61,10 @@ public class DataProductRepository {
                                     ps.setString(9, dto.username);
                         }
                     },new ResultSetExtractor<>() {
-                        public Integer extractData(ResultSet rs) throws SQLException,
+                        public Long extractData(ResultSet rs) throws SQLException,
                                 DataAccessException {
                             if (rs.next()) {
-                                return rs.getInt("id");
+                                return rs.getLong("id");
                             }
                             return null;
                         }
@@ -78,7 +78,7 @@ public class DataProductRepository {
         }
         return id;
     }
-    public void updateDataProduct(DataProductDTO dto, int id){
+    public void updateDataProduct(DataProductDTO dto, long id){
         final String STATEMENT = "UPDATE dataproducts SET title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE id = ?";
         try {
             jdbcTemplate.update(connection -> {
@@ -92,7 +92,7 @@ public class DataProductRepository {
                 ps.setInt(7, dto.accessRightId);
                 ps.setString(8, dto.data);
                 ps.setString(9, dto.username);
-                ps.setInt(10, id);
+                ps.setLong(10, id);
                 return ps;
             });
         }
@@ -100,13 +100,13 @@ public class DataProductRepository {
             return;
         }
     }
-    public DataProductDTO getDataProduct(int id){
+    public DataProductDTO getDataProduct(long id){
         final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username FROM dataproducts JOIN users ON users.id = dataproducts.userid WHERE id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
                         public void setValues(PreparedStatement ps) throws SQLException {
-                            ps.setInt(1, id);
+                            ps.setLong(1, id);
                         }
                     },new ResultSetExtractor<>() {
                         public DataProductDTO extractData(ResultSet rs) throws SQLException,
@@ -134,14 +134,14 @@ public class DataProductRepository {
             return null;
         }
     }
-    public boolean setAddressColumns(int id, GoogleMapsAddressDTO dto) {
+    public boolean setAddressColumns(long id, GoogleMapsAddressDTO dto) {
         final String STATEMENT = "INSERT INTO dataproduct_maps_data (maps_city_column, maps_street_column, dataproduct_id) VALUES (?, ?, (SELECT id FROM dataproducts WHERE id = ?))";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
                 ps.setString(1, dto.city);
                 ps.setString(2, dto.street);
-                ps.setInt(3, id);
+                ps.setLong(3, id);
                 return ps;
             });
         }
@@ -150,12 +150,12 @@ public class DataProductRepository {
         }
         return true;
     }
-    public boolean deleteAddressColumns(int id) {
+    public boolean deleteAddressColumns(long id) {
         final String STATEMENT = "DELETE FROM dataproduct_maps_data USING dataproducts WHERE dataproducts.id = dataproduct_maps_data.dataproduct_id AND dataproducts.id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
-                ps.setInt(1, id);
+                ps.setLong(1, id);
                 return ps;
             });
         }
@@ -164,13 +164,13 @@ public class DataProductRepository {
         }
         return true;
     }
-    public GoogleMapsAddressDTO getMapsData(int id){
+    public GoogleMapsAddressDTO getMapsData(long id){
         final String STATEMENT = "SELECT maps_city_column, maps_street_column, dataproduct_id FROM dataproduct_maps_data JOIN dataproducts ON dataproduct_maps_data.dataproduct_id = dataproducts.id WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
                         public void setValues(PreparedStatement ps) throws SQLException {
-                            ps.setInt(1, id);
+                            ps.setLong(1, id);
                         }
                     },new ResultSetExtractor<>() {
                         public GoogleMapsAddressDTO extractData(ResultSet rs) throws SQLException,
@@ -190,13 +190,13 @@ public class DataProductRepository {
             return null;
         }
     }
-    public GoogleMapsAddressDTO getAddressColumns(int id){
+    public GoogleMapsAddressDTO getAddressColumns(long id){
         final String STATEMENT = "SELECT maps_city_column, maps_street_column FROM dataproduct_maps_data " +
                 "JOIN dataproducts ON dataproducts.id = dataproduct_maps_data.dataproduct_id WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, preparedStatement ->
-                            preparedStatement.setInt(1, id),
+                            preparedStatement.setLong(1, id),
                     (ResultSetExtractor<GoogleMapsAddressDTO>) resultSet -> {
                         if (resultSet.next())
                             return new GoogleMapsAddressDTO(resultSet.getString(1),resultSet.getString(2));
@@ -208,7 +208,7 @@ public class DataProductRepository {
             return null;
         }
     }
-    public Float getAvgRatings(int id){
+    public Float getAvgRatings(long id){
         final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.id = ?";
 
         try {
@@ -251,12 +251,12 @@ public class DataProductRepository {
             throw new RuntimeException(e);
         }
     }
-    public String getData(int id){
+    public String getData(long id){
         final String STATEMENT = "SELECT data FROM dataproducts WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                 STATEMENT, preparedStatement ->
-                        preparedStatement.setInt(1, id),
+                        preparedStatement.setLong(1, id),
                 (ResultSetExtractor<String>) resultSet -> {
                     if (resultSet.next())
                         return resultSet.getString(1);
@@ -268,13 +268,13 @@ public class DataProductRepository {
             return null;
         }
     }
-    public void setData(int id, String data){
+    public void setData(long id, String data){
         final String STATEMENT = "UPDATE dataproducts SET data = cast(? as jsonb) WHERE id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
                 ps.setString(1, data);
-                ps.setInt(2, id);
+                ps.setLong(2, id);
                 return ps;
             });
         }

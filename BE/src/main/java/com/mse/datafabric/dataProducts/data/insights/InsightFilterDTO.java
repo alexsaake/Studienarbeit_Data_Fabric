@@ -8,7 +8,7 @@ public class InsightFilterDTO {
     public int filterType;
     public int filterId;
     public String filterColumn;
-    public int id;
+    public long id;
 
     public InsightFilterDTO(String displayName, int filterType, int filterId){
         this.displayName = displayName;
@@ -21,7 +21,7 @@ public class InsightFilterDTO {
     }
 
     @JsonCreator
-    public InsightFilterDTO(@JsonProperty("id")int id, @JsonProperty("displayName")String displayName,
+    public InsightFilterDTO(@JsonProperty("id")long id, @JsonProperty("displayName")String displayName,
                           @JsonProperty("dataProductColumn")String filterColumn, @JsonProperty("filterType")int filterType){
         this.id = id;
         this.displayName = displayName;

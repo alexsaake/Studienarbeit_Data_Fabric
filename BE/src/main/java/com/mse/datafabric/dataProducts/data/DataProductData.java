@@ -23,14 +23,14 @@ public class DataProductData {
     private DataProductRepository dataProductRepository;
     @Autowired
     private DataProductInsightRepository dataProductInsightRepository;
-    private int id;
+    private long id;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     public GoogleMapsAPI googleMapsAPI;
 
 
-    public void setId(int id){
+    public void setId(long id){
         this.id = id;
     }
 
@@ -68,13 +68,13 @@ public class DataProductData {
         }
         return count;
     }
-    public int createDataProduct(DataProductAllDTO dto){
-        int id = dataProductRepository.insertDataProduct(dto.metaData);
+    public long createDataProduct(DataProductAllDTO dto){
+        long id = dataProductRepository.insertDataProduct(dto.metaData);
         createInsightData(dto, id);
         //
         return id;
     }
-    private void createInsightData(DataProductAllDTO dto, int id){
+    private void createInsightData(DataProductAllDTO dto, long id){
         dataProductInsightRepository.insertInsights(id,dto.insights);
         dataProductInsightRepository.insertInsightsFilter(id,dto.insightFilters);
         if(dto.mapsData.city != null && !dto.mapsData.city.equals("") && dto.mapsData.street != null && !dto.mapsData.street.equals("")) {
@@ -83,7 +83,7 @@ public class DataProductData {
             dataProductAddMapsData();
         }
     }
-    public boolean editDataProduct(DataProductAllDTO dto, int id){
+    public boolean editDataProduct(DataProductAllDTO dto, long id){
         dataProductRepository.updateDataProduct(dto.metaData, id);
         dataProductInsightRepository.deleteInsights(id);
         dataProductInsightRepository.deleteInsightsFilter(id);
@@ -92,7 +92,7 @@ public class DataProductData {
         createInsightData(dto, id);
         return true;
     }
-    public DataProductAllDTO getDataProductAll(int id){
+    public DataProductAllDTO getDataProductAll(long id){
         DataProductDTO dataProduct = dataProductRepository.getDataProduct(id);
         DataProductInsightDataDTO[] insightData = dataProductInsightRepository.getInsightsData(id);
         InsightFilterDTO[] insightFilter = dataProductInsightRepository.getInsightFiltersData(id);

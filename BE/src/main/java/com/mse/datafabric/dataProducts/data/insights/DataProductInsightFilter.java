@@ -12,11 +12,11 @@ public class DataProductInsightFilter {
     DataProductInsightRepository dataProductInsightRepository;
     public String[] filterKeys;
     public String[] filterValues;
-    public int id;
+    public long id;
     public InsightFilterDTO[] activeFilters;
 
 
-    public DataProductInsightFilter(String filterKeys, String filterValues, int id, DataProductInsightRepository dataProductInsightRepository){
+    public DataProductInsightFilter(String filterKeys, String filterValues, long id, DataProductInsightRepository dataProductInsightRepository){
         if(filterKeys == null)
             this.filterKeys = new String[]{};
         else

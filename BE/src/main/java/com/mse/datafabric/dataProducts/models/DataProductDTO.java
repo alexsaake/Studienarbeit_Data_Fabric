@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
 
 public class DataProductDTO {
-    public int id;
+    public long id;
     public String title;
     public String description;
     public String shortDescription;
@@ -21,7 +21,7 @@ public class DataProductDTO {
 
     public String username;
     @JsonCreator
-    public DataProductDTO(@JsonProperty("id")int id, @JsonProperty("title")String title, @JsonProperty("description")String description,
+    public DataProductDTO(@JsonProperty("id")long id, @JsonProperty("title")String title, @JsonProperty("description")String description,
                           @JsonProperty("shortDescription")String shortDescription, @JsonProperty("source")String source, @JsonProperty("sourceLink")String sourceLink,
                           @JsonProperty("accessRight")int accessRightId, @JsonProperty("category")int categoryId, @JsonProperty("data") Object data,
                           @JsonProperty("username") String username) {

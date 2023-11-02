@@ -11,7 +11,7 @@ import lombok.*;
 @EqualsAndHashCode
 public class WgSucheDto {
 
-    private int id;
+    private long id;
     private String title;
     private Boolean addressHidden;
     private String borough;

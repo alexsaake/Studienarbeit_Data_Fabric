@@ -11,7 +11,7 @@ public class DataProductInsightDataDTO {
 
     public int type;
 
-    public int id;
+    public long id;
 
 
     public DataProductInsightDataDTO(float insightValue, String displayName, String unit){
@@ -26,7 +26,7 @@ public class DataProductInsightDataDTO {
         this.unit = unit;
     }
     @JsonCreator
-    public DataProductInsightDataDTO(@JsonProperty("id")int id, @JsonProperty("displayName")String displayName,
+    public DataProductInsightDataDTO(@JsonProperty("id")long id, @JsonProperty("displayName")String displayName,
                             @JsonProperty("dataProductColumn")String dataProductColumn, @JsonProperty("insightType")int type,
                             @JsonProperty("unit")String unit){
         this.id = id;

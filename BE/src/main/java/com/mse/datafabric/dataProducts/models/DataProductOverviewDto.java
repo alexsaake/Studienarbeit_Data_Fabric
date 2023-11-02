@@ -13,7 +13,7 @@ import java.util.Objects;
 @JsonPropertyOrder({"id", "title", "shortDescription", "lastUpdated", "userName", "category", "accessRights"})
 public class DataProductOverviewDto implements Serializable
 {
-    protected int id;
+    protected long id;
     protected String title;
     protected String shortDescription;
     protected Date lastUpdated;
