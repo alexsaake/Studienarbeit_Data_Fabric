@@ -34,7 +34,7 @@ class DataProductsService implements IDataProductsService
         for (Map databaseDataProduct : databaseDataProducts)
         {
             DataProductOverviewDto dataProduct = new DataProductOverviewDto(
-                (Integer) databaseDataProduct.get("id"),
+                (Long) databaseDataProduct.get("id"),
                 (String)databaseDataProduct.get("title"),
                 (String)databaseDataProduct.get("shortDescription"),
                 new Date(((Timestamp) databaseDataProduct.get("lastUpdated")).getTime()),
@@ -86,7 +86,7 @@ class DataProductsService implements IDataProductsService
         for (Map databaseDataProductRating : databaseDataProductsRating)
         {
             RatingDto dataProductRating = new RatingDto(
-                    (Integer) databaseDataProductRating.get("id"),
+                    (Long) databaseDataProductRating.get("id"),
                     (String)databaseDataProductRating.get("userName"),
                     (String)databaseDataProductRating.get("title"),
                     (String)databaseDataProductRating.get("comment"),

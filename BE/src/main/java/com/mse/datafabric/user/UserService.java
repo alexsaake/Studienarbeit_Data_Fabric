@@ -63,7 +63,7 @@ public class UserService {
         for (Map databaseUserRating : databaseUserRatings)
         {
             RatingDto dataProductRating = new RatingDto(
-                    (Integer)databaseUserRating.get("id"),
+                    (Long)databaseUserRating.get("id"),
                     (String)databaseUserRating.get("userName"),
                     (String)databaseUserRating.get("title"),
                     (String)databaseUserRating.get("comment"),
