@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Random;
 
 public abstract class ScrapingPage {
-
     DataProductRepository dataProductRepo;
     public final static int DRIVER_TIMEOUT = 10;
     public WebDriver driver;
@@ -68,7 +67,8 @@ public abstract class ScrapingPage {
         driver.quit();
     }
     public void scrapeAllPages(String cityName){
-        dataProductRepo.updateDataProductDate("immobilien", new java.sql.Date(System.currentTimeMillis()));
+        int immobilienDataProductId = 1;
+        dataProductRepo.updateDataProductDate(immobilienDataProductId, new java.sql.Date(System.currentTimeMillis()));
         try {
             activePageCount = 1;
 

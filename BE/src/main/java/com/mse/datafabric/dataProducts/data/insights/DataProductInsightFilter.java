@@ -9,16 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 public class DataProductInsightFilter {
-
     DataProductInsightRepository dataProductInsightRepository;
     public String[] filterKeys;
     public String[] filterValues;
-
-    public String shortkey;
+    public int id;
     public InsightFilterDTO[] activeFilters;
 
 
-    public DataProductInsightFilter(String filterKeys, String filterValues, String shortkey, DataProductInsightRepository dataProductInsightRepository){
+    public DataProductInsightFilter(String filterKeys, String filterValues, int id, DataProductInsightRepository dataProductInsightRepository){
         if(filterKeys == null)
             this.filterKeys = new String[]{};
         else
@@ -27,7 +25,7 @@ public class DataProductInsightFilter {
             this.filterValues = new String[]{};
         else
             this.filterValues = filterValues.split(";");
-        this.shortkey = shortkey;
+        this.id = id;
         this.dataProductInsightRepository = dataProductInsightRepository;
         //
         setActiveFilters();
@@ -37,7 +35,7 @@ public class DataProductInsightFilter {
         List<InsightFilterDTO> dtoList = new ArrayList<>();
         for (int i = 0; i < filterKeys.length; i++) {
 
-            InsightFilterDTO dto = dataProductInsightRepository.getFilterById(shortkey,Integer.parseInt(filterKeys[i]));
+            InsightFilterDTO dto = dataProductInsightRepository.getFilterById(id,Integer.parseInt(filterKeys[i]));
             if(dto == null || dto.filterColumn == null || dto.filterType == 0)
                 continue;
             dto.setFilterColumn(dto.filterColumn);

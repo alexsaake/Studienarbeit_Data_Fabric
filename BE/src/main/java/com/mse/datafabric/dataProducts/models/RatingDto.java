@@ -12,11 +12,11 @@ import java.util.Date;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"shortKey", "userName", "title", "comment", "rating", "submitted", "isEdited"})
+@JsonPropertyOrder({"id", "userName", "title", "comment", "rating", "submitted", "isEdited"})
 public class RatingDto implements Serializable
 {
     @Setter
-    private String shortKey;
+    private int id;
     @Setter
     private String userName;
     private String title;

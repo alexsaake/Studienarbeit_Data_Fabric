@@ -14,8 +14,6 @@ import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,27 +23,27 @@ public class DataProductData {
     private DataProductRepository dataProductRepository;
     @Autowired
     private DataProductInsightRepository dataProductInsightRepository;
-    private String shortkey;
+    private int id;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     public GoogleMapsAPI googleMapsAPI;
 
 
-    public void setShortkey(String shortkey){
-        this.shortkey = shortkey;
+    public void setId(int id){
+        this.id = id;
     }
 
     public List<Map<String, Object>> getData(){
         try {
-            return objectMapper.readValue(dataProductRepository.getData(shortkey), new TypeReference<List<Map<String, Object>>>(){});
+            return objectMapper.readValue(dataProductRepository.getData(id), new TypeReference<List<Map<String, Object>>>(){});
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
     public int dataProductAddMapsData(){
         int count = 0;
-        GoogleMapsAddressDTO addressColumns = dataProductRepository.getAddressColumns(shortkey);
+        GoogleMapsAddressDTO addressColumns = dataProductRepository.getAddressColumns(id);
         if(addressColumns == null)
             return 0;
         //
@@ -64,41 +62,41 @@ public class DataProductData {
         }
         //
         try {
-            dataProductRepository.setData(shortkey,objectMapper.writeValueAsString(data));
+            dataProductRepository.setData(id,objectMapper.writeValueAsString(data));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
         return count;
     }
-    public String createDataProduct(DataProductAllDTO dto){
-        String shortKey = dataProductRepository.insertDataProduct(dto.metaData);
-        createInsightData(dto, shortKey);
+    public int createDataProduct(DataProductAllDTO dto){
+        int id = dataProductRepository.insertDataProduct(dto.metaData);
+        createInsightData(dto, id);
         //
-        return shortKey;
+        return id;
     }
-    private void createInsightData(DataProductAllDTO dto, String shortKey){
-        dataProductInsightRepository.insertInsights(shortKey,dto.insights);
-        dataProductInsightRepository.insertInsightsFilter(shortKey,dto.insightFilters);
+    private void createInsightData(DataProductAllDTO dto, int id){
+        dataProductInsightRepository.insertInsights(id,dto.insights);
+        dataProductInsightRepository.insertInsightsFilter(id,dto.insightFilters);
         if(dto.mapsData.city != null && !dto.mapsData.city.equals("") && dto.mapsData.street != null && !dto.mapsData.street.equals("")) {
-            dataProductRepository.setAddressColumns(shortKey, dto.mapsData);
-            setShortkey(shortKey);
+            dataProductRepository.setAddressColumns(id, dto.mapsData);
+            setId(id);
             dataProductAddMapsData();
         }
     }
-    public boolean editDataProduct(DataProductAllDTO dto, String shortKey){
-        dataProductRepository.updateDataProduct(dto.metaData, shortKey);
-        dataProductInsightRepository.deleteInsights(shortKey);
-        dataProductInsightRepository.deleteInsightsFilter(shortKey);
-        dataProductRepository.deleteAddressColumns(shortKey);
+    public boolean editDataProduct(DataProductAllDTO dto, int id){
+        dataProductRepository.updateDataProduct(dto.metaData, id);
+        dataProductInsightRepository.deleteInsights(id);
+        dataProductInsightRepository.deleteInsightsFilter(id);
+        dataProductRepository.deleteAddressColumns(id);
         //
-        createInsightData(dto, shortKey);
+        createInsightData(dto, id);
         return true;
     }
-    public DataProductAllDTO getDataProductAll(String shortkey){
-        DataProductDTO dataProduct = dataProductRepository.getDataProduct(shortkey);
-        DataProductInsightDataDTO[] insightData = dataProductInsightRepository.getInsightsData(shortkey);
-        InsightFilterDTO[] insightFilter = dataProductInsightRepository.getInsightFiltersData(shortkey);
-        GoogleMapsAddressDTO mapsData = dataProductRepository.getMapsData(shortkey);
+    public DataProductAllDTO getDataProductAll(int id){
+        DataProductDTO dataProduct = dataProductRepository.getDataProduct(id);
+        DataProductInsightDataDTO[] insightData = dataProductInsightRepository.getInsightsData(id);
+        InsightFilterDTO[] insightFilter = dataProductInsightRepository.getInsightFiltersData(id);
+        GoogleMapsAddressDTO mapsData = dataProductRepository.getMapsData(id);
         //
         return new DataProductAllDTO(dataProduct,insightData,insightFilter,mapsData);
     }

@@ -8,15 +8,15 @@ import java.util.Date;
 import java.util.Objects;
 
 @Getter
-@JsonPropertyOrder({"shortKey", "title", "shortDescription", "description", "userName", "source", "sourceLink", "lastUpdated", "category", "accessRights"})
+@JsonPropertyOrder({"id", "title", "shortDescription", "description", "userName", "source", "sourceLink", "lastUpdated", "category", "accessRights"})
 public class DataProductDetailDto extends DataProductOverviewDto implements Serializable
 {
-    private String description;
-    private String source;
-    private String sourceLink;
+    private final String description;
+    private final String source;
+    private final String sourceLink;
 
-    public DataProductDetailDto(String shortKey, String title, String shortDescription, Date lastUpdated, DataProductAccessRights accessRight, DataProductCategories category, String description, String source, String sourceLink, String userName) {
-        super(shortKey, title, shortDescription, lastUpdated, userName, accessRight, category);
+    public DataProductDetailDto(int id, String title, String shortDescription, Date lastUpdated, DataProductAccessRights accessRight, DataProductCategories category, String description, String source, String sourceLink, String userName) {
+        super(id, title, shortDescription, lastUpdated, userName, accessRight, category);
         this.description = description;
         this.source = source;
         this.sourceLink = sourceLink;

@@ -1,7 +1,6 @@
 package com.mse.datafabric.dataProducts.data.insights;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DataProductInsightDataDTO {
@@ -12,7 +11,7 @@ public class DataProductInsightDataDTO {
 
     public int type;
 
-    public String shortkey;
+    public int id;
 
 
     public DataProductInsightDataDTO(float insightValue, String displayName, String unit){
@@ -27,10 +26,10 @@ public class DataProductInsightDataDTO {
         this.unit = unit;
     }
     @JsonCreator
-    public DataProductInsightDataDTO(@JsonProperty("shortKey")String shortkey, @JsonProperty("displayName")String displayName,
+    public DataProductInsightDataDTO(@JsonProperty("id")int id, @JsonProperty("displayName")String displayName,
                             @JsonProperty("dataProductColumn")String dataProductColumn, @JsonProperty("insightType")int type,
                             @JsonProperty("unit")String unit){
-        this.shortkey = shortkey;
+        this.id = id;
         this.displayName = displayName;
         this.dataProductColumn =  dataProductColumn;
         this.type =  type;

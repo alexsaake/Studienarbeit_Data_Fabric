@@ -3,8 +3,6 @@ package com.mse.datafabric.dataProducts;
 import com.mse.datafabric.dataProducts.models.DataProductDTO;
 import com.mse.datafabric.utils.GoogleMapsAPI;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,7 +20,6 @@ import static jakarta.xml.bind.DatatypeConverter.parseFloat;
 
 @Repository
 public class DataProductRepository {
-    public static final Logger LOGGER= LoggerFactory.getLogger(DataProductRepository.class);
     @Autowired
     public JdbcTemplate jdbcTemplate;
     @Autowired
@@ -32,13 +29,13 @@ public class DataProductRepository {
 
     }
 
-    public void updateDataProductDate(String shortKey, Date date) {
-        final String UPDATE_DATE_DATA_PRODUCT = "UPDATE DATAPRODUCTS SET LASTUPDATED = ? WHERE SHORTKEY = ?";
+    public void updateDataProductDate(int id, Date date) {
+        final String UPDATE_DATE_DATA_PRODUCT = "UPDATE DATAPRODUCTS SET LASTUPDATED = ? WHERE id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(UPDATE_DATE_DATA_PRODUCT);
                 ps.setDate(1, date);
-                ps.setString(2, shortKey);
+                ps.setInt(2, id);
                 return ps;
             });
         }
@@ -46,14 +43,11 @@ public class DataProductRepository {
 
         }
     }
-    public String insertDataProduct(DataProductDTO dto){
-        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid,shortkey) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?),?) RETURNING id";
-        final String STATEMENT2 = "UPDATE DATAPRODUCTS SET shortkey = ? WHERE id = ?";
-
-        String shortKey = dto.title.replaceAll(" ","_");
+    public int insertDataProduct(DataProductDTO dto){
+        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?)) RETURNING id";
+        Integer id;
         try {
-            String finalShotKey1 = shortKey;
-            Integer id = jdbcTemplate.query(
+            id = jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
                         public void setValues(PreparedStatement ps) throws SQLException {
                                     ps.setString(1, dto.title);
@@ -65,36 +59,27 @@ public class DataProductRepository {
                                     ps.setInt(7, dto.accessRightId);
                                     ps.setString(8, dto.data);
                                     ps.setString(9, dto.username);
-                                    ps.setString(10, finalShotKey1);
                         }
                     },new ResultSetExtractor<>() {
                         public Integer extractData(ResultSet rs) throws SQLException,
                                 DataAccessException {
                             if (rs.next()) {
-                                return rs.getInt(1);
+                                return rs.getInt("id");
                             }
                             return null;
                         }
                     }
             );
             if(id == null)
-                return null;
-            shortKey = finalShotKey1 + "_" + id;
-            String finalShortKey = shortKey;
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(STATEMENT2);
-                ps.setString(1, finalShortKey);
-                ps.setInt(2,id);
-                return ps;
-            });
+                return -1;
         }
         catch (Exception e) {
-            return null;
+            return -1;
         }
-        return shortKey;
+        return id;
     }
-    public void updateDataProduct(DataProductDTO dto, String shortKey){
-        final String STATEMENT = "UPDATE dataproducts SET title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE shortkey = ?";
+    public void updateDataProduct(DataProductDTO dto, int id){
+        final String STATEMENT = "UPDATE dataproducts SET title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
@@ -107,7 +92,7 @@ public class DataProductRepository {
                 ps.setInt(7, dto.accessRightId);
                 ps.setString(8, dto.data);
                 ps.setString(9, dto.username);
-                ps.setString(10, shortKey);
+                ps.setInt(10, id);
                 return ps;
             });
         }
@@ -115,20 +100,20 @@ public class DataProductRepository {
             return;
         }
     }
-    public DataProductDTO getDataProduct(String shortkey){
-        final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username FROM dataproducts JOIN users ON users.id = dataproducts.userid WHERE shortkey = ?";
+    public DataProductDTO getDataProduct(int id){
+        final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username FROM dataproducts JOIN users ON users.id = dataproducts.userid WHERE id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
                         public void setValues(PreparedStatement ps) throws SQLException {
-                            ps.setString(1, shortkey);
+                            ps.setInt(1, id);
                         }
                     },new ResultSetExtractor<>() {
                         public DataProductDTO extractData(ResultSet rs) throws SQLException,
                                 DataAccessException {
                             if (rs.next()) {
                                 return new DataProductDTO(
-                                        shortkey,
+                                        id,
                                         rs.getString(1),
                                         rs.getString(2),
                                         rs.getString(3),
@@ -149,14 +134,14 @@ public class DataProductRepository {
             return null;
         }
     }
-    public boolean setAddressColumns(String shortKey, GoogleMapsAddressDTO dto) {
-        final String STATEMENT = "INSERT INTO dataproduct_maps_data (maps_city_column, maps_street_column, dataproduct_id) VALUES (?, ?, (SELECT id FROM dataproducts WHERE shortkey = ?))";
+    public boolean setAddressColumns(int id, GoogleMapsAddressDTO dto) {
+        final String STATEMENT = "INSERT INTO dataproduct_maps_data (maps_city_column, maps_street_column, dataproduct_id) VALUES (?, ?, (SELECT id FROM dataproducts WHERE id = ?))";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
                 ps.setString(1, dto.city);
                 ps.setString(2, dto.street);
-                ps.setString(3, shortKey);
+                ps.setInt(3, id);
                 return ps;
             });
         }
@@ -165,12 +150,12 @@ public class DataProductRepository {
         }
         return true;
     }
-    public boolean deleteAddressColumns(String shortKey) {
-        final String STATEMENT = "DELETE FROM dataproduct_maps_data USING dataproducts WHERE dataproducts.id = dataproduct_maps_data.dataproduct_id AND dataproducts.shortkey = ?";
+    public boolean deleteAddressColumns(int id) {
+        final String STATEMENT = "DELETE FROM dataproduct_maps_data USING dataproducts WHERE dataproducts.id = dataproduct_maps_data.dataproduct_id AND dataproducts.id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
-                ps.setString(1, shortKey);
+                ps.setInt(1, id);
                 return ps;
             });
         }
@@ -179,13 +164,13 @@ public class DataProductRepository {
         }
         return true;
     }
-    public GoogleMapsAddressDTO getMapsData(String shortkey){
-        final String STATEMENT = "SELECT maps_city_column, maps_street_column, dataproduct_id FROM dataproduct_maps_data JOIN dataproducts ON dataproduct_maps_data.dataproduct_id = dataproducts.id WHERE dataproducts.shortkey = ?";
+    public GoogleMapsAddressDTO getMapsData(int id){
+        final String STATEMENT = "SELECT maps_city_column, maps_street_column, dataproduct_id FROM dataproduct_maps_data JOIN dataproducts ON dataproduct_maps_data.dataproduct_id = dataproducts.id WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
                         public void setValues(PreparedStatement ps) throws SQLException {
-                            ps.setString(1, shortkey);
+                            ps.setInt(1, id);
                         }
                     },new ResultSetExtractor<>() {
                         public GoogleMapsAddressDTO extractData(ResultSet rs) throws SQLException,
@@ -205,13 +190,13 @@ public class DataProductRepository {
             return null;
         }
     }
-    public GoogleMapsAddressDTO getAddressColumns(String shortkey){
+    public GoogleMapsAddressDTO getAddressColumns(int id){
         final String STATEMENT = "SELECT maps_city_column, maps_street_column FROM dataproduct_maps_data " +
-                "JOIN dataproducts ON dataproducts.id = dataproduct_maps_data.dataproduct_id WHERE dataproducts.shortkey = ?";
+                "JOIN dataproducts ON dataproducts.id = dataproduct_maps_data.dataproduct_id WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, preparedStatement ->
-                            preparedStatement.setString(1, shortkey),
+                            preparedStatement.setInt(1, id),
                     (ResultSetExtractor<GoogleMapsAddressDTO>) resultSet -> {
                         if (resultSet.next())
                             return new GoogleMapsAddressDTO(resultSet.getString(1),resultSet.getString(2));
@@ -223,11 +208,11 @@ public class DataProductRepository {
             return null;
         }
     }
-    public Float getAvgRatings(String shortKey){
-        final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.shortkey = ?";
+    public Float getAvgRatings(int id){
+        final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.id = ?";
 
         try {
-            return parseFloat(jdbcTemplate.queryForObject(queryAvg, new Object[]{shortKey}, String.class));
+            return parseFloat(jdbcTemplate.queryForObject(queryAvg, new Object[]{id}, String.class));
         }
 
         catch (Exception e) {
@@ -266,12 +251,12 @@ public class DataProductRepository {
             throw new RuntimeException(e);
         }
     }
-    public String getData(String shortkey){
-        final String STATEMENT = "SELECT data FROM dataproducts WHERE dataproducts.shortkey = ?";
+    public String getData(int id){
+        final String STATEMENT = "SELECT data FROM dataproducts WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                 STATEMENT, preparedStatement ->
-                        preparedStatement.setString(1, shortkey),
+                        preparedStatement.setInt(1, id),
                 (ResultSetExtractor<String>) resultSet -> {
                     if (resultSet.next())
                         return resultSet.getString(1);
@@ -283,13 +268,13 @@ public class DataProductRepository {
             return null;
         }
     }
-    public void setData(String shortkey, String data){
-        final String STATEMENT = "UPDATE dataproducts SET data = cast(? as jsonb) WHERE shortkey = ?";
+    public void setData(int id, String data){
+        final String STATEMENT = "UPDATE dataproducts SET data = cast(? as jsonb) WHERE id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
                 ps.setString(1, data);
-                ps.setString(2, shortkey);
+                ps.setInt(2, id);
                 return ps;
             });
         }

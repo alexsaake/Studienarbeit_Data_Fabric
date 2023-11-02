@@ -1,9 +1,6 @@
 package com.mse.datafabric.dataProducts.data.insights;
 
-import com.mse.datafabric.dataProducts.models.DataProductDTO;
 import com.mse.datafabric.utils.GoogleMapsAPI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,19 +17,18 @@ import java.util.Map;
 
 @Repository
 public class DataProductInsightRepository {
-    public static final Logger LOGGER= LoggerFactory.getLogger(DataProductInsightRepository.class);
     @Autowired
     public JdbcTemplate jdbcTemplate;
     @Autowired
     public GoogleMapsAPI googleMapsAPI;
 
-    public InsightFilterDTO getFilterById(String shortkey, int filterId) {
-        String SQL = "SELECT filter_column, type_id FROM insight_filters JOIN dataproducts ON dataproducts.id = insight_filters.dataproduct_id WHERE insight_filters.filter_id = ? AND dataproducts.shortkey = ?";
+    public InsightFilterDTO getFilterById(int id, int filterId) {
+        String SQL = "SELECT filter_column, type_id FROM insight_filters JOIN dataproducts ON dataproducts.id = insight_filters.dataproduct_id WHERE insight_filters.filter_id = ? AND dataproducts.id = ?";
         return jdbcTemplate.query(
                 SQL, new PreparedStatementSetter() {
                     public void setValues(PreparedStatement preparedStatement) throws SQLException {
                         preparedStatement.setInt(1, filterId);
-                        preparedStatement.setString(2, shortkey);
+                        preparedStatement.setInt(2, id);
                     }
                 },new ResultSetExtractor<>() {
                     public InsightFilterDTO extractData(ResultSet resultSet) throws SQLException,
@@ -47,13 +43,13 @@ public class DataProductInsightRepository {
                 }
         );
     }
-    public DataProductInsightDataDTO[] getDataProductInsights(String shortkey){
+    public DataProductInsightDataDTO[] getDataProductInsights(int id){
         List<DataProductInsightDataDTO> dtoList = new ArrayList<>();
-        String query = "SELECT * FROM dataproduct_insights JOIN dataproducts ON dataproducts.id = dataproduct_insights.dataproduct_id WHERE dataproducts.shortkey = ? ORDER BY dataproduct_insights.id";
+        String query = "SELECT * FROM dataproduct_insights JOIN dataproducts ON dataproducts.id = dataproduct_insights.dataproduct_id WHERE dataproducts.id = ? ORDER BY dataproduct_insights.id";
         jdbcTemplate.query(
                 query, new PreparedStatementSetter() {
                     public void setValues(PreparedStatement preparedStatement) throws SQLException {
-                        preparedStatement.setString(1, shortkey);
+                        preparedStatement.setInt(1, id);
                     }
                 },new ResultSetExtractor<>() {
                     public Object extractData(ResultSet resultSet) throws SQLException,
@@ -74,13 +70,13 @@ public class DataProductInsightRepository {
         );
         return dtoList.toArray(new DataProductInsightDataDTO[0]);
     }
-    public InsightFilterDTO[] getInsightFilters(String shortkey){
+    public InsightFilterDTO[] getInsightFilters(int id){
         List<InsightFilterDTO> dtoList = new ArrayList<>();
-        String query = "SELECT * FROM insight_filters JOIN dataproducts ON dataproducts.id = insight_filters.dataproduct_id WHERE dataproducts.shortkey = ? ORDER BY insight_filters.type_id DESC";
+        String query = "SELECT * FROM insight_filters JOIN dataproducts ON dataproducts.id = insight_filters.dataproduct_id WHERE dataproducts.id = ? ORDER BY insight_filters.type_id DESC";
         jdbcTemplate.query(
                 query, new PreparedStatementSetter() {
                     public void setValues(PreparedStatement preparedStatement) throws SQLException {
-                        preparedStatement.setString(1, shortkey);
+                        preparedStatement.setInt(1, id);
                     }
                 },new ResultSetExtractor<>() {
                     public Object extractData(ResultSet resultSet) throws SQLException,
@@ -118,8 +114,8 @@ public class DataProductInsightRepository {
             return null;
         }
     }
-    public boolean insertInsights(String shortKey, DataProductInsightDataDTO[] dto){
-        final String STATEMENT = "INSERT INTO dataproduct_insights (type, display_name, unit, dataproduct_column, dataproduct_id) VALUES (?, ?, ?, ?, (SELECT id FROM dataproducts WHERE shortkey = ?))";
+    public boolean insertInsights(int id, DataProductInsightDataDTO[] dto){
+        final String STATEMENT = "INSERT INTO dataproduct_insights (type, display_name, unit, dataproduct_column, dataproduct_id) VALUES (?, ?, ?, ?, (SELECT id FROM dataproducts WHERE id = ?))";
         try {
             for(int i = 0;i< dto.length;i++){
                 int finalI = i;
@@ -129,7 +125,7 @@ public class DataProductInsightRepository {
                     ps.setString(2, dto[finalI].displayName);
                     ps.setString(3, dto[finalI].unit);
                     ps.setString(4, dto[finalI].dataProductColumn);
-                    ps.setString(5, shortKey);
+                    ps.setInt(5, id);
                     return ps;
                 });
             }
@@ -139,12 +135,12 @@ public class DataProductInsightRepository {
         }
         return true;
     }
-    public boolean deleteInsights(String shortKey){
-        final String STATEMENT = "DELETE FROM dataproduct_insights USING dataproducts WHERE dataproduct_insights.dataproduct_id = dataproducts.id AND dataproducts.shortkey = ?";
+    public boolean deleteInsights(int id){
+        final String STATEMENT = "DELETE FROM dataproduct_insights USING dataproducts WHERE dataproduct_insights.dataproduct_id = dataproducts.id AND dataproducts.id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
-                ps.setString(1, shortKey);
+                ps.setInt(1, id);
                 return ps;
             });
         }
@@ -153,13 +149,13 @@ public class DataProductInsightRepository {
         }
         return true;
     }
-    public DataProductInsightDataDTO[] getInsightsData(String shortkey){
-        final String STATEMENT = "SELECT type, display_name, unit, dataproduct_column, dataproduct_id FROM dataproduct_insights JOIN dataproducts ON dataproduct_insights.dataproduct_id = dataproducts.id WHERE dataproducts.shortkey = ?";
+    public DataProductInsightDataDTO[] getInsightsData(int id){
+        final String STATEMENT = "SELECT type, display_name, unit, dataproduct_column, dataproduct_id FROM dataproduct_insights JOIN dataproducts ON dataproduct_insights.dataproduct_id = dataproducts.id WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
                         public void setValues(PreparedStatement ps) throws SQLException {
-                            ps.setString(1, shortkey);
+                            ps.setInt(1, id);
                         }
                     },new ResultSetExtractor<>() {
                         public DataProductInsightDataDTO[] extractData(ResultSet rs) throws SQLException,
@@ -182,13 +178,13 @@ public class DataProductInsightRepository {
             return null;
         }
     }
-    public InsightFilterDTO[] getInsightFiltersData(String shortkey){
-        final String STATEMENT = "SELECT type_id, filter_column, display_name, dataproduct_id FROM insight_filters JOIN dataproducts ON insight_filters.dataproduct_id = dataproducts.id WHERE dataproducts.shortkey = ?";
+    public InsightFilterDTO[] getInsightFiltersData(int id){
+        final String STATEMENT = "SELECT type_id, filter_column, display_name, dataproduct_id FROM insight_filters JOIN dataproducts ON insight_filters.dataproduct_id = dataproducts.id WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
                         public void setValues(PreparedStatement ps) throws SQLException {
-                            ps.setString(1, shortkey);
+                            ps.setInt(1, id);
                         }
                     },new ResultSetExtractor<>() {
                         public InsightFilterDTO[] extractData(ResultSet rs) throws SQLException,
@@ -196,7 +192,7 @@ public class DataProductInsightRepository {
                             List<InsightFilterDTO> list = new ArrayList<>();
                             while (rs.next()) {
                                 list.add( new InsightFilterDTO(
-                                        shortkey,
+                                        id,
                                         rs.getString(3),
                                         rs.getString(2),
                                         rs.getInt(1)
@@ -211,8 +207,8 @@ public class DataProductInsightRepository {
             return null;
         }
     }
-    public boolean insertInsightsFilter(String shortKey, InsightFilterDTO[] dto){
-        final String STATEMENT = "INSERT INTO insight_filters (type_id, filter_column, display_name, dataproduct_id) VALUES (?, ?, ?, (SELECT id FROM dataproducts WHERE shortkey = ?))";
+    public boolean insertInsightsFilter(int id, InsightFilterDTO[] dto){
+        final String STATEMENT = "INSERT INTO insight_filters (type_id, filter_column, display_name, dataproduct_id) VALUES (?, ?, ?, (SELECT id FROM dataproducts WHERE id = ?))";
         try {
             for(int i = 0;i< dto.length;i++){
                 int finalI = i;
@@ -221,7 +217,7 @@ public class DataProductInsightRepository {
                     ps.setInt(1, dto[finalI].filterType);
                     ps.setString(2, dto[finalI].filterColumn);
                     ps.setString(3, dto[finalI].displayName);
-                    ps.setString(4, shortKey);
+                    ps.setInt(4, id);
                     return ps;
                 });
             }
@@ -231,12 +227,12 @@ public class DataProductInsightRepository {
         }
         return true;
     }
-    public boolean deleteInsightsFilter(String shortKey){
-        final String STATEMENT = "DELETE FROM insight_filters USING dataproducts WHERE dataproducts.id = insight_filters.dataproduct_id AND dataproducts.shortkey = ?";
+    public boolean deleteInsightsFilter(int id){
+        final String STATEMENT = "DELETE FROM insight_filters USING dataproducts WHERE dataproducts.id = insight_filters.dataproduct_id AND dataproducts.id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
-                ps.setString(1, shortKey);
+                ps.setInt(1, id);
                 return ps;
             });
         }

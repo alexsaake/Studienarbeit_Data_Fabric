@@ -10,10 +10,10 @@ import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"shortKey", "title", "shortDescription", "lastUpdated", "userName", "category", "accessRights"})
+@JsonPropertyOrder({"id", "title", "shortDescription", "lastUpdated", "userName", "category", "accessRights"})
 public class DataProductOverviewDto implements Serializable
 {
-    protected String shortKey;
+    protected int id;
     protected String title;
     protected String shortDescription;
     protected Date lastUpdated;
@@ -32,7 +32,7 @@ public class DataProductOverviewDto implements Serializable
         }
 
         final DataProductOverviewDto other = (DataProductOverviewDto) obj;
-        if (!Objects.equals(this.shortKey, other.shortKey)) {
+        if (!Objects.equals(this.id, other.id)) {
             return false;
         }
         if (!Objects.equals(this.title, other.title)) {

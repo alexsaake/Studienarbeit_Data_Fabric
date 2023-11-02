@@ -1157,14 +1157,6 @@ ALTER TABLE ONLY public.dataproducts
 
 
 --
--- Name: dataproducts dataproducts_shortkey_key; Type: CONSTRAINT; Schema: public; Owner: msedfdb
---
-
-ALTER TABLE ONLY public.dataproducts
-    ADD CONSTRAINT dataproducts_shortkey_key UNIQUE (shortkey);
-
-
---
 -- Name: dataproducts dataproducts_title_key; Type: CONSTRAINT; Schema: public; Owner: msedfdb
 --
 

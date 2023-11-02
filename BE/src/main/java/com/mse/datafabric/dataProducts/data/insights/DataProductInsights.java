@@ -1,18 +1,10 @@
 package com.mse.datafabric.dataProducts.data.insights;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mse.datafabric.dataProducts.data.DataProductData;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.shell.standard.ShellComponent;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 @ShellComponent
@@ -20,17 +12,15 @@ public class DataProductInsights {
 
     private List<Map<String, Object>> data;
     @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
     private DataProductData dataProductData;
     private DataProductInsightFilter filter;
     @Autowired
     private DataProductInsightRepository insightsRepo;
 
-    public void getData(String shortkey, DataProductInsightFilter filter){
+    public void getData(int id, DataProductInsightFilter filter){
         this.filter = filter;
         //
-        dataProductData.setShortkey(shortkey);
+        dataProductData.setId(id);
         //
         data = dataProductData.getData();
         filterData();
@@ -58,8 +48,8 @@ public class DataProductInsights {
         });
         return values;
     }
-    public String[] getDifferentColumnValues(String shortkey, int filterId) {
-        InsightFilterDTO filterData = insightsRepo.getFilterById(shortkey, filterId);
+    public String[] getDifferentColumnValues(int id, int filterId) {
+        InsightFilterDTO filterData = insightsRepo.getFilterById(id, filterId);
         if(filterData == null)
             return null;
         //
@@ -81,15 +71,15 @@ public class DataProductInsights {
         }
         return differentValues.toArray(new String[0]);
     }
-    public DataProductInsightDataDTO[] getInsights(String shortkey){
-        DataProductInsightDataDTO[] dtoList = insightsRepo.getDataProductInsights(shortkey);
+    public DataProductInsightDataDTO[] getInsights(int id){
+        DataProductInsightDataDTO[] dtoList = insightsRepo.getDataProductInsights(id);
         for (DataProductInsightDataDTO dto : dtoList) {
-            dto.setValue(getInsightValue(dto.type,shortkey,dto.dataProductColumn));
+            dto.setValue(getInsightValue(dto.type,dto.dataProductColumn));
         }
         return dtoList;
     }
 
-    private float getInsightValue(int type, String shortkey, String columnName){
+    private float getInsightValue(int type, String columnName){
         switch (type){
             case 1:
                 return getCount(columnName);
@@ -173,7 +163,7 @@ public class DataProductInsights {
         }
         return ans;
     }
-    public GoogleMapsAddressDTO[] getInsightMapsData(String shortkey, DataProductInsightFilter filter) {
+    public GoogleMapsAddressDTO[] getInsightMapsData() {
         List<GoogleMapsAddressDTO> dtoLlist = new ArrayList<>();
         data.forEach(dataRow->{
             Map<String, Object> mapsData = (Map<String, Object>) dataRow.get("_mapsData");

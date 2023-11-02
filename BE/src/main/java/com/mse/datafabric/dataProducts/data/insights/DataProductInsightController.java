@@ -3,9 +3,7 @@ package com.mse.datafabric.dataProducts.data.insights;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mse.datafabric.auth.AuthenticationService;
 import com.mse.datafabric.dataProducts.DataProductRepository;
-import com.mse.datafabric.dataProducts.IDataProductsService;
 import com.mse.datafabric.dataProducts.data.DataProductData;
 import com.mse.datafabric.utils.GoogleMapsAPI;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
@@ -44,17 +42,17 @@ public class DataProductInsightController {
     }
 
     @PostMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/Insights",
+            value = "/DataProduct/{id}/Data/Insights",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProductInsights(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+    public boolean createDataProductInsights(@PathVariable int id, @RequestBody String requestBodyJson){
         DataProductInsightDataDTO[] dto;
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             dto = mapper.readValue(requestBodyJson, DataProductInsightDataDTO[].class);
-            return dataProductInsightRepository.insertInsights(dataproduct_key, dto);
+            return dataProductInsightRepository.insertInsights(id, dto);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
@@ -62,17 +60,17 @@ public class DataProductInsightController {
         return false;
     }
     @PostMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/Insights/Filter",
+            value = "/DataProduct/{id}/Data/Insights/Filter",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProductInsightsFilter(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+    public boolean createDataProductInsightsFilter(@PathVariable int id, @RequestBody String requestBodyJson){
         InsightFilterDTO[] dto;
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             dto = mapper.readValue(requestBodyJson, InsightFilterDTO[].class);
-            return dataProductInsightRepository.insertInsightsFilter(dataproduct_key, dto);
+            return dataProductInsightRepository.insertInsightsFilter(id, dto);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
@@ -80,11 +78,11 @@ public class DataProductInsightController {
         return false;
     }
     @PostMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/MapsData/Filter",
+            value = "/DataProduct/{id}/Data/MapsData/Filter",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean createDataProductMapsData(@PathVariable String dataproduct_key, @RequestBody String requestBodyJson){
+    public boolean createDataProductMapsData(@PathVariable int id, @RequestBody String requestBodyJson){
         GoogleMapsAddressDTO dto;
         boolean tRet = false;
         try {
@@ -93,31 +91,31 @@ public class DataProductInsightController {
             dto = mapper.readValue(requestBodyJson, GoogleMapsAddressDTO.class);
             if(dto.city == null || dto.city.equals("")||dto.street == null || dto.street.equals(""))
                 return false;
-            tRet = dataProductRepository.setAddressColumns(dataproduct_key, dto);
+            tRet = dataProductRepository.setAddressColumns(id, dto);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
         }
-        setDataProductMapsData(dataproduct_key);
+        setDataProductMapsData(id);
         return tRet;
     }
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/Insights",
+            value = "/DataProduct/{id}/Data/Insights",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getDataProductInsights(@PathVariable String dataproduct_key, @PathParam(value="filterKeys") String filterKeys,
+    public String getDataProductInsights(@PathVariable int id, @PathParam(value="filterKeys") String filterKeys,
                                          @PathParam(value="filterValues") String filterValues){
 
-        DataProductInsightFilter filter = new DataProductInsightFilter(filterKeys,filterValues,dataproduct_key, dataProductInsightRepository);
+        DataProductInsightFilter filter = new DataProductInsightFilter(filterKeys,filterValues,id,dataProductInsightRepository);
         //
-        insights.getData(dataproduct_key, filter);
+        insights.getData(id, filter);
         //
         DataProductInsightsDTO insightsDTO = new DataProductInsightsDTO();
-        insightsDTO.insightData = insights.getInsights(dataproduct_key);
+        insightsDTO.insightData = insights.getInsights(id);
         insightsDTO.insightCount = insights.getDataCount();
-        insightsDTO.mapsData = insights.getInsightMapsData(dataproduct_key, filter);
+        insightsDTO.mapsData = insights.getInsightMapsData();
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.writeValueAsString(insightsDTO);
@@ -160,12 +158,12 @@ public class DataProductInsightController {
     }
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/Insights/Filter",
+            value = "/DataProduct/{id}/Data/Insights/Filter",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getInsightFilters(@PathVariable String dataproduct_key){
-        InsightFilterDTO[] filter =  dataProductInsightRepository.getInsightFilters(dataproduct_key);
+    public String getInsightFilters(@PathVariable int id){
+        InsightFilterDTO[] filter =  dataProductInsightRepository.getInsightFilters(id);
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.writeValueAsString(filter);
@@ -177,12 +175,12 @@ public class DataProductInsightController {
     }
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/Insights/Filter/{filter_id}",
+            value = "/DataProduct/{id}/Data/Insights/Filter/{filter_id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public String getInsightFilterValues(@PathVariable String dataproduct_key,@PathVariable int filter_id){
-        String[] values =  insights.getDifferentColumnValues(dataproduct_key, filter_id);
+    public String getInsightFilterValues(@PathVariable int id,@PathVariable int filter_id){
+        String[] values =  insights.getDifferentColumnValues(id, filter_id);
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.writeValueAsString(values);
@@ -195,12 +193,12 @@ public class DataProductInsightController {
     }
     @ShellMethod( "getDataProduct" )
     @PostMapping(
-            value = "/DataProduct/{dataproduct_key}/Data/MapsData",
+            value = "/DataProduct/{id}/Data/MapsData",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public String setDataProductMapsData(@PathVariable String dataproduct_key){
-        productData.setShortkey(dataproduct_key);
+    public String setDataProductMapsData(@PathVariable int id){
+        productData.setId(id);
         int count = productData.dataProductAddMapsData();
 
         return "{\"updated items\":"+ count +"}";
