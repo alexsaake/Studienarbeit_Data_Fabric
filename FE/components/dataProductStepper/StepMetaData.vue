@@ -74,7 +74,7 @@
             v-model="form.category"
             label="Kategorie"
             :rules="[rules.required]"
-            :items="dataProductCategories.categories"
+            :items="dataProductCategories"
             item-text="value"
             item-value="key"
             ></v-select>
@@ -87,7 +87,7 @@
             v-model="form.accessRight"
             label="Zugriff"
             :rules="[rules.required]"
-            :items="dataProductAccessRights.accessRights"
+            :items="dataProductAccessRights"
             item-text="value"
             item-value="key"
           ></v-select>
@@ -187,17 +187,13 @@ export default {
       const rawData = await getDataProductCategories(
         this.$axios,
       );
-      return {
-        categories: rawData,
-      };
+      return Object.values(rawData);
     },
     async fetchDataProductAccessRights() {
       const rawData = await getDataProductAccessRights(
         this.$axios,
       );
-      return {
-        accessRights: rawData,
-      };
+      return Object.values(rawData);
     },
     setValidation(){
       this.$nextTick(() => {

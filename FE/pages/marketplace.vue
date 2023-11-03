@@ -21,33 +21,52 @@
           :key="dataProductOverview.id"
           cols="12" md="4"
         >
-          <v-card style="height: 100%" @click="onShowDataProduct(dataProductOverview.id)">
-            <data-product-overview-card
-              style="height: 100%"
-              :image="dataProductOverview.image"
-              :title="dataProductOverview.title"
-              :short-description="dataProductOverview.shortDescription"
-              :last-updated="dataProductOverview.lastUpdated"
-              :access-right="dataProductOverview.accessRight"
-              :average-rating="dataProductOverview.averageRating"
-              :user-name="dataProductOverview.userName"
-            />
-          </v-card>
+          <v-lazy :min-height="200" :options="{'threshold':0.5}" transition="fade-transition">
+            <v-card style="height: 100%">
+              <data-product-overview-card
+                style="height: 100%"
+                :id="dataProductOverview.id"
+                :title="dataProductOverview.title"
+                :last-updated="dataProductOverview.lastUpdated"
+                :average-rating="dataProductOverview.averageRating"
+                :access-rights-catalogue="accessRightsCatalogue"
+                @on-select-data-product="onShowDataProduct"
+              />
+            </v-card>
+          </v-lazy>
         </v-col>
       </v-row>
     </v-container>
     <v-card v-else>
       <p>No data products found.</p>
     </v-card>
-    <v-overlay v-if="id !== -1" class="my-overlay">
-      <data-product-detail-wrapper-card v-click-outside="onCloseDataProduct" :id="id" @on-close-data-product="onCloseDataProduct" @on-data-product-deleted="onDataProductDeleted" @on-edit-data-product="onEditDataProduct" />
+    <v-overlay v-if="selectedDataProduct.id !== -1" class="my-overlay">
+      <data-product-detail-wrapper-card
+          v-click-outside="onCloseDataProduct"
+          :id="selectedDataProduct.id"
+          :image-file-name="selectedDataProduct.imageFileName"
+          :title="selectedDataProduct.title"
+          :short-description="selectedDataProduct.shortDescription"
+          :last-updated="selectedDataProduct.lastUpdated"
+          :access-right="selectedDataProduct.accessRight"
+          :category="selectedDataProduct.category"
+          :average-rating="selectedDataProduct.averageRating"
+          :user-name="selectedDataProduct.userName"
+          @on-close-data-product="onCloseDataProduct"
+          @on-data-product-deleted="onDataProductDeleted"
+          @on-edit-data-product="onEditDataProduct" />
     </v-overlay>
     <overlay-button @custom-click="$auth.loggedIn?$router.push('/dataProduct'):$router.push('/login?page=dataProduct');"></overlay-button>
   </v-card>
 </template>
 
 <script>
-  import {getDataProductImage, getDataProducts, getDataProductAvgRatings} from "~/middleware/dataProductService";
+import {
+  getDataProducts,
+  getDataProductAvgRatings,
+  getDataProduct,
+  getDataProductAccessRights, getDataProductCategories
+} from "~/middleware/dataProductService";
   import DataProductOverviewCard from "~/components/DataProductOverviewCard.vue";
   import DataProductDetailWrapperCard from "~/components/DataProductDetailWrapperCard.vue";
   import OverlayButton from "~/components/OverlayButton.vue";
@@ -57,10 +76,10 @@
     components: {OverlayButton, DataProductDetailWrapperCard, DataProductOverviewCard},
     beforeRouteLeave (to, from, next) {
       if(to.fullPath === '/login') {
-        if (!this.id) {
+        if (!this.selectedDataProduct.id) {
           next();
         } else {
-          this.id = -1;
+          this.selectedDataProduct.id = -1;
           next(false);
         }
       }else
@@ -71,11 +90,23 @@
         search: '',
         filter: '',
         filters: [''],
+        categoriesCatalogue: null,
+        accessRightsCatalogue: null,
         sortOrder: 'Bewertung (abst.)',
         sortOrders: ['Bewertung (abst.)', 'Bewertung (aufst.)', 'Neueste (abst.)', 'Neueste (aufst.)'],
         dataProductsOverview: [],
         isLoading: true, // Initialize the loading state to true
-        id: -1
+        selectedDataProduct: {
+          id: -1,
+          image: String,
+          title: String,
+          shortDescription: String,
+          lastUpdated: Date,
+          accessRight: String,
+          category: String,
+          averageRating: String,
+          userName: String
+        }
       }
     },
     computed: {
@@ -111,15 +142,21 @@
       await this.fetchData() // Call the fetchData method on component creation
       if(this.$route.query !== undefined && this.$route.query.id !== undefined) {
         const id = this.$route.query.id;
-        this.onShowDataProduct(id);
+        const dataProduct = await getDataProduct(this.$axios, id);
+        const dataProductOverview = this.dataProductsOverview.filter(obj => { return obj.id === id });
+        if(dataProduct.imageFileName === null) {
+          dataProduct.imageFileName = "defaultImage.jpg";
+        }
+        this.onShowDataProduct(id, dataProduct.imageFileName, dataProductOverview.title, dataProduct.shortDescription, dataProductOverview.lastUpdated, this.accessRightsCatalogue[dataProduct.accessRightsId], dataProductOverview.averageRating, dataProduct.userName);
       }
     },
 
     methods: {
       async fetchData() {
-        const rawDataProductsOverview = await getDataProducts(
-          this.$axios
-        )
+        const rawDataProductsOverview = await getDataProducts(this.$axios);
+        this.categoriesCatalogue = await getDataProductCategories(this.$axios);
+        this.filters = Object.values(this.categoriesCatalogue);
+        this.accessRightsCatalogue = await getDataProductAccessRights(this.$axios);
 
         if (Array.isArray(rawDataProductsOverview))
         {
@@ -128,39 +165,37 @@
             dataProductsOverview.push({
               id: dataProduct.id,
               title: dataProduct.title,
-              shortDescription: dataProduct.shortDescription,
               lastUpdated: new Date(dataProduct.lastUpdated),
-              category: dataProduct.category,
-              accessRight: dataProduct.accessRight,
-              image: await getDataProductImage(this.$axios, dataProduct.id),
-              averageRating: await getDataProductAvgRatings(this.$axios, dataProduct.id),
-              userName: dataProduct.userName
+              category: this.categoriesCatalogue[dataProduct.categoryId],
+              averageRating: await getDataProductAvgRatings(this.$axios, dataProduct.id)
             });
           }
           this.dataProductsOverview = dataProductsOverview;
-          this.filters = this.getDataProductCategories();
         }
 
-        this.isLoading = false // Set loading state to false after fetching data
+        this.isLoading = false; // Set loading state to false after fetching data
       },
 
-      getDataProductCategories() {
-        const categories = this.dataProductsOverview.map(
-          (dataProduct) => dataProduct.category
-        )
-        return this.filters.concat(
-          Array.from(new Set(categories.map((category) => category)))
-        )
-      },
-      onShowDataProduct(id)
+      onShowDataProduct(id, imageFileName, title, shortDescription, lastUpdated, accessRight, averageRating, userName)
       {
-        this.id = id;
+        const category = this.dataProductsOverview.filter(obj => { return obj.id === id }).category;
+        this.selectedDataProduct = {
+          id,
+          imageFileName,
+          title,
+          shortDescription,
+          lastUpdated,
+          accessRight,
+          category,
+          averageRating,
+          userName
+        };
       },
       onCloseDataProduct()
       {
         if(document.activeElement.tagName === 'BODY' && sessionStorage.getItem("datePickerOpen") !== "true")
         {
-          this.id = -1;
+          this.selectedDataProduct.id = -1;
         }
       },
       async onDataProductDeleted()

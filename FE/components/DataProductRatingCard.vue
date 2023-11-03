@@ -11,7 +11,7 @@
         </v-row>
         <v-row class="mt-4" no-gutters>
           <v-col cols="2">Datum:</v-col>
-          <v-col>{{ submitted }}</v-col>
+          <v-col>{{ submitted.toLocaleDateString('ge-GE') }}</v-col>
         </v-row>
       </v-container>
     </v-card-text>
@@ -49,7 +49,7 @@
       comment: String,
       rating: Number,
       userName: String,
-      submitted: String,
+      submitted: Date,
       isEdited: Boolean
     },
     data()

@@ -11,10 +11,8 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 import static jakarta.xml.bind.DatatypeConverter.parseFloat;
 
@@ -219,7 +217,7 @@ public class DataProductRepository {
             return 0.0F;
         }
     }
-    public Map<String, String>[] getCategories(){
+    public Map<Long, String> getCategories(){
         final String STATEMENT = "SELECT DISTINCT dataproduct_categories.id, dataproduct_categories.category FROM dataproduct_categories JOIN dataproducts ON dataproducts.categoryid = dataproduct_categories.id";
         try {
             return jdbcTemplate.query(STATEMENT, this::getKeyValue);
@@ -228,7 +226,7 @@ public class DataProductRepository {
             return null;
         }
     }
-    public Map<String, String>[] getAccessRights(){
+    public Map<Long, String> getAccessRights(){
         final String STATEMENT = "SELECT DISTINCT dataproduct_accessrights.id, dataproduct_accessrights.accessright FROM dataproduct_accessrights JOIN dataproducts ON dataproducts.accessrightid = dataproduct_accessrights.id";
         try {
             return jdbcTemplate.query(STATEMENT, this::getKeyValue);
@@ -237,16 +235,13 @@ public class DataProductRepository {
             return null;
         }
     }
-    public Map<String, String>[] getKeyValue(ResultSet resultSet){
+    public Map<Long, String> getKeyValue(ResultSet resultSet){
         try {
-            List<Map<String, String>> hashList = new ArrayList<>();
+            Map<Long, String> dictionary = new HashMap<Long, String>();
             while (resultSet.next()) {
-                Map<String, String> map = new HashMap<>();
-                map.put("key",resultSet.getString(1));
-                map.put("value",resultSet.getString(2));
-                hashList.add(map);
+                dictionary.put(resultSet.getLong(1), resultSet.getString(2));
             }
-            return hashList.toArray(new Map[0]);
+            return dictionary;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

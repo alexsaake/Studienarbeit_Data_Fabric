@@ -1,6 +1,6 @@
 <template>
   <v-card class="my-card">
-    <v-img :src="'data:text/plain;base64,' + image" height="300px" />
+    <v-img :src="imageFileName" height="300px" />
     <v-card-actions style="position: absolute; top: 310px; right: 20px;">
       <v-btn v-show="$auth.loggedIn && $auth.user.userName === userName" icon @click="onShowConfirmDeleteRating" >
         <v-icon>mdi-delete</v-icon>
@@ -30,7 +30,7 @@
         </v-row>
         <v-row class="mt-4" no-gutters>
           <v-col cols="2">Zuletzt aktualisiert:</v-col>
-          <v-col>{{ lastUpdated }}</v-col>
+          <v-col>{{ lastUpdated.toLocaleDateString('ge-GE') }}</v-col>
         </v-row>
         <v-row class="mt-4" no-gutters>
           <v-col cols="2">Kategorie</v-col>
@@ -42,7 +42,7 @@
         </v-row>
         <v-row class="mt-4" no-gutters>
           <v-col cols="3">Durchschnittliche Bewertung </v-col>
-          <v-col>{{ avgRating.toFixed(2) }}</v-col>
+          <v-col>{{ averageRating.toFixed(2) }}</v-col>
         </v-row>
       </v-container>
     </v-card-text>
@@ -57,32 +57,44 @@
 </template>
 
 <script>
-import {deleteDataProduct} from "~/middleware/dataProductService";
+import {
+  deleteDataProduct,
+  getDataProductDetails
+} from "~/middleware/dataProductService";
 
   export default {
     name: 'DataProductDetailCard',
     props:
     {
-      image: String,
+      imageFileName: String,
       id: Number,
       title: String,
       shortDescription: String,
-      description: String,
-      source: String,
-      sourceLink: String,
-      lastUpdated: String,
+      lastUpdated: Date,
       category: String,
       accessRight: String,
-      avgRating: Number,
+      averageRating: Number,
       userName: String
     },
     data()
     {
       return {
-        showConfirmDeleteDialog: false
+        showConfirmDeleteDialog: false,
+        description: '',
+        source: '',
+        sourceLink: '',
       }
     },
+    async fetch() {
+      await this.fetchDataProductDetail();
+    },
     methods:{
+      async fetchDataProductDetail() {
+        const dataProductDetails = await getDataProductDetails(this.$axios, this.id);
+        this.description = dataProductDetails.description;
+        this.source = dataProductDetails.source;
+        this.sourceLink = dataProductDetails.sourceLink;
+      },
       async onConfirmDeleteRating()
       {
         if(this.$auth.loggedIn)

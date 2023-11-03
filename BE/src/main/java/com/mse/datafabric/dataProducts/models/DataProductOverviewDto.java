@@ -10,16 +10,13 @@ import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"id", "title", "shortDescription", "lastUpdated", "userName", "category", "accessRights"})
+@JsonPropertyOrder({"id", "title", "lastUpdated", "categoryId"})
 public class DataProductOverviewDto implements Serializable
 {
-    protected long id;
-    protected String title;
-    protected String shortDescription;
-    protected Date lastUpdated;
-    protected String userName;
-    protected DataProductAccessRights accessRight;
-    private DataProductCategories category;
+    private long id;
+    private String title;
+    private Date lastUpdated;
+    private long categoryId;
 
     @Override
     public boolean equals(Object obj) {
@@ -38,19 +35,10 @@ public class DataProductOverviewDto implements Serializable
         if (!Objects.equals(this.title, other.title)) {
             return false;
         }
-        if (!Objects.equals(this.shortDescription, other.shortDescription)) {
-            return false;
-        }
         if (!Objects.equals(this.lastUpdated, other.lastUpdated)) {
             return false;
         }
-        if (!Objects.equals(this.userName, other.userName)) {
-            return false;
-        }
-        if (!Objects.equals(this.category, other.category)) {
-            return false;
-        }
-        if (!Objects.equals(this.accessRight, other.accessRight)) {
+        if (!Objects.equals(this.categoryId, other.categoryId)) {
             return false;
         }
 

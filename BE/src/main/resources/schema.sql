@@ -54,7 +54,7 @@ CREATE TABLE DataProducts
     lastUpdated      TIMESTAMP           NOT NULL,
     categoryId       BIGINT              NOT NULL,
     accessRightId    BIGINT              NOT NULL,
-    image            bytea,
+    imageFileName    VARCHAR(128),
     dataId           BIGINT,
     userId           BIGINT              NOT NULL,
     isDeleted        BOOLEAN             NOT NULL DEFAULT FALSE,

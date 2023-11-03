@@ -100,37 +100,34 @@ public class DataProductsController {
         return jsonString;
     }
 
-    @ShellMethod( "getDataProduct/Image" )
-    @GetMapping(
-            value = "/DataProduct/{id}/Image",
-            produces = MediaType.TEXT_PLAIN_VALUE
-    )
-    public @ResponseBody byte[] getDataProductImage(@PathVariable long id) {
-        byte[]  file = null;
-        try {
-            file = Base64.getEncoder().encode((new ClassPathResource(id+".jpg")).getInputStream().readAllBytes());
-        }
-        catch (Exception e) {
-            try {
-                file = Base64.getEncoder().encode((new ClassPathResource("defaultImage.jpg")).getInputStream().readAllBytes());
-            }
-            catch (Exception e2) {
-                myLogger.error("Could not load Image: " + e2);
-            }
-        }
-        return file;
-    }
-
     @ShellMethod( "getDataProduct" )
     @GetMapping(
             value = "/DataProduct/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String getDataProductDetail(@PathVariable long id){
+    public String getDataProductSummary(@PathVariable long id){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductDetail(id));
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductSummary(id));
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+
+        return jsonString;
+    }
+
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/{id}/Details",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getDataProductDetails(@PathVariable long id){
+        String jsonString = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductDetails(id));
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);

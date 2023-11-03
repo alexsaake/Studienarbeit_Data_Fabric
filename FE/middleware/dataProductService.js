@@ -8,6 +8,11 @@ export async function getDataProduct(axios, id)
   return await axios.$get(`api/Gateway/DataProduct/${id}`);
 }
 
+export async function getDataProductDetails(axios, id)
+{
+  return await axios.$get(`api/Gateway/DataProduct/${id}/Details`);
+}
+
 export async function deleteDataProduct(axios, id)
 {
   return await axios.$delete(`api/Gateway/DataProduct/${id}`);
@@ -19,13 +24,6 @@ export async function insertDataProduct(axios, data)
 export async function updateDataProduct(axios, data, id)
 {
   return await axios.$patch(`api/Gateway/DataProduct/${id}`, data);
-}
-export async function insertMapsData(axios, id, data) {
-  return await axios.$post(`api/Gateway/DataProduct/${id}/Data/MapsData/Filter`, data);
-}
-export async function getDataProductImage(axios, id)
-{
-  return await axios.$get(`api/Gateway/DataProduct/${id}/Image`);
 }
 
 export async function getDataProductData(axios, id)

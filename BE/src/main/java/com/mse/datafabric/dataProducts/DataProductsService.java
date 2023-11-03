@@ -26,7 +26,7 @@ class DataProductsService implements IDataProductsService
 
     public List<DataProductOverviewDto> getDataProductsOverview()
     {
-        String dataProductsSql = "SELECT dp.id, dp.title, dp.shortDescription, dp.lastUpdated, users.username, dpc.category, dpar.accessRight FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id JOIN users ON dp.userId = users.id WHERE dp.isDeleted = FALSE";
+        String dataProductsSql = "SELECT id, title, lastUpdated, categoryId FROM DataProducts WHERE isDeleted = FALSE";
         List<Map<String, Object>> databaseDataProducts = myJdbcTemplate.queryForList(dataProductsSql);
 
         List<DataProductOverviewDto> dataProducts = new ArrayList<>();
@@ -35,12 +35,9 @@ class DataProductsService implements IDataProductsService
         {
             DataProductOverviewDto dataProduct = new DataProductOverviewDto(
                 (Long) databaseDataProduct.get("id"),
-                (String)databaseDataProduct.get("title"),
-                (String)databaseDataProduct.get("shortDescription"),
+                (String) databaseDataProduct.get("title"),
                 new Date(((Timestamp) databaseDataProduct.get("lastUpdated")).getTime()),
-                (String)databaseDataProduct.get("username"),
-                DataProductAccessRights.valueOf((String)databaseDataProduct.get("accessRight")),
-                DataProductCategories.valueOf((String)databaseDataProduct.get("category"))
+                (Long) databaseDataProduct.get("categoryId")
             );
             dataProducts.add(dataProduct);
         }
@@ -48,21 +45,26 @@ class DataProductsService implements IDataProductsService
         return dataProducts;
     }
 
-    public DataProductDetailDto getDataProductDetail(long id) {
-        String dataProductSql = "SELECT dp.title, dp.shortDescription, dp.description, dp.source, dp.sourceLink, dp.lastUpdated, dpc.category, dpar.accessRight, users.username FROM DataProducts dp JOIN DataProduct_Categories dpc ON dp.categoryId = dpc.id JOIN DataProduct_AccessRights dpar ON dp.accessRightId = dpar.id JOIN users ON dp.userId = users.id WHERE dp.id = '%s' AND dp.isDeleted = FALSE".formatted(id);
+    public DataProductSummaryDto getDataProductSummary(long id) {
+        String dataProductSql = "SELECT dp.imageFileName, dp.shortDescription, users.username, dp.accessRightId FROM DataProducts dp JOIN users ON dp.userId = users.id WHERE dp.id = '%s' AND dp.isDeleted = FALSE".formatted(id);
+        Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
+
+        return new DataProductSummaryDto(
+                (String) databaseDataProduct.get("imageFileName"),
+                (String) databaseDataProduct.get("shortDescription"),
+                (String) databaseDataProduct.get("username"),
+                (Long) databaseDataProduct.get("accessRightId")
+        );
+    }
+
+    public DataProductDetailDto getDataProductDetails(long id) {
+        String dataProductSql = "SELECT description, source, sourceLink FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(id);
         Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
 
         return new DataProductDetailDto(
-            id,
-            (String)databaseDataProduct.get("title"),
-            (String)databaseDataProduct.get("shortDescription"),
-            new Date(((Timestamp) databaseDataProduct.get("lastUpdated")).getTime()),
-            DataProductAccessRights.valueOf((String)databaseDataProduct.get("accessRight")),
-            DataProductCategories.valueOf((String)databaseDataProduct.get("category")),
             (String)databaseDataProduct.get("description"),
             (String)databaseDataProduct.get("source"),
-            (String)databaseDataProduct.get("sourceLink"),
-            (String)databaseDataProduct.get("username")
+            (String)databaseDataProduct.get("sourceLink")
         );
     }
 

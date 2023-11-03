@@ -1,24 +1,27 @@
 <template>
-  <v-card v-if="!dataProductDetail" class="my-progress">
-    <v-progress-circular :size="120" indeterminate color="white"/>
-  </v-card>
-  <v-card v-else class="my-details">
-    <v-card>
+  <v-card class="my-details">
+    <v-card v-if="false">
+      <v-progress-circular :size="120" indeterminate color="white"/>
+    </v-card>
+    <v-card v-else-if="showUseDataDialog" class="my-dialog">
+      <data-product-use-data-card :id="id" @on-close-dialog="onCloseUseData" />
+    </v-card>
+    <v-card v-else-if="showRatingDialog" class="my-dialog">
+      <data-product-edit-rating-card :id="id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
+    </v-card>
+    <v-card v-else>
       <data-product-detail-card
-        :id="dataProductDetail.id"
-        :title="dataProductDetail.title"
-        :short-description="dataProductDetail.shortDescription"
-        :description="dataProductDetail.description"
-        :source="dataProductDetail.source"
-        :source-link="dataProductDetail.sourceLink"
-        :last-updated="dataProductDetail.lastUpdated"
-        :category="dataProductDetail.category"
-        :access-right="dataProductDetail.accessRight"
-        :avg-rating="dataProductDetail.avgRating"
-        :image="dataProductDetail.image"
-        :user-name="dataProductDetail.userName"
-        @on-data-product-deleted="$emit('on-data-product-deleted');"
-        @on-edit-data-product="$emit('on-edit-data-product')"
+          :image-file-name="imageFileName"
+          :id="id"
+          :title="title"
+          :short-description="shortDescription"
+          :last-updated="lastUpdated"
+          :category="category"
+          :access-right="accessRight"
+          :average-rating="averageRating"
+          :user-name="userName"
+          @on-data-product-deleted="$emit('on-data-product-deleted');"
+          @on-edit-data-product="$emit('on-edit-data-product')"
       />
       <v-card-actions>
         <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
@@ -28,11 +31,14 @@
         <v-btn @click="$emit('on-close-data-product');">Zurück</v-btn>
       </v-card-actions>
       <v-container class="pa-0">
-        <v-row  v-if="dataProductDetail.ratings.length == 0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
-        <v-row no-gutters>
-          <v-col v-for="(rating, index) in dataProductDetail.ratings" :key="index" cols="12">
+        <v-row v-if="ratings == null">
+          <v-progress-circular :size="120" indeterminate color="white"/>
+        </v-row>
+        <v-row v-else-if="ratings.length === 0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
+        <v-row else no-gutters>
+          <v-col v-for="(rating, index) in ratings" :key="index" cols="12">
             <data-product-rating-card
-                :id="dataProductDetail.id"
+                :id="id"
                 :title="rating.title"
                 :comment="rating.comment"
                 :rating="rating.rating"
@@ -46,19 +52,12 @@
         </v-row>
       </v-container>
     </v-card>
-    <v-card v-if="showUseDataDialog" class="my-dialog">
-      <data-product-use-data-card :id="dataProductDetail.id" @on-close-dialog="onCloseUseData" />
-    </v-card>
-    <v-card v-if="showRatingDialog" class="my-dialog">
-      <data-product-edit-rating-card :id="dataProductDetail.id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
-    </v-card>
   </v-card>
 </template>
 
 <script>
 import {
-  getDataProduct, getDataProductAvgRatings,
-  getDataProductImage, getDataProductRatingCanSubmit,
+  getDataProductRatingCanSubmit,
   getDataProductRatings
 } from "~/middleware/dataProductService";
   import DataProductRatingCard from "~/components/DataProductRatingCard.vue";
@@ -70,18 +69,22 @@ import {
     components: {
       DataProductUseDataCard, DataProductEditRatingCard, DataProductDetailCard, DataProductRatingCard},
     props: {
-      id: {
-        type: Number,
-        required: true,
-        default: -1
-      }
+      imageFileName: String,
+      id: Number,
+      title: String,
+      shortDescription: String,
+      lastUpdated: Date,
+      category: String,
+      accessRight: String,
+      averageRating: Number,
+      userName: String
     },
     data() {
       return {
         showUseDataDialog: false,
         showRatingDialog: false,
         showDeleteRating: false,
-        dataProductDetail: null, // Initialize to null to indicate data is not yet loaded
+        ratings: null, // Initialize to null to indicate data is not yet loaded
         canSubmit: true,
         isUpdate: false,
         existingRating: null,
@@ -89,27 +92,15 @@ import {
       }
     },
     async fetch() {
-      if(this.id !== -1)
-      {
-        this.dataProductDetail = await this.fetchDataProductDetail(this.id);
-        if(this.$auth.loggedIn)
-        {
-          this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.id);
-        }
-      }
-      else
-      {
-        this.dataProductDetail = null // Reset to null when id changes to indicate data is not yet loaded
-      }
+      await this.refreshRatings();
     },
     mounted() {
       this.updateScreenWidth();
       this.onScreenResize();
     },
     methods: {
-      async fetchDataProductDetail(id) {
-        const rawDataProductDetail = await getDataProduct(this.$axios, id);
-        const rawDataProductRatings = await getDataProductRatings(this.$axios, id);
+      async fetchDataProductRatings() {
+        const rawDataProductRatings = await getDataProductRatings(this.$axios, this.id);
         const dataProductRatings = [];
         for (const rawDataProductRating of rawDataProductRatings) {
           dataProductRatings.push({
@@ -117,25 +108,11 @@ import {
             comment: rawDataProductRating.comment,
             rating: rawDataProductRating.rating,
             userName: rawDataProductRating.userName,
-            submitted: new Date(rawDataProductRating.submitted).toLocaleDateString('ge-GE'),
+            submitted: new Date(rawDataProductRating.submitted),
             isEdited: rawDataProductRating.isEdited,
           });
         }
-        return {
-          id: rawDataProductDetail.id,
-          title: rawDataProductDetail.title,
-          shortDescription: rawDataProductDetail.shortDescription,
-          description: rawDataProductDetail.description,
-          source: rawDataProductDetail.source,
-          sourceLink: rawDataProductDetail.sourceLink,
-          lastUpdated: new Date(rawDataProductDetail.lastUpdated).toLocaleDateString('ge-GE'),
-          category: rawDataProductDetail.category,
-          accessRight: rawDataProductDetail.accessRight,
-          image: await getDataProductImage(this.$axios, rawDataProductDetail.id),
-          ratings: dataProductRatings,
-          avgRating: await getDataProductAvgRatings(this.$axios, rawDataProductDetail.id),
-          userName: rawDataProductDetail.userName
-        };
+        this.ratings = dataProductRatings;
       },
       onOpenUseData()
       {
@@ -147,7 +124,7 @@ import {
       },
       async refreshRatings()
       {
-        this.dataProductDetail = await this.fetchDataProductDetail(this.id);
+        await this.fetchDataProductRatings();
         if(this.$auth.loggedIn)
         {
           this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.id);
@@ -175,10 +152,6 @@ import {
         this.showRatingDialog = false;
         this.isUpdate = false;
         this.existingRating = null;
-      },
-      onCloseDataProduct()
-      {
-        this.$emit('on-close-data-product');
       },
       onScreenResize() {
         window.addEventListener("resize", () => {

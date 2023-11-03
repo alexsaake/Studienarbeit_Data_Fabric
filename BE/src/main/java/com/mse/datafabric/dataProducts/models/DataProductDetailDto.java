@@ -1,26 +1,20 @@
 package com.mse.datafabric.dataProducts.models;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Objects;
 
 @Getter
-@JsonPropertyOrder({"id", "title", "shortDescription", "description", "userName", "source", "sourceLink", "lastUpdated", "category", "accessRights"})
-public class DataProductDetailDto extends DataProductOverviewDto implements Serializable
+@AllArgsConstructor
+@JsonPropertyOrder({"description", "source", "sourceLink"})
+public class DataProductDetailDto implements Serializable
 {
     private final String description;
     private final String source;
     private final String sourceLink;
-
-    public DataProductDetailDto(long id, String title, String shortDescription, Date lastUpdated, DataProductAccessRights accessRight, DataProductCategories category, String description, String source, String sourceLink, String userName) {
-        super(id, title, shortDescription, lastUpdated, userName, accessRight, category);
-        this.description = description;
-        this.source = source;
-        this.sourceLink = sourceLink;
-    }
 
     @Override
     public boolean equals(Object obj) {
