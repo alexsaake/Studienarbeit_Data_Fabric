@@ -9,12 +9,12 @@ public interface IDataProductsService
     List<DataProductOverviewDto> getDataProductsOverview();
     DataProductSummaryDto getDataProductSummary(long dataProductId);
     DataProductDetailsDto getDataProductDetails(long dataProductId);
-    void softDeleteDataProduct(long dataProductId);
+    void softDeleteDataProduct(String userName, long dataProductId);
     List<RatingDto> getDataProductRatings(long dataProductId);
     RatingDetailsDto getDataProductRatingDetails(long ratingId);
     DataProductRatingMaxLengths getDataProductRatingMaxLengths();
-    boolean getDataProductRatingCanSubmit(long dataProductId, String userName);
+    boolean getDataProductRatingCanSubmit(String userName, long dataProductId);
     void setDataProductsRating(String userName, long dataProductId, RatingDetailsDto ratingDetails);
-    void updateDataProductsRating(long ratingId, RatingDetailsDto ratingDetails);
-    void markAsDeletedDataProductRating(long ratingId);
+    void updateDataProductsRating(String userName, long ratingId, RatingDetailsDto ratingDetails);
+    void markAsDeletedDataProductRating(String userName, long ratingId);
 }

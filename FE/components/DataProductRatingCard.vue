@@ -26,7 +26,7 @@
         <v-btn v-show="$auth.loggedIn && $auth.user.userName === userName" icon @click="onShowConfirmDeleteRating">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
-        <v-btn v-show="$auth.loggedIn && $auth.user.userName === userName" icon @click="$emit('on-edit-rating')">
+        <v-btn v-show="$auth.loggedIn && $auth.user.userName === userName" icon @click="$emit('on-edit-rating', ratingId, title, comment, rating)">
           <v-icon>mdi-lead-pencil</v-icon>
         </v-btn>
       </v-card-actions>

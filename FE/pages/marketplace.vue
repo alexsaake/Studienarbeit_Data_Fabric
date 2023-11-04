@@ -96,14 +96,14 @@ import {
         dataProductsOverview: [],
         selectedDataProduct: {
           id: -1,
-          image: String,
-          title: String,
-          shortDescription: String,
-          lastUpdated: Date,
-          accessRight: String,
-          category: String,
-          averageRating: Number,
-          userName: String
+          image: '',
+          title: '',
+          shortDescription: '',
+          lastUpdated: new Date(),
+          accessRight: '',
+          category: '',
+          averageRating: 0,
+          userName: ''
         },
         isLoading: true
       }
@@ -134,18 +134,19 @@ import {
               dataProduct.category === filter
           ).sort(sortFunction)
         }
-      },
+      }
     },
 
     async created() {
-      await this.fetchData() // Call the fetchData method on component creation
+      await this.fetchData(); // Call the fetchData method on component creation
       if(this.$route.query !== undefined && this.$route.query.id !== undefined) {
-        const id = this.$route.query.id;
+        const id = Number.parseInt(this.$route.query.id.toString());
         const dataProduct = await getDataProduct(this.$axios, id);
-        const dataProductOverview = this.dataProductsOverview.filter(obj => { return obj.id === id });
+        const dataProductOverview = this.dataProductsOverview.find(obj => { return obj.id === id });
         if(dataProduct.imageFileName === null) {
           dataProduct.imageFileName = "defaultImage.jpg";
         }
+
         this.onShowDataProduct(id, dataProduct.imageFileName, dataProductOverview.title, dataProduct.shortDescription, dataProductOverview.lastUpdated, this.accessRightsCatalogue[dataProduct.accessRightsId], dataProductOverview.averageRating, dataProduct.userName);
       }
     },

@@ -8,7 +8,7 @@
         <data-product-use-data-card :id="id" @on-close-dialog="onCloseUseData" />
       </v-card>
       <v-card v-else-if="showRatingDialog" class="my-dialog">
-        <data-product-edit-rating-card :id="id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
+        <data-product-edit-rating-card :data-product-id="id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
       </v-card>
       <v-card v-else>
         <data-product-detail-card
@@ -42,7 +42,7 @@
                 <data-product-rating-card
                     :rating-id="rating.id"
                     @on-rating-deleted="refreshRatings"
-                    @on-edit-rating="refreshRatings"
+                    @on-edit-rating="onUpdateRating"
                 />
               </v-lazy>
             </v-col>
@@ -131,6 +131,17 @@ import {
         this.existingRating = null;
         this.showRatingDialog = true
       },
+      onUpdateRating(ratingId, title, comment, rating)
+      {
+        this.isUpdate = true;
+        this.existingRating = {
+          ratingId,
+          title,
+          comment,
+          rating
+        };
+        this.showRatingDialog = true;
+      },
       onRatingAdded()
       {
         this.refreshRatings();
@@ -138,9 +149,9 @@ import {
       },
       onCloseRating()
       {
-        this.showRatingDialog = false;
         this.isUpdate = false;
         this.existingRating = null;
+        this.showRatingDialog = false;
       },
       onScreenResize() {
         window.addEventListener("resize", () => {

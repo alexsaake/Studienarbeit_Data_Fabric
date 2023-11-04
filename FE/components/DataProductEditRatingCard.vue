@@ -21,7 +21,7 @@ import {
   export default {
     name: 'DataProductEditRatingForm',
     props: {
-      id: {
+      dataProductId: {
         type: Number,
         required: true,
         default: -1
@@ -33,12 +33,12 @@ import {
       },
       existingRating: {
         type: Object,
-        required: false,
         default: null
       }
     },
     data() {
       return {
+        ratingId: -1,
         title: '',
         comment: '',
         rating: 0,
@@ -50,14 +50,15 @@ import {
     async fetch() {
       if(this.isUpdate)
       {
+        this.ratingId = this.existingRating.ratingId;
         this.title = this.existingRating.title;
         this.comment = this.existingRating.comment;
         this.rating = this.existingRating.rating;
       }
       if(this.$auth.loggedIn) {
-        const maxLenghts = await getDataProductRatingMaxLengths(this.$axios);
-        this.ratingTitleMaxLength = maxLenghts.title;
-        this.ratingCommentMaxLength = maxLenghts.comment;
+        const maxLengths = await getDataProductRatingMaxLengths(this.$axios);
+        this.ratingTitleMaxLength = maxLengths.title;
+        this.ratingCommentMaxLength = maxLengths.comment;
       }
     },
     methods: {
@@ -67,7 +68,7 @@ import {
       async onSubmitRating() {
         if(!this.isUpdate)
         {
-          await setDataProductRating(this.$axios, this.id, this.title, this.comment, this.rating)
+          await setDataProductRating(this.$axios, this.dataProductId, this.title, this.comment, this.rating)
               .then(() => {
                 this.cancelRating();
                 this.$emit('on-rating-added');
@@ -75,7 +76,7 @@ import {
         }
         else
         {
-          await updateDataProductRating(this.$axios, this.id, this.title, this.comment, this.rating)
+          await updateDataProductRating(this.$axios, this.ratingId, this.title, this.comment, this.rating)
               .then(() => {
                 this.cancelRating();
                 this.$emit('on-rating-added');
