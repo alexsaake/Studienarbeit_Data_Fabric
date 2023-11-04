@@ -1,64 +1,61 @@
 <template>
   <v-card class="my-details">
-    <v-card v-if="false">
+    <v-card v-if="isLoading">
       <v-progress-circular :size="120" indeterminate color="white"/>
     </v-card>
-    <v-card v-else-if="showUseDataDialog" class="my-dialog">
-      <data-product-use-data-card :id="id" @on-close-dialog="onCloseUseData" />
-    </v-card>
-    <v-card v-else-if="showRatingDialog" class="my-dialog">
-      <data-product-edit-rating-card :id="id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
-    </v-card>
     <v-card v-else>
-      <data-product-detail-card
-          :image-file-name="imageFileName"
-          :id="id"
-          :title="title"
-          :short-description="shortDescription"
-          :last-updated="lastUpdated"
-          :category="category"
-          :access-right="accessRight"
-          :average-rating="averageRating"
-          :user-name="userName"
-          @on-data-product-deleted="$emit('on-data-product-deleted');"
-          @on-edit-data-product="$emit('on-edit-data-product')"
-      />
-      <v-card-actions>
-        <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
-        <v-btn v-if="$auth.loggedIn && canSubmit === true" @click="onCreateRating">Datenprodukt bewerten</v-btn>
-      </v-card-actions>
-      <v-card-actions v-if="screenWidth<600">
-        <v-btn @click="$emit('on-close-data-product');">Zurück</v-btn>
-      </v-card-actions>
-      <v-container class="pa-0">
-        <v-row v-if="ratings == null">
-          <v-progress-circular :size="120" indeterminate color="white"/>
-        </v-row>
-        <v-row v-else-if="ratings.length === 0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
-        <v-row else no-gutters>
-          <v-col v-for="(rating, index) in ratings" :key="index" cols="12">
-            <data-product-rating-card
-                :id="id"
-                :title="rating.title"
-                :comment="rating.comment"
-                :rating="rating.rating"
-                :user-name="rating.userName"
-                :submitted="rating.submitted"
-                :is-edited="rating.isEdited"
-                @on-rating-deleted="refreshRatings"
-                @on-edit-rating="onUpdateRating(rating)"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
+      <v-card v-if="showUseDataDialog" class="my-dialog">
+        <data-product-use-data-card :id="id" @on-close-dialog="onCloseUseData" />
+      </v-card>
+      <v-card v-else-if="showRatingDialog" class="my-dialog">
+        <data-product-edit-rating-card :id="id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
+      </v-card>
+      <v-card v-else>
+        <data-product-detail-card
+            :image-file-name="imageFileName"
+            :id="id"
+            :title="title"
+            :short-description="shortDescription"
+            :last-updated="lastUpdated"
+            :category="category"
+            :access-right="accessRight"
+            :average-rating="averageRating"
+            :user-name="userName"
+            @on-data-product-deleted="$emit('on-data-product-deleted');"
+            @on-edit-data-product="$emit('on-edit-data-product')"
+        />
+        <v-card-actions>
+          <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
+          <v-btn v-if="$auth.loggedIn && canSubmit === true" @click="onCreateRating">Datenprodukt bewerten</v-btn>
+        </v-card-actions>
+        <v-card-actions v-if="screenWidth<600">
+          <v-btn @click="$emit('on-close-data-product');">Zurück</v-btn>
+        </v-card-actions>
+        <v-container class="pa-0">
+          <v-row v-if="ratings == null">
+            <v-progress-circular :size="120" indeterminate color="white"/>
+          </v-row>
+          <v-row v-else-if="ratings.length === 0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
+          <v-row else no-gutters>
+            <v-col v-for="(rating, index) in ratings" :key="index" cols="12">
+              <v-lazy :min-height="200" :options="{'threshold':0.5}" transition="fade-transition">
+                <data-product-rating-card
+                    :rating-id="rating.id"
+                    @on-rating-deleted="refreshRatings"
+                    @on-edit-rating="refreshRatings"
+                />
+              </v-lazy>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
     </v-card>
   </v-card>
 </template>
 
 <script>
 import {
-  getDataProductRatingCanSubmit,
-  getDataProductRatings
+  getDataProductRatingCanSubmit, getDataProductRatings,
 } from "~/middleware/dataProductService";
   import DataProductRatingCard from "~/components/DataProductRatingCard.vue";
   import DataProductDetailCard from "~/components/DataProductDetailCard.vue";
@@ -89,6 +86,7 @@ import {
         isUpdate: false,
         existingRating: null,
         screenWidth: null,
+        isLoading: true
       }
     },
     async fetch() {
@@ -99,20 +97,15 @@ import {
       this.onScreenResize();
     },
     methods: {
-      async fetchDataProductRatings() {
-        const rawDataProductRatings = await getDataProductRatings(this.$axios, this.id);
-        const dataProductRatings = [];
-        for (const rawDataProductRating of rawDataProductRatings) {
-          dataProductRatings.push({
-            title: rawDataProductRating.title,
-            comment: rawDataProductRating.comment,
-            rating: rawDataProductRating.rating,
-            userName: rawDataProductRating.userName,
-            submitted: new Date(rawDataProductRating.submitted),
-            isEdited: rawDataProductRating.isEdited,
+      async fetchRatings() {
+        const rawRatings = await getDataProductRatings(this.$axios, this.id);
+        const ratings = [];
+        for (const rawRating of rawRatings) {
+          ratings.push({
+            id: rawRating.id
           });
         }
-        this.ratings = dataProductRatings;
+        this.ratings = ratings;
       },
       onOpenUseData()
       {
@@ -124,23 +117,19 @@ import {
       },
       async refreshRatings()
       {
-        await this.fetchDataProductRatings();
+        this.isLoading = true;
+        await this.fetchRatings();
         if(this.$auth.loggedIn)
         {
           this.canSubmit = await getDataProductRatingCanSubmit(this.$axios, this.id);
         }
+        this.isLoading = false;
       },
       onCreateRating()
       {
         this.isUpdate = false;
         this.existingRating = null;
         this.showRatingDialog = true
-      },
-      onUpdateRating(rating)
-      {
-        this.isUpdate = true;
-        this.existingRating = rating;
-        this.showRatingDialog = true;
       },
       onRatingAdded()
       {

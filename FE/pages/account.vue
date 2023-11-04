@@ -10,24 +10,22 @@
     </v-form>
     </v-container>
     <v-container>
-
-
       <v-card-actions>
         <v-btn @click="onLogout()">Logout</v-btn>
         <v-btn @click="onEdit()">{{ editSaveButtonText }}</v-btn>
       </v-card-actions>
-
-        <v-row v-if="userRatings.length !=0" justify="center" class="pb-10">Your Ratings</v-row>
-        <v-row no-gutters>
+        <v-row v-if="userRatings == null">
+          <v-progress-circular :size="120" indeterminate color="white"/>
+        </v-row>
+        <v-row v-else-if="userRatings.length !=0" justify="center" class="pb-10" no-gutters>
+          Your Ratings
           <v-col v-for="(rating, index) in userRatings" :key="index" cols="12">
-            <user-rating-card
-                :id="rating.id"
-                :title="rating.title"
-                :comment="rating.comment"
-                :rating="rating.rating"
-                :submitted="rating.submitted"
-                :is-edited="rating.isEdited"
-            />
+            <v-lazy :min-height="200" :options="{'threshold':0.5}" transition="fade-transition">
+              <user-rating-card
+                  :data-product-id="rating.dataProductId"
+                  :rating-id="rating.id"
+              />
+            </v-lazy>
           </v-col>
           <v-row v-if="userRatings.length==0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
         </v-row>
@@ -59,7 +57,7 @@ import { updateUser, getUserRatings } from "~/middleware/userService";
       this.user.lastName = this.$auth.user.lastName;
       this.user.userName = this.$auth.user.userName;
       this.user.email = this.$auth.user.email;
-      this.userRatings = await this.fetchUserRatings();
+      await this.fetchUserRatings();
     },
     methods: {
       async fetchUserRatings() {
@@ -67,16 +65,12 @@ import { updateUser, getUserRatings } from "~/middleware/userService";
         const formattedUserRatings = [];
         for (const rawRating of userRatings) {
           const formattedRating = {
-            id: rawRating.id,
-            title: rawRating.title,
-            comment: rawRating.comment,
-            rating: rawRating.rating,
-            submitted: new Date(rawRating.submitted).toLocaleDateString('ge-GE'),
-            isEdited: rawRating.edited
+            dataProductId: rawRating.dataProductId,
+            id: rawRating.id
           };
           formattedUserRatings.push(formattedRating);
         }
-        return formattedUserRatings;
+        this.userRatings = formattedUserRatings;
       },
 
       async onLogout() {

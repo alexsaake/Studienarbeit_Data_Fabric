@@ -7,13 +7,14 @@ import java.util.List;
 public interface IDataProductsService
 {
     List<DataProductOverviewDto> getDataProductsOverview();
-    DataProductSummaryDto getDataProductSummary(long id);
-    DataProductDetailDto getDataProductDetails(long id);
-    void softDeleteDataProduct(long id, String userName);
-    List<RatingDto> getDataProductRatings(long id);
+    DataProductSummaryDto getDataProductSummary(long dataProductId);
+    DataProductDetailsDto getDataProductDetails(long dataProductId);
+    void softDeleteDataProduct(long dataProductId);
+    List<RatingDto> getDataProductRatings(long dataProductId);
+    RatingDetailsDto getDataProductRatingDetails(long ratingId);
     DataProductRatingMaxLengths getDataProductRatingMaxLengths();
-    boolean getDataProductRatingCanSubmit(long id, String userName);
-    void setDataProductsRating(RatingDto dataProductRating);
-    void updateDataProductsRating(RatingDto dataProductRating);
-    void markAsDeletedDataProductRating(long id, String userName);
+    boolean getDataProductRatingCanSubmit(long dataProductId, String userName);
+    void setDataProductsRating(String userName, long dataProductId, RatingDetailsDto ratingDetails);
+    void updateDataProductsRating(long ratingId, RatingDetailsDto ratingDetails);
+    void markAsDeletedDataProductRating(long ratingId);
 }

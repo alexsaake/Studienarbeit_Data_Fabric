@@ -1,6 +1,6 @@
 <template>
   <v-card class="d-flex flex-column" @click="$emit('on-select-data-product', id, imageFileName, title, shortDescription, lastUpdated, accessRight, averageRating, userName)">
-    <v-card v-if="false">
+    <v-card v-if="isLoading">
       <v-progress-circular :size="120" indeterminate color="white"/>
     </v-card>
     <v-card v-else>
@@ -49,10 +49,11 @@ import {getDataProduct} from "~/middleware/dataProductService";
     },
     data() {
       return {
-        imageFileName: String,
-        shortDescription: String,
-        accessRight: String,
-        userName: String
+        imageFileName: '',
+        shortDescription: '',
+        accessRight: '',
+        userName: '',
+        isLoading: true
       }
     },
     async created() {
@@ -69,6 +70,8 @@ import {getDataProduct} from "~/middleware/dataProductService";
         this.shortDescription = dataProductSummary.shortDescription;
         this.accessRight = this.accessRightsCatalogue[dataProductSummary.accessRightId];
         this.userName = dataProductSummary.userName;
+
+        this.isLoading = false;
       }
     }
   }

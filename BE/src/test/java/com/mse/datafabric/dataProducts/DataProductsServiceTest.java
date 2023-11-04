@@ -2,7 +2,7 @@ package com.mse.datafabric.dataProducts;
 
 import com.mse.datafabric.dataProducts.models.DataProductAccessRights;
 import com.mse.datafabric.dataProducts.models.DataProductCategories;
-import com.mse.datafabric.dataProducts.models.DataProductDetailDto;
+import com.mse.datafabric.dataProducts.models.DataProductDetailsDto;
 import com.mse.datafabric.dataProducts.models.DataProductSummaryDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,9 +52,9 @@ class DataProductsServiceTest
     {
         Map<String, Object> databaseDataProduct = Map.of("id",Id,"title", "title","shortDescription","shortDescription","description","description", "username", "schne", "source","source","sourceLink","sourceLink","lastUpdated", new Timestamp(0),"category","Wirtschaft","accessRight","gratis");
         Mockito.when(myJdbcTemplateMock.queryForMap(anyString())).thenReturn(databaseDataProduct);
-        DataProductSummaryDto expectedDataProduct = new DataProductDetailDto(Id, "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft, "description", "source", "sourceLink","schne");
+        DataProductSummaryDto expectedDataProduct = new DataProductDetailsDto(Id, "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft, "description", "source", "sourceLink","schne");
 
-        DataProductDetailDto actualDataProduct = myDataProductsService.getDataProductDetail(Id);
+        DataProductDetailsDto actualDataProduct = myDataProductsService.getDataProductDetail(Id);
 
         Assert.isTrue(expectedDataProduct.equals(actualDataProduct), "");
     }

@@ -94,30 +94,19 @@ export async function getDataProductInsightFilterValues(axios, id, filterId, par
   }
 }
 
-export async function getDataProductRatings(axios, id)
+export async function getDataProductRatings(axios, dataProductId)
 {
-  return await axios.$get(`api/Gateway/DataProduct/${id}/Ratings`);
+  return await axios.$get(`api/Gateway/DataProduct/${dataProductId}/Ratings`);
 }
 
-
-export async function setDataProductRating(axios, id, title, comment, rating)
+export async function getDataProductRating(axios, ratingId)
 {
-  return await axios.$post(`api/Gateway/DataProduct/${id}/Rating`,
-      {
-        title,
-        comment,
-        rating
-      }
-  );
-}
-export async function getDataProductAvgRatings(axios, id)
-{
-  return await axios.$get(`api/Gateway/DataProduct/${id}/Ratings/Averages`);
+  return await axios.$get(`api/Gateway/DataProduct/Rating/${ratingId}`);
 }
 
-export async function updateDataProductRating(axios, id, title, comment, rating)
+export async function setDataProductRating(axios, dataProductId, title, comment, rating)
 {
-  return await axios.$put(`api/Gateway/DataProduct/${id}/Rating`,
+  return await axios.$post(`api/Gateway/DataProduct/${dataProductId}/Rating`,
       {
         title,
         comment,
@@ -126,14 +115,30 @@ export async function updateDataProductRating(axios, id, title, comment, rating)
   );
 }
 
-export async function deleteDataProductRating(axios, id)
+export async function getDataProductAvgRatings(axios, dataProductId)
 {
-  return await axios.request(`api/Gateway/DataProduct/${id}/Rating`, {data: null, method: 'delete'});
+  return await axios.$get(`api/Gateway/DataProduct/${dataProductId}/Ratings/Averages`);
 }
 
-export async function getDataProductRatingCanSubmit(axios, id)
+export async function updateDataProductRating(axios, ratingId, title, comment, rating)
 {
-  return await axios.$get(`api/Gateway/DataProduct/${id}/Rating/CanSubmit`);
+  return await axios.$put(`api/Gateway/DataProduct/Rating/${ratingId}`,
+      {
+        title,
+        comment,
+        rating
+      }
+  );
+}
+
+export async function deleteDataProductRating(axios, ratingId)
+{
+  return await axios.request(`api/Gateway/DataProduct/Rating/${ratingId}`, {data: null, method: 'delete'});
+}
+
+export async function getDataProductRatingCanSubmit(axios, dataProductId)
+{
+  return await axios.$get(`api/Gateway/DataProduct/${dataProductId}/Rating/CanSubmit`);
 }
 
 export async function getDataProductRatingMaxLengths(axios)

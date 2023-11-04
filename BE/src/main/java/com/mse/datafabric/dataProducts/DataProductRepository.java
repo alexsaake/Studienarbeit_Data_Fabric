@@ -206,11 +206,11 @@ public class DataProductRepository {
             return null;
         }
     }
-    public Float getAvgRatings(long id){
+    public Float getAvgRatings(long dataProductId){
         final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.id = ?";
 
         try {
-            return parseFloat(jdbcTemplate.queryForObject(queryAvg, new Object[]{id}, String.class));
+            return parseFloat(jdbcTemplate.queryForObject(queryAvg, new Object[]{dataProductId}, String.class));
         }
 
         catch (Exception e) {
@@ -246,12 +246,12 @@ public class DataProductRepository {
             throw new RuntimeException(e);
         }
     }
-    public String getData(long id){
+    public String getData(long dataProductId){
         final String STATEMENT = "SELECT data FROM dataproducts WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                 STATEMENT, preparedStatement ->
-                        preparedStatement.setLong(1, id),
+                        preparedStatement.setLong(1, dataProductId),
                 (ResultSetExtractor<String>) resultSet -> {
                     if (resultSet.next())
                         return resultSet.getString(1);

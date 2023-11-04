@@ -11,16 +11,12 @@ import com.mse.datafabric.utils.GoogleMapsAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Base64;
-
 
 @ShellComponent
 @RestController
@@ -102,14 +98,14 @@ public class DataProductsController {
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{id}",
+            value = "/DataProduct/{dataProductId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String getDataProductSummary(@PathVariable long id){
+    public String getDataProductSummary(@PathVariable long dataProductId){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductSummary(id));
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductSummary(dataProductId));
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
@@ -120,14 +116,14 @@ public class DataProductsController {
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{id}/Details",
+            value = "/DataProduct/{dataProductId}/Details",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String getDataProductDetails(@PathVariable long id){
+    public String getDataProductDetails(@PathVariable long dataProductId){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductDetails(id));
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductDetails(dataProductId));
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
@@ -154,17 +150,17 @@ public class DataProductsController {
         return -1;
     }
     @PatchMapping(
-            value = "/DataProduct/{id}",
+            value = "/DataProduct/{dataProductId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public boolean editDataProduct(@PathVariable long id, @RequestBody String requestBodyJson){
+    public boolean editDataProduct(@PathVariable long dataProductId, @RequestBody String requestBodyJson){
         DataProductAllDTO dto;
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             dto = mapper.readValue(requestBodyJson, DataProductAllDTO.class);
-            return productData.editDataProduct(dto, id);
+            return productData.editDataProduct(dto, dataProductId);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
@@ -172,48 +168,48 @@ public class DataProductsController {
         return false;
     }
     @GetMapping(
-            value = "/DataProduct/{id}/DataAll",
+            value = "/DataProduct/{dataProductId}/DataAll",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public String getDataProductDataAll(@PathVariable long id){
+    public String getDataProductDataAll(@PathVariable long dataProductId){
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsString(productData.getDataProductAll(id));
+            return mapper.writeValueAsString(productData.getDataProductAll(dataProductId));
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
             return null;
         }
     }
-    @DeleteMapping(
-            value = "/DataProduct/{id}"
-    )
+
     @PreAuthorize("hasAuthority('USER')")
-    public void deleteDataProduct(@PathVariable long id){
-        myDataProductsService.softDeleteDataProduct(id, myAuthenticationService.getCurrentUserName());
+    @DeleteMapping(
+            value = "/DataProduct/{dataProductId}"
+    )
+    public void deleteDataProduct(@PathVariable long dataProductId){
+        myDataProductsService.softDeleteDataProduct(dataProductId);
     }
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{id}/Data",
+            value = "/DataProduct/{dataProductId}/Data",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String getDataProductDetailData(@PathVariable long id){
-        return dataProductRepository.getData(id);
-
+    public String getDataProductDetailData(@PathVariable long dataProductId){
+        return dataProductRepository.getData(dataProductId);
     }
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{id}/Ratings",
+            value = "/DataProduct/{dataProductId}/Ratings",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public String getDataProductRatings(@PathVariable long id){
+    public String getDataProductRatings(@PathVariable long dataProductId){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatings(id));
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatings(dataProductId));
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
@@ -224,84 +220,87 @@ public class DataProductsController {
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{id}/Ratings/Averages",
+            value = "/DataProduct/{dataProductId}/Ratings/Averages",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Float getAvgRatings(@PathVariable long id){
-        return dataProductRepository.getAvgRatings(id);
+    public Float getAvgRatings(@PathVariable long dataProductId){
+        return dataProductRepository.getAvgRatings(dataProductId);
     }
 
     @PreAuthorize("hasAuthority('USER')")
     @ShellMethod( "postDataProduct" )
     @PostMapping(
-            value = "/DataProduct/{id}/Rating"
+            value = "/DataProduct/{dataProductId}/Rating"
     )
-    public void setDataProductRatings(@PathVariable long id, @RequestBody String requestBodyJson){
-        if(!myDataProductsService.getDataProductRatingCanSubmit(id, myAuthenticationService.getCurrentUserName())){
-            return;
-        }
-        RatingDto dataProductRating = null;
+    public void setDataProductRating(@PathVariable long dataProductId, @RequestBody String requestBodyJson){
+        RatingDetailsDto ratingDetails = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            dataProductRating = mapper.readValue(requestBodyJson, RatingDto.class);
+            ratingDetails = mapper.readValue(requestBodyJson, RatingDetailsDto.class);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
         }
 
-        dataProductRating.setId(id);
-        dataProductRating.setUserName(myAuthenticationService.getCurrentUserName());
+        myDataProductsService.setDataProductsRating(myAuthenticationService.getCurrentUserName(), dataProductId, ratingDetails);
+    }
 
-        myDataProductsService.setDataProductsRating(dataProductRating);
+    @ShellMethod( "getDataProduct" )
+    @GetMapping(
+            value = "/DataProduct/Rating/{ratingId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public String getDataProductRating(@PathVariable long ratingId){
+        String jsonString = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatingDetails(ratingId));
+        }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+
+        return jsonString;
     }
 
     @PreAuthorize("hasAuthority('USER')")
     @ShellMethod( "putDataProduct" )
     @PutMapping(
-            value = "/DataProduct/{id}/Rating"
+            value = "/DataProduct/Rating/{ratingId}"
     )
-    public void updateDataProductRatings(@PathVariable long id, @RequestBody String requestBodyJson){
-        if(myDataProductsService.getDataProductRatingCanSubmit(id, myAuthenticationService.getCurrentUserName())){
-            return;
-        }
-        RatingDto dataProductRating = null;
+    public void updateDataProductRatings(@PathVariable long ratingId, @RequestBody String requestBodyJson){
+        RatingDetailsDto ratingDetails = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            dataProductRating = mapper.readValue(requestBodyJson, RatingDto.class);
+            ratingDetails = mapper.readValue(requestBodyJson, RatingDetailsDto.class);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
         }
 
-        dataProductRating.setId(id);
-        dataProductRating.setUserName(myAuthenticationService.getCurrentUserName());
-
-        myDataProductsService.updateDataProductsRating(dataProductRating);
+        myDataProductsService.updateDataProductsRating(ratingId, ratingDetails);
     }
 
     @PreAuthorize("hasAuthority('USER')")
     @ShellMethod( "deleteDataProduct" )
     @DeleteMapping(
-            value = "/DataProduct/{id}/Rating"
+            value = "/DataProduct/Rating/{ratingId}"
     )
-    public void deleteDataProductRating(@PathVariable long id){
-        if(myDataProductsService.getDataProductRatingCanSubmit(id, myAuthenticationService.getCurrentUserName())){
-            return;
-        }
-        myDataProductsService.markAsDeletedDataProductRating(id, myAuthenticationService.getCurrentUserName());
+    public void deleteDataProductRating(@PathVariable long ratingId){
+        myDataProductsService.markAsDeletedDataProductRating(ratingId);
     }
 
     @PreAuthorize("hasAuthority('USER')")
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{id}/Rating/CanSubmit"
+            value = "/DataProduct/{dataProductId}/Rating/CanSubmit"
     )
 
-    public String getDataProductRatingCanSubmit(@PathVariable long id){
+    public String getDataProductRatingCanSubmit(@PathVariable long dataProductId){
         String jsonString = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatingCanSubmit(id, myAuthenticationService.getCurrentUserName()));
+            jsonString = mapper.writeValueAsString(myDataProductsService.getDataProductRatingCanSubmit(dataProductId, myAuthenticationService.getCurrentUserName()));
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);

@@ -83,20 +83,20 @@ public class DataProductData {
             dataProductAddMapsData();
         }
     }
-    public boolean editDataProduct(DataProductAllDTO dto, long id){
-        dataProductRepository.updateDataProduct(dto.metaData, id);
-        dataProductInsightRepository.deleteInsights(id);
-        dataProductInsightRepository.deleteInsightsFilter(id);
-        dataProductRepository.deleteAddressColumns(id);
+    public boolean editDataProduct(DataProductAllDTO dto, long dataProductId){
+        dataProductRepository.updateDataProduct(dto.metaData, dataProductId);
+        dataProductInsightRepository.deleteInsights(dataProductId);
+        dataProductInsightRepository.deleteInsightsFilter(dataProductId);
+        dataProductRepository.deleteAddressColumns(dataProductId);
         //
-        createInsightData(dto, id);
+        createInsightData(dto, dataProductId);
         return true;
     }
-    public DataProductAllDTO getDataProductAll(long id){
-        DataProductDTO dataProduct = dataProductRepository.getDataProduct(id);
-        DataProductInsightDataDTO[] insightData = dataProductInsightRepository.getInsightsData(id);
-        InsightFilterDTO[] insightFilter = dataProductInsightRepository.getInsightFiltersData(id);
-        GoogleMapsAddressDTO mapsData = dataProductRepository.getMapsData(id);
+    public DataProductAllDTO getDataProductAll(long dataProductId){
+        DataProductDTO dataProduct = dataProductRepository.getDataProduct(dataProductId);
+        DataProductInsightDataDTO[] insightData = dataProductInsightRepository.getInsightsData(dataProductId);
+        InsightFilterDTO[] insightFilter = dataProductInsightRepository.getInsightFiltersData(dataProductId);
+        GoogleMapsAddressDTO mapsData = dataProductRepository.getMapsData(dataProductId);
         //
         return new DataProductAllDTO(dataProduct,insightData,insightFilter,mapsData);
     }

@@ -76,14 +76,13 @@ import {
     components: {OverlayButton, DataProductDetailWrapperCard, DataProductOverviewCard},
     beforeRouteLeave (to, from, next) {
       if(to.fullPath === '/login') {
-        if (!this.selectedDataProduct.id) {
-          next();
-        } else {
+        if(this.selectedDataProduct.id !== -1) {
           this.selectedDataProduct.id = -1;
-          next(false);
         }
-      }else
         next();
+      } else {
+        next();
+      }
     },
     data() {
       return {
@@ -95,7 +94,6 @@ import {
         sortOrder: 'Bewertung (abst.)',
         sortOrders: ['Bewertung (abst.)', 'Bewertung (aufst.)', 'Neueste (abst.)', 'Neueste (aufst.)'],
         dataProductsOverview: [],
-        isLoading: true, // Initialize the loading state to true
         selectedDataProduct: {
           id: -1,
           image: String,
@@ -104,9 +102,10 @@ import {
           lastUpdated: Date,
           accessRight: String,
           category: String,
-          averageRating: String,
+          averageRating: Number,
           userName: String
-        }
+        },
+        isLoading: true
       }
     },
     computed: {
@@ -150,7 +149,6 @@ import {
         this.onShowDataProduct(id, dataProduct.imageFileName, dataProductOverview.title, dataProduct.shortDescription, dataProductOverview.lastUpdated, this.accessRightsCatalogue[dataProduct.accessRightsId], dataProductOverview.averageRating, dataProduct.userName);
       }
     },
-
     methods: {
       async fetchData() {
         const rawDataProductsOverview = await getDataProducts(this.$axios);
@@ -205,7 +203,7 @@ import {
       },
       onEditDataProduct()
       {
-        this.$router.push('/dataProduct?id='+this.id);
+        this.$router.push('/dataProduct?id=' + this.selectedDataProduct.id);
       }
     },
   }

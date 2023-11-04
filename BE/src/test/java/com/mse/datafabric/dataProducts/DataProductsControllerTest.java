@@ -3,7 +3,7 @@ package com.mse.datafabric.dataProducts;
 import com.mse.datafabric.auth.AuthenticationService;
 import com.mse.datafabric.dataProducts.models.DataProductAccessRights;
 import com.mse.datafabric.dataProducts.models.DataProductCategories;
-import com.mse.datafabric.dataProducts.models.DataProductDetailDto;
+import com.mse.datafabric.dataProducts.models.DataProductDetailsDto;
 import com.mse.datafabric.dataProducts.models.DataProductSummaryDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ class DataProductsControllerTest
     @Test
     void getDataProductDetail_ValidDataProducts_ReturnValidJSON()
     {
-        DataProductDetailDto dataProductDetailBean = new DataProductDetailDto(1, "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft, "description", "source", "sourceLink","schne");
+        DataProductDetailsDto dataProductDetailBean = new DataProductDetailsDto(1, "title", "shortDescription", new Date(0), DataProductAccessRights.gratis, DataProductCategories.Wirtschaft, "description", "source", "sourceLink","schne");
         Mockito.when(myDataProductsProviderMock.getDataProductDetail(anyLong())).thenReturn(dataProductDetailBean);
         String expectedResponseJSON = "{\"id\":1,\"title\":\"title\",\"shortDescription\":\"shortDescription\",\"description\":\"description\",\"userName\":\"schne\",\"source\":\"source\",\"sourceLink\":\"sourceLink\",\"lastUpdated\":0,\"category\":\"Wirtschaft\",\"accessRight\":\"gratis\"}";
 

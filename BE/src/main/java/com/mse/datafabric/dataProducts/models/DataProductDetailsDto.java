@@ -10,7 +10,7 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"description", "source", "sourceLink"})
-public class DataProductDetailDto implements Serializable
+public class DataProductDetailsDto implements Serializable
 {
     private final String description;
     private final String source;
@@ -26,7 +26,7 @@ public class DataProductDetailDto implements Serializable
             return false;
         }
 
-        final DataProductDetailDto other = (DataProductDetailDto) obj;
+        final DataProductDetailsDto other = (DataProductDetailsDto) obj;
         if (!super.equals(other)) {
             return false;
         }

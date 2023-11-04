@@ -55,7 +55,7 @@ public class UserService {
     {
         UserEntity currentUserEntity = myUserRepository.findByUsername(myAuthenticationService.getCurrentUserName()).get();
 
-        String dataProductsSql = "SELECT dp.id, usr.userName, rate.title, rate.comment, rate.rating, rate.submitted, rate.isEdited FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN Users usr ON rate.id_users = usr.id WHERE usr.userName = '%s' AND rate.isDeleted = FALSE AND dp.isDeleted = FALSE".formatted(currentUserEntity.getUsername());
+        String dataProductsSql = "SELECT rate.id, rate.id_dataProducts FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN Users usr ON rate.id_users = usr.id WHERE usr.userName = '%s' AND rate.isDeleted = FALSE AND dp.isDeleted = FALSE".formatted(currentUserEntity.getUsername());
         List<Map<String, Object>> databaseUserRatings = myJdbcTemplate.queryForList(dataProductsSql);
 
         List<RatingDto> userRatings = new ArrayList<>();
@@ -64,12 +64,7 @@ public class UserService {
         {
             RatingDto dataProductRating = new RatingDto(
                     (Long)databaseUserRating.get("id"),
-                    (String)databaseUserRating.get("userName"),
-                    (String)databaseUserRating.get("title"),
-                    (String)databaseUserRating.get("comment"),
-                    ((BigDecimal)databaseUserRating.get("rating")).intValue(),
-                    new Date(((Timestamp) databaseUserRating.get("submitted")).getTime()),
-                    (Boolean)databaseUserRating.get("isEdited")
+                    (Long)databaseUserRating.get("id_dataProducts")
             );
             userRatings.add(dataProductRating);
         }
