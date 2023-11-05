@@ -60,7 +60,8 @@ export default {
           property: 'accessToken'
         },
         refreshToken: {
-          property: 'refreshToken'
+          property: 'refreshToken',
+          data: 'refreshToken'
         },
         user: {
           property: 'user'
