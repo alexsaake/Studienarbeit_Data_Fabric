@@ -1,4 +1,4 @@
-package com.mse.datafabric.dataProducts.models;
+package com.mse.datafabric.dataProducts.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"imageFileName", "shortDescription", "userName", "accessRightsId"})
-public class DataProductSummaryDto implements Serializable
+public class DataProductSummaryReponse implements Serializable
 {
     private String imageFileName;
     private String shortDescription;
@@ -27,7 +27,7 @@ public class DataProductSummaryDto implements Serializable
             return false;
         }
 
-        final DataProductSummaryDto other = (DataProductSummaryDto) obj;
+        final DataProductSummaryReponse other = (DataProductSummaryReponse) obj;
         if (!Objects.equals(this.imageFileName, other.imageFileName)) {
             return false;
         }

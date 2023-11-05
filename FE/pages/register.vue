@@ -31,8 +31,12 @@
     methods: {
       async onSubmit() {
         await registerUser(this.$axios, this.firstName, this.lastName, this.userName, this.email, this.password)
-          .then(response => {
-            this.$auth.setUserToken(response.data.token);
+          .then(async response => {
+            if(!response) {
+              this.error = 'Username or email already taken.';
+              return;
+            }
+            await this.$auth.loginWith('local', {data: {userName: this.userName, password: this.password}})
           })
           .catch(() => {
             this.error = 'Username or email already taken.';

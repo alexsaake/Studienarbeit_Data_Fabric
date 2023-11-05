@@ -1,4 +1,4 @@
-package com.mse.datafabric.user.dto;
+package com.mse.datafabric.user.models;
 
 public enum UserRoles {
     USER,

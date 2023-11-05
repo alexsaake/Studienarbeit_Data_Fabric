@@ -1,12 +1,15 @@
 package com.mse.datafabric.auth;
 
-import com.mse.datafabric.auth.dto.AuthenticationRequestDto;
-import com.mse.datafabric.auth.dto.AuthenticationResponseDto;
-import com.mse.datafabric.auth.dto.RegisterRequestDto;
+import com.mse.datafabric.auth.models.RefreshToken;
+import com.mse.datafabric.auth.payload.request.LoginRequest;
+import com.mse.datafabric.auth.payload.request.RefreshRequest;
+import com.mse.datafabric.auth.payload.response.JwtResponse;
+import com.mse.datafabric.auth.payload.request.RegisterRequest;
+import com.mse.datafabric.auth.services.RefreshTokenService;
 import com.mse.datafabric.config.JwtService;
-import com.mse.datafabric.user.UserRepository;
-import com.mse.datafabric.user.dto.UserRoles;
-import com.mse.datafabric.user.entities.UserEntity;
+import com.mse.datafabric.auth.repositories.UserRepository;
+import com.mse.datafabric.user.models.UserRoles;
+import com.mse.datafabric.auth.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,40 +22,53 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserRepository myUserRepository;
-    private final PasswordEncoder myPasswordEncoder;
-    private final JwtService myJwtService;
-
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
     private final AuthenticationManager authManager;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthenticationResponseDto authenticate(AuthenticationRequestDto request) {
-        // incorrect username + password will automatically throw an exception
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-
-        // ToDo: throw correct exception, but this case is very unlikely because beforehand an error will be thrown
-        var user = myUserRepository.findByUsername(request.getUserName()).orElseThrow();
-
-        var jwtToken = myJwtService.generateToken(user);
-
-        return AuthenticationResponseDto.builder().token(jwtToken).build();
-    }
-
-    public AuthenticationResponseDto register(RegisterRequestDto request) {
-        var user = UserEntity.builder()
+    public boolean register(RegisterRequest request) {
+        var user = User.builder()
                 .firstname(request.getFirstName())
                 .lastname(request.getLastName())
                 .email(request.getEmail())
                 .username(request.getUserName())
-                .password(myPasswordEncoder.encode(request.getPassword()))
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(UserRoles.USER)
                 .build();
 
-        var savedUser = myUserRepository.save(user);
-        var jwtToken = myJwtService.generateToken(savedUser);
+        try {
+            userRepository.save(user);
+        } catch(Exception e) {
+            return false;
+        }
 
-        return AuthenticationResponseDto.builder()
-                .token(jwtToken)
-                .build();
+        return true;
+    }
+
+    public JwtResponse login(LoginRequest request) {
+        authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
+
+        var user = userRepository.findByUsername(request.getUserName()).orElseThrow();
+
+        var jwtToken = jwtService.generateToken(user);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
+        return new JwtResponse(jwtToken, refreshToken.getToken());
+    }
+
+    public JwtResponse refresh(RefreshRequest request) throws Exception {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String token = jwtService.generateToken(user);
+                    return new JwtResponse(token, requestRefreshToken);
+                })
+                .orElseThrow(() -> new Exception("Refresh token is not in database!"));
     }
 
     public String getCurrentUserName(){

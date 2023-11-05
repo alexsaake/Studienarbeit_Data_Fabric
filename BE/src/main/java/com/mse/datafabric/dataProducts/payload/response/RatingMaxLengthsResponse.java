@@ -1,4 +1,4 @@
-package com.mse.datafabric.dataProducts.models;
+package com.mse.datafabric.dataProducts.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"title", "comment"})
-public class DataProductRatingMaxLengths implements Serializable
+public class RatingMaxLengthsResponse implements Serializable
 {
     private int title;
     private int comment;

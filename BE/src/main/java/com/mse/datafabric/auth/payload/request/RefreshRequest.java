@@ -1,4 +1,4 @@
-package com.mse.datafabric.auth.dto;
+package com.mse.datafabric.auth.payload.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponseDto {
-    private String token;
+public class RefreshRequest {
+    private String refreshToken;
 }

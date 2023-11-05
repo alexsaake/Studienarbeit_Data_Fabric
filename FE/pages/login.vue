@@ -22,7 +22,7 @@
     },
     methods: {
       async onSubmit() {
-        await this.$auth.loginWith("local", {data: {userName: this.userName, password: this.password}})
+        await this.$auth.loginWith('local', {data: {userName: this.userName, password: this.password}})
           .then(() => {
             if(this.$route.query.page !== undefined)
               this.$router.push('/'+ this.$route.query.page );

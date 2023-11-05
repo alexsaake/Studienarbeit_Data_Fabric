@@ -1,6 +1,6 @@
-package com.mse.datafabric.user.entities;
+package com.mse.datafabric.auth.models;
 
-import com.mse.datafabric.user.dto.UserRoles;
+import com.mse.datafabric.user.models.UserRoles;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity implements UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)

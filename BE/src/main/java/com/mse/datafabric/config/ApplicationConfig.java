@@ -1,6 +1,6 @@
 package com.mse.datafabric.config;
 
-import com.mse.datafabric.user.UserRepository;
+import com.mse.datafabric.auth.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

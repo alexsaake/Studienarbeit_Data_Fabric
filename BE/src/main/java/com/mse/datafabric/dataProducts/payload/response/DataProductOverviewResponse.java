@@ -1,4 +1,4 @@
-package com.mse.datafabric.dataProducts.models;
+package com.mse.datafabric.dataProducts.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"id", "title", "lastUpdated", "categoryId"})
-public class DataProductOverviewDto implements Serializable
+public class DataProductOverviewResponse implements Serializable
 {
     private long id;
     private String title;
@@ -28,7 +28,7 @@ public class DataProductOverviewDto implements Serializable
             return false;
         }
 
-        final DataProductOverviewDto other = (DataProductOverviewDto) obj;
+        final DataProductOverviewResponse other = (DataProductOverviewResponse) obj;
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }

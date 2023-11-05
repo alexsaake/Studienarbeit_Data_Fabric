@@ -1,4 +1,4 @@
-package com.mse.datafabric.user.dto;
+package com.mse.datafabric.user.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,13 +7,13 @@ import lombok.Getter;
 
 @Getter
 @JsonPropertyOrder({"firstName", "lastName", "email"})
-public class UserDto {
+public class UserRequest {
     private final String firstName;
     private final String lastName;
     private final String email;
 
     @JsonCreator
-    public UserDto(@JsonProperty("firstName")String firstName, @JsonProperty("lastName")String lastName, @JsonProperty("email")String email) {
+    public UserRequest(@JsonProperty("firstName")String firstName, @JsonProperty("lastName")String lastName, @JsonProperty("email")String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

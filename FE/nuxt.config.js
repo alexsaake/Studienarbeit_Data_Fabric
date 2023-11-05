@@ -55,11 +55,19 @@ export default {
   auth: {
     strategies: {
       local: {
+        scheme: 'refresh',
+        token: {
+          property: 'accessToken'
+        },
+        refreshToken: {
+          property: 'refreshToken'
+        },
         user: {
           property: 'user'
         },
         endpoints: {
-          login: { url: '/api/Gateway/Auth/Authenticate', method: 'post', propertyName: 'data.token' },
+          login: { url: '/api/Gateway/Auth/Login', method: 'post' },
+          refresh: { url: '/api/Gateway/Auth/Refresh', method: 'post' },
           user: { url: '/api/Gateway/User', method: 'get' },
           logout: false
         }

@@ -1,14 +1,11 @@
-package com.mse.datafabric.dataProducts.models;
+package com.mse.datafabric.dataProducts.payload;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mse.datafabric.dataProducts.data.insights.DataProductInsightDataDTO;
 import com.mse.datafabric.dataProducts.data.insights.InsightFilterDTO;
+import com.mse.datafabric.dataProducts.models.DataProductDTO;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;
-
-import java.util.Date;
 
 public class DataProductAllDTO {
     public DataProductDTO metaData;

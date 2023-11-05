@@ -1,6 +1,7 @@
 package com.mse.datafabric.dataProducts;
 
-import com.mse.datafabric.dataProducts.models.*;
+import com.mse.datafabric.dataProducts.payload.RatingDetailsDTO;
+import com.mse.datafabric.dataProducts.payload.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -24,16 +25,16 @@ class DataProductsService implements IDataProductsService
         myJdbcTemplate = jdbcTemplate;
     }
 
-    public List<DataProductOverviewDto> getDataProductsOverview()
+    public List<DataProductOverviewResponse> getDataProductsOverview()
     {
         String dataProductsSql = "SELECT id, title, lastUpdated, categoryId FROM DataProducts WHERE isDeleted = FALSE";
         List<Map<String, Object>> databaseDataProducts = myJdbcTemplate.queryForList(dataProductsSql);
 
-        List<DataProductOverviewDto> dataProducts = new ArrayList<>();
+        List<DataProductOverviewResponse> dataProducts = new ArrayList<>();
 
         for (Map databaseDataProduct : databaseDataProducts)
         {
-            DataProductOverviewDto dataProduct = new DataProductOverviewDto(
+            DataProductOverviewResponse dataProduct = new DataProductOverviewResponse(
                 (Long) databaseDataProduct.get("id"),
                 (String) databaseDataProduct.get("title"),
                 new Date(((Timestamp) databaseDataProduct.get("lastUpdated")).getTime()),
@@ -45,11 +46,11 @@ class DataProductsService implements IDataProductsService
         return dataProducts;
     }
 
-    public DataProductSummaryDto getDataProductSummary(long dataProductId) {
+    public DataProductSummaryReponse getDataProductSummary(long dataProductId) {
         String dataProductSql = "SELECT dp.imageFileName, dp.shortDescription, users.username, dp.accessRightId FROM DataProducts dp JOIN users ON dp.userId = users.id WHERE dp.id = '%s' AND dp.isDeleted = FALSE".formatted(dataProductId);
         Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
 
-        return new DataProductSummaryDto(
+        return new DataProductSummaryReponse(
                 (String) databaseDataProduct.get("imageFileName"),
                 (String) databaseDataProduct.get("shortDescription"),
                 (String) databaseDataProduct.get("username"),
@@ -57,37 +58,37 @@ class DataProductsService implements IDataProductsService
         );
     }
 
-    public DataProductDetailsDto getDataProductDetails(long dataProductId) {
+    public DataProductDetailsReponse getDataProductDetails(long dataProductId) {
         String dataProductSql = "SELECT description, source, sourceLink FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(dataProductId);
         Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
 
-        return new DataProductDetailsDto(
+        return new DataProductDetailsReponse(
             (String)databaseDataProduct.get("description"),
             (String)databaseDataProduct.get("source"),
             (String)databaseDataProduct.get("sourceLink")
         );
     }
 
-    public void softDeleteDataProduct(String userName, long dataProductId) {
+    public boolean softDeleteDataProduct(String userName, long dataProductId) {
         String SOFT_DELETE_DATA_PRODUCT = "UPDATE DataProducts SET isDeleted = TRUE WHERE id = ? AND userid = (SELECT id FROM Users WHERE userName = ?)";
-        myJdbcTemplate.update(connection -> {
+        return myJdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SOFT_DELETE_DATA_PRODUCT);
             ps.setLong(1, dataProductId);
             ps.setString(2, userName);
             return ps;
-        });
+        }) > 0;
     }
 
-    public List<RatingDto> getDataProductRatings(long dataProductId)
+    public List<RatingReponse> getDataProductRatings(long dataProductId)
     {
         String ratingSql = "SELECT rate.id, rate.id_dataProducts FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id WHERE dp.id = '%s' AND rate.isDeleted = FALSE AND dp.isDeleted = FALSE".formatted(dataProductId);
         List<Map<String, Object>> databaseRatings = myJdbcTemplate.queryForList(ratingSql);
 
-        List<RatingDto> ratings = new ArrayList<>();
+        List<RatingReponse> ratings = new ArrayList<>();
 
         for (Map databaseRating : databaseRatings)
         {
-            RatingDto dataProductRating = new RatingDto(
+            RatingReponse dataProductRating = new RatingReponse(
                     (Long) databaseRating.get("id"),
                     (Long) databaseRating.get("id_dataProducts")
             );
@@ -97,12 +98,12 @@ class DataProductsService implements IDataProductsService
         return ratings;
     }
 
-    public RatingDetailsDto getDataProductRatingDetails(long ratingId)
+    public RatingDetailsDTO getDataProductRatingDetails(long ratingId)
     {
         String ratingSql = "SELECT usr.userName, rate.title, rate.comment, rate.rating, rate.submitted, rate.isEdited FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN Users usr ON rate.id_users = usr.id WHERE rate.id = '%s' AND rate.isDeleted = FALSE AND dp.isDeleted = FALSE".formatted(ratingId);
         Map<String, Object> databaseRating = myJdbcTemplate.queryForMap(ratingSql);
 
-        return new RatingDetailsDto(
+        return new RatingDetailsDTO(
                 (String)databaseRating.get("userName"),
                 (String)databaseRating.get("title"),
                 (String)databaseRating.get("comment"),
@@ -112,12 +113,12 @@ class DataProductsService implements IDataProductsService
         );
     }
 
-    public DataProductRatingMaxLengths getDataProductRatingMaxLengths()
+    public RatingMaxLengthsResponse getDataProductRatingMaxLengths()
     {
         String dataProductsSql = "SELECT title, comment FROM DataProduct_Ratings";
         SqlRowSet rowSet = myJdbcTemplate.queryForRowSet(dataProductsSql);
         SqlRowSetMetaData metaData = rowSet.getMetaData();
-        return new DataProductRatingMaxLengths(metaData.getPrecision(1), metaData.getPrecision(2));
+        return new RatingMaxLengthsResponse(metaData.getPrecision(1), metaData.getPrecision(2));
     }
 
     public boolean getDataProductRatingCanSubmit(String userName, long dataProductId)
@@ -128,18 +129,18 @@ class DataProductsService implements IDataProductsService
         return databaseDataProductsRating.size() == 0;
     }
 
-    public void setDataProductsRating(String userName, long dataProductId, RatingDetailsDto ratingDetails) {
+    public boolean setDataProductsRating(String userName, long dataProductId, RatingDetailsDTO ratingDetails) {
         String dataProductsSql = "INSERT INTO DataProduct_Ratings (id_users, id_dataProducts, title, comment, rating) VALUES ((SELECT id FROM users WHERE userName = '%s'), '%s', '%s', '%s', %s)".formatted(userName, dataProductId, ratingDetails.getTitle(), ratingDetails.getComment(), ratingDetails.getRating());
-        myJdbcTemplate.update(dataProductsSql);
+        return myJdbcTemplate.update(dataProductsSql) > 0;
     }
 
-    public void updateDataProductsRating(String userName, long ratingId, RatingDetailsDto ratingDetails) {
+    public boolean updateDataProductsRating(String userName, long ratingId, RatingDetailsDTO ratingDetails) {
         String dataProductsSql = "UPDATE DataProduct_Ratings SET title = '%s', comment = '%s', rating = %s, submitted = CURRENT_TIMESTAMP, isEdited = TRUE WHERE id = '%s' AND id_users = (SELECT id FROM Users WHERE userName = '%s') AND isDeleted = FALSE".formatted(ratingDetails.getTitle(), ratingDetails.getComment(), ratingDetails.getRating(), ratingId, userName);
-        myJdbcTemplate.update(dataProductsSql);
+        return myJdbcTemplate.update(dataProductsSql) > 0;
     }
 
-    public void markAsDeletedDataProductRating(String userName, long ratingId) {
+    public boolean markAsDeletedDataProductRating(String userName, long ratingId) {
         String dataProductsSql = "UPDATE DataProduct_Ratings SET isDeleted = TRUE WHERE id = '%s' AND id_users = (SELECT id FROM Users WHERE userName = '%s') AND isDeleted = FALSE".formatted(ratingId, userName);
-        myJdbcTemplate.update(dataProductsSql);
+        return myJdbcTemplate.update(dataProductsSql) > 0;
     }
 }

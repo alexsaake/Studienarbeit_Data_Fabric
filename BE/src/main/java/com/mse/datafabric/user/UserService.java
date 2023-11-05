@@ -1,18 +1,16 @@
 package com.mse.datafabric.user;
 
 import com.mse.datafabric.auth.AuthenticationService;
-import com.mse.datafabric.dataProducts.models.RatingDto;
-import com.mse.datafabric.user.dto.UserDto;
-import com.mse.datafabric.user.entities.UserEntity;
-import com.mse.datafabric.user.dto.UserResponseDto;
+import com.mse.datafabric.auth.repositories.UserRepository;
+import com.mse.datafabric.dataProducts.payload.response.RatingReponse;
+import com.mse.datafabric.user.payload.request.UserRequest;
+import com.mse.datafabric.auth.models.User;
+import com.mse.datafabric.user.payload.response.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +27,14 @@ public class UserService {
         myJdbcTemplate = jdbcTemplate;
     }
 
-    public UserResponseDto getCurrentUser() {
-        UserEntity currentUserEntity = myUserRepository.findByUsername(myAuthenticationService.getCurrentUserName()).get();
+    public UserResponse getCurrentUser() {
+        User currentUserEntity = myUserRepository.findByUsername(myAuthenticationService.getCurrentUserName()).get();
 
-        return new UserResponseDto(currentUserEntity.getFirstname(), currentUserEntity.getLastname(), currentUserEntity.getUsername(), currentUserEntity.getEmail());
+        return new UserResponse(currentUserEntity.getFirstname(), currentUserEntity.getLastname(), currentUserEntity.getUsername(), currentUserEntity.getEmail());
     }
 
-    public void updateUser(UserDto user) {
-        UserEntity currentUserEntity = myUserRepository.findByUsername(myAuthenticationService.getCurrentUserName()).get();
+    public void updateUser(UserRequest user) {
+        User currentUserEntity = myUserRepository.findByUsername(myAuthenticationService.getCurrentUserName()).get();
 
         if(!currentUserEntity.getFirstname().equals(user.getFirstName())) {
             currentUserEntity.setFirstname(user.getFirstName());
@@ -51,18 +49,18 @@ public class UserService {
         myUserRepository.save(currentUserEntity);
     }
 
-    public List<RatingDto> getUserRatings()
+    public List<RatingReponse> getUserRatings()
     {
-        UserEntity currentUserEntity = myUserRepository.findByUsername(myAuthenticationService.getCurrentUserName()).get();
+        User currentUserEntity = myUserRepository.findByUsername(myAuthenticationService.getCurrentUserName()).get();
 
         String dataProductsSql = "SELECT rate.id, rate.id_dataProducts FROM DataProduct_Ratings rate JOIN DataProducts dp ON rate.id_dataProducts = dp.id JOIN Users usr ON rate.id_users = usr.id WHERE usr.userName = '%s' AND rate.isDeleted = FALSE AND dp.isDeleted = FALSE".formatted(currentUserEntity.getUsername());
         List<Map<String, Object>> databaseUserRatings = myJdbcTemplate.queryForList(dataProductsSql);
 
-        List<RatingDto> userRatings = new ArrayList<>();
+        List<RatingReponse> userRatings = new ArrayList<>();
 
         for (Map databaseUserRating : databaseUserRatings)
         {
-            RatingDto dataProductRating = new RatingDto(
+            RatingReponse dataProductRating = new RatingReponse(
                     (Long)databaseUserRating.get("id"),
                     (Long)databaseUserRating.get("id_dataProducts")
             );

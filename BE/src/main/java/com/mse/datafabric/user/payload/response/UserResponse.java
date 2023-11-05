@@ -1,4 +1,4 @@
-package com.mse.datafabric.user.dto;
+package com.mse.datafabric.user.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonTypeName("user")
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-public class UserResponseDto {
+public class UserResponse {
     private String firstName;
     private String lastName;
     private String userName;

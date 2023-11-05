@@ -2,8 +2,8 @@ package com.mse.datafabric.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mse.datafabric.user.dto.UserDto;
-import com.mse.datafabric.user.dto.UserResponseDto;
+import com.mse.datafabric.user.payload.request.UserRequest;
+import com.mse.datafabric.user.payload.response.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +29,16 @@ public class UserController {
             value = "/User",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<UserResponseDto> getUser() {
+    public ResponseEntity<UserResponse> getUser() {
         return ResponseEntity.ok(myUserService.getCurrentUser());
     }
 
     @PutMapping( value = "/User" )
     public void updateUser(@RequestBody String requestBodyJson) {
-        UserDto user = null;
+        UserRequest user = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            user = mapper.readValue(requestBodyJson, UserDto.class);
+            user = mapper.readValue(requestBodyJson, UserRequest.class);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);

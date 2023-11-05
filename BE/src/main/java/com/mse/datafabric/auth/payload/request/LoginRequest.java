@@ -1,19 +1,15 @@
-package com.mse.datafabric.auth.dto;
+package com.mse.datafabric.auth.payload.request;
 
-import com.mse.datafabric.user.entities.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Request Dto to authenticate a {@link UserEntity}
- */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequestDto {
+public class LoginRequest {
     private String userName;
     private String password;
 }

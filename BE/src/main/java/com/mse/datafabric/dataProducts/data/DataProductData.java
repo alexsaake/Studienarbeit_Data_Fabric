@@ -7,7 +7,7 @@ import com.mse.datafabric.dataProducts.DataProductRepository;
 import com.mse.datafabric.dataProducts.data.insights.DataProductInsightDataDTO;
 import com.mse.datafabric.dataProducts.data.insights.DataProductInsightRepository;
 import com.mse.datafabric.dataProducts.data.insights.InsightFilterDTO;
-import com.mse.datafabric.dataProducts.models.DataProductAllDTO;
+import com.mse.datafabric.dataProducts.payload.DataProductAllDTO;
 import com.mse.datafabric.dataProducts.models.DataProductDTO;
 import com.mse.datafabric.utils.GoogleMapsAPI;
 import com.mse.datafabric.utils.dtos.GoogleMapsAddressDTO;

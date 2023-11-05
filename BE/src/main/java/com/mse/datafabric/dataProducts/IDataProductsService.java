@@ -1,20 +1,21 @@
 package com.mse.datafabric.dataProducts;
 
-import com.mse.datafabric.dataProducts.models.*;
+import com.mse.datafabric.dataProducts.payload.RatingDetailsDTO;
+import com.mse.datafabric.dataProducts.payload.response.*;
 
 import java.util.List;
 
 public interface IDataProductsService
 {
-    List<DataProductOverviewDto> getDataProductsOverview();
-    DataProductSummaryDto getDataProductSummary(long dataProductId);
-    DataProductDetailsDto getDataProductDetails(long dataProductId);
-    void softDeleteDataProduct(String userName, long dataProductId);
-    List<RatingDto> getDataProductRatings(long dataProductId);
-    RatingDetailsDto getDataProductRatingDetails(long ratingId);
-    DataProductRatingMaxLengths getDataProductRatingMaxLengths();
+    List<DataProductOverviewResponse> getDataProductsOverview();
+    DataProductSummaryReponse getDataProductSummary(long dataProductId);
+    DataProductDetailsReponse getDataProductDetails(long dataProductId);
+    boolean softDeleteDataProduct(String userName, long dataProductId);
+    List<RatingReponse> getDataProductRatings(long dataProductId);
+    RatingDetailsDTO getDataProductRatingDetails(long ratingId);
+    RatingMaxLengthsResponse getDataProductRatingMaxLengths();
     boolean getDataProductRatingCanSubmit(String userName, long dataProductId);
-    void setDataProductsRating(String userName, long dataProductId, RatingDetailsDto ratingDetails);
-    void updateDataProductsRating(String userName, long ratingId, RatingDetailsDto ratingDetails);
-    void markAsDeletedDataProductRating(String userName, long ratingId);
+    boolean setDataProductsRating(String userName, long dataProductId, RatingDetailsDTO ratingDetails);
+    boolean updateDataProductsRating(String userName, long ratingId, RatingDetailsDTO ratingDetails);
+    boolean markAsDeletedDataProductRating(String userName, long ratingId);
 }
