@@ -17,8 +17,10 @@
         <v-row v-if="userRatings == null">
           <v-progress-circular :size="120" indeterminate color="white"/>
         </v-row>
+        <h1>Your ratings</h1>
+        <v-row v-if="userRatings.length==0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
         <v-row v-else-if="userRatings.length !=0" class="pb-10" no-gutters>
-          <h1>Your ratings</h1>
+
           <v-col v-for="(rating, index) in userRatings" :key="index" cols="12">
             <v-lazy :min-height="200" :options="{'threshold':0.5}" transition="fade-transition">
               <user-rating-card
@@ -27,7 +29,6 @@
               />
             </v-lazy>
           </v-col>
-          <v-row v-if="userRatings.length==0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
         </v-row>
     </v-container>
   </v-card>

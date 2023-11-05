@@ -35,7 +35,6 @@
           <v-row v-if="ratings == null">
             <v-progress-circular :size="120" indeterminate color="white"/>
           </v-row>
-          <v-row v-else-if="ratings.length === 0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
           <v-row else no-gutters>
             <v-col v-for="(rating, index) in ratings" :key="index" cols="12">
               <v-lazy :min-height="200" :options="{'threshold':0.5}" transition="fade-transition">
