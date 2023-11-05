@@ -3,7 +3,7 @@
     <v-card v-if="isLoading" class="my-progress">
       <v-progress-circular :size="120" indeterminate color="white"/>
     </v-card>
-    <v-container v-else-if="filteredDataProductsOverview.length > 0">
+    <v-container v-else-if="dataProductsOverview.length > 0">
       <v-row>
         <v-col cols="12" md="4">
           <v-text-field v-model="search" label="Suche"></v-text-field>
@@ -155,6 +155,7 @@ import {
         const rawDataProductsOverview = await getDataProducts(this.$axios);
         this.categoriesCatalogue = await getDataProductCategories(this.$axios);
         this.filters = Object.values(this.categoriesCatalogue);
+        this.filters.unshift('');
         this.accessRightsCatalogue = await getDataProductAccessRights(this.$axios);
 
         if (Array.isArray(rawDataProductsOverview))
