@@ -14,44 +14,47 @@
             ref="title"
             v-model="form.title"
             label="Titel"
-            :rules="[rules.required, rules.counter]"
+            :rules="[rules.required]"
             counter
-            maxlength="50"
+            maxlength="32"
           ></v-text-field>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col class="col" cols="12" md="6">
-          <v-text-field
+          <v-textarea
             ref="shortDescription"
             v-model="form.shortDescription"
             label="Kurzbeschreibung"
-            :rules="[rules.required, rules.counter]"
+            rows="1"
+            :rules="[rules.required]"
             counter
-            maxlength="50">
-          </v-text-field>
+            auto-grow
+            maxlength="1024">
+          </v-textarea>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col class="col" cols="12" md="6">
-          <v-text-field
+          <v-textarea
             ref="description"
             v-model="form.description"
             label="Beschreibung"
-            :rules="[rules.required, rules.counter]"
+            rows="1"
+            :rules="[rules.required]"
             counter
-            maxlength="50">
-          </v-text-field>
+            auto-grow
+            maxlength="4096">
+          </v-textarea>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col class="col" cols="12" md="6">
           <v-text-field
               v-model="form.source"
-              :rules="[rules.counter]"
               counter
               label="Quelle"
-              maxlength="50"
+              maxlength="128"
           ></v-text-field>
 
         </v-col>
@@ -61,9 +64,8 @@
           <v-text-field
             v-model="form.sourceLink"
             label="Quellen-Link"
-            :rules="[rules.counter]"
             counter
-            maxlength="50"
+            maxlength="1024"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -118,7 +120,6 @@ export default {
       },
       rules: {
         required: value => !!value || 'Notwendig.',
-        counter: value => value.length <= 50 || 'Max. 50 Zeichen',
       }
     }
   },
