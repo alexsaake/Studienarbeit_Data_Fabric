@@ -16,7 +16,7 @@
             label="Titel"
             :rules="[rules.required]"
             counter
-            maxlength="32"
+            maxlength="128"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -188,13 +188,13 @@ export default {
       const rawData = await getDataProductCategories(
         this.$axios,
       );
-      return Object.values(rawData);
+      return Object.entries(rawData).map(([key, value]) => ({ key, value }));
     },
     async fetchDataProductAccessRights() {
       const rawData = await getDataProductAccessRights(
         this.$axios,
       );
-      return Object.values(rawData);
+      return Object.entries(rawData).map(([key, value]) => ({ key, value }));
     },
     setValidation(){
       this.$nextTick(() => {

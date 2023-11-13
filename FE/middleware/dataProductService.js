@@ -30,6 +30,10 @@ export async function getDataProductData(axios, id)
 {
   return await axios.$get(`api/Gateway/DataProduct/${id}/Data`);
 }
+export async function getDataProductCharts(axios, id)
+{
+  return await axios.$get(`api/Gateway/DataProduct/${id}/Data/Charts`);
+}
 export async function getDataProductDataAll(axios, id)
 {
   return await axios.$get(`api/Gateway/DataProduct/${id}/DataAll`);

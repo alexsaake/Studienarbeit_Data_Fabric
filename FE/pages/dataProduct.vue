@@ -46,8 +46,6 @@ export default {
   },
   data() {
     return {
-      snackbarText: '',
-      snackbar: false,
       id: -1,
       steps: [
         {
@@ -121,6 +119,9 @@ export default {
       if(data !== undefined){
         this.dataProductPreselect.state = true;
         if(data.metaData !== undefined) {
+          if(this.$auth.loggedIn && data.metaData.username !== this.$auth.user.userName){
+            window.location.href = '/dataProduct';
+          }
           this.dataProductPreselect.metaData = data.metaData;
         }
         if(data.insights !== undefined) {
@@ -173,10 +174,6 @@ export default {
       }else{
         this.$root.VToast.show({message: 'Datenprodukt konnte nicht gespeichert werden!', color: 'error', icon: 'mdi-close'});
       }
-    },
-    showSnackbar(txt){
-      this.snackbar = true;
-      this.snackbarText = txt;
     }
   }
 }

@@ -20,6 +20,16 @@
       </v-row>
       <v-row>
         <v-col cols="12" md="12" style="padding-bottom: 0">
+          <h3>Diagramme</h3>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12">
+          <data-product-chart-card :id="id" />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="12" style="padding-bottom: 0">
           <h3>Insights</h3>
         </v-col>
       </v-row>

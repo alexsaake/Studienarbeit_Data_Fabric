@@ -42,7 +42,7 @@ public class DataProductRepository {
         }
     }
     public long insertDataProduct(DataProductDTO dto){
-        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?)) RETURNING id";
+        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?)) RETURNING dataproducts.id";
         Long id;
         try {
             id = jdbcTemplate.query(
@@ -77,7 +77,7 @@ public class DataProductRepository {
         return id;
     }
     public void updateDataProduct(DataProductDTO dto, long id){
-        final String STATEMENT = "UPDATE dataproducts SET title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE id = ?";
+        final String STATEMENT = "UPDATE dataproducts SET title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE dataproducts.id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
@@ -99,7 +99,7 @@ public class DataProductRepository {
         }
     }
     public DataProductDTO getDataProduct(long id){
-        final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username FROM dataproducts JOIN users ON users.id = dataproducts.userid WHERE id = ?";
+        final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username FROM (dataproducts JOIN users ON users.id = dataproducts.userid) WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
