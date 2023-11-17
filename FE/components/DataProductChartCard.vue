@@ -22,7 +22,8 @@
         </v-tabs>
         <v-tabs-items :value="tabs">
           <v-tab-item
-            v-for="chart in dataProductCharts" :key="chart.displayName">
+            v-for="chart in dataProductCharts" :key="chart.displayName"
+            :eager="true">
             <canvas :id="'chart_'+chart.displayName"></canvas>
           </v-tab-item>
         </v-tabs-items>
@@ -33,9 +34,7 @@
 </template>
 <script>
 import Chart from 'chart.js';
-import {
-  getDataProductCharts
-} from "~/middleware/dataProductService";
+import { getDataProductCharts } from "~/middleware/dataProductService";
 
 
 export default {
@@ -51,6 +50,23 @@ export default {
       dataProductCharts: null,
       tabs: null,
       charts: [],
+      CHART_COLORS: [
+        'rgba(25,118,210,0.75)',
+        'rgba(255,99,132,0.75)',
+        'rgba(255,159,64,0.75)',
+        'rgba(255,205,86,0.75)',
+        'rgba(75,192,192,0.75)',
+        'rgba(54,162,235,0.75)',
+        'rgba(153,102,255,0.75)',
+        'rgba(201,203,207,0.75)',
+        'rgba(171,68,89,0.75)',
+        'rgba(197,122,47,0.75)',
+        'rgba(182,146,61,0.75)',
+        'rgba(55,140,140,0.75)',
+        'rgba(44,109,154,0.75)',
+        'rgba(102,69,166,0.75)',
+        'rgba(135,136,140,0.75)'
+      ]
     }
   },
   async fetch() {
@@ -78,21 +94,67 @@ export default {
         const ctx = document.getElementById('chart_'+chart.displayName);
         if(ctx !== null)
           this.charts.push(new Chart(ctx, {
-            type: 'doughnut',
+            type: this.getType(chart),
             data: {
               labels: chart.xAxisValues,
               datasets: [{
                 label: chart.displayName,
                 data: chart.yAxisValues,
-                borderColor: '#1976d2',
-                borderWidth: 1
+                borderWidth: this.getBorderWidth(chart),
+                backgroundColor: this.getBackgroundColor(chart),
+                borderColor: this.getColor(chart),
               }]
             },
             options: {
               responsive: true,
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }]
+              }
             }
           }));
+        console.log(this.charts[this.charts.length-1]);
+        // this.setDatasetBorderColor(this.charts[this.charts.length-1].data.datasets, chart);
+        // this.setDatasetBackgroundColor(this.charts[this.charts.length-1].data.datasets, chart);
+        // this.charts[this.charts.length-1].update();
       });
+    },
+    getBorderWidth(chart){
+      if(chart.type === 4)
+        return 0;
+      return 1;
+    },
+    getColor(chart) {
+      if(chart.type === 3 || chart.type === 5){
+        return this.CHART_COLORS
+      }
+      return this.CHART_COLORS[0];
+    },
+    getBackgroundColor(chart) {
+      if(!chart.fillChart)
+        return undefined;
+      if(chart.type === 3 || chart.type === 5){
+        return this.CHART_COLORS
+      }
+      return this.CHART_COLORS[0];
+    },
+    getType(chart){
+      console.log(chart.type);
+      switch (chart.type){
+        case 1:
+          return 'line';
+        case 2:
+          return 'bar';
+        case 3:
+          return 'pie';
+        case 4:
+          return 'line';
+        case 5:
+          return 'doughnut';
+      }
     },
     async fetchDataProductCharts(id) {
       const rawDataProductCharts = await getDataProductCharts(

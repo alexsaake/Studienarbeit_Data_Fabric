@@ -43,7 +43,9 @@ public class DataProductChartRepository {
                                     resultSet.getString("y_axis_unit"),
                                     resultSet.getString("x_axis_dataproduct_column"),
                                     resultSet.getString("y_axis_dataproduct_column"),
-                                    resultSet.getString("display_name")
+                                    resultSet.getString("display_name"),
+                                    resultSet.getInt("y_value_type"),
+                                    resultSet.getInt("fill_chart")
                             );
                             dtoList.add(dto);
                         }

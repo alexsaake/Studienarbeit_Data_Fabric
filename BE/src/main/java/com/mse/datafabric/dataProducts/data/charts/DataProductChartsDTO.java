@@ -16,9 +16,12 @@ public class DataProductChartsDTO {
     public String[] xAxisValues;
     public String[] yAxisValues;
 
+    public int yValueType;
+    public int fillChart;
+
     public DataProductChartsDTO(int type, String xAxisName, String yAxisName,
                              String xAxisUnit, String yAxisUnit, String xAxisDataproductColumn,
-                             String yAxisDataproductColumn, String displayName){
+                             String yAxisDataproductColumn, String displayName, int yValueType, int fillChart){
         this.type = type;
         this.xAxisName = xAxisName;
         this.yAxisName = yAxisName;
@@ -27,5 +30,7 @@ public class DataProductChartsDTO {
         this.xAxisDataproductColumn = xAxisDataproductColumn;
         this.yAxisDataproductColumn = yAxisDataproductColumn;
         this.displayName = displayName;
+        this.yValueType = yValueType;
+        this.fillChart = fillChart;
     }
 }
