@@ -34,7 +34,7 @@
           </v-row>
           <v-row class="mt-4" no-gutters>
             <v-col cols="2">Zuletzt aktualisiert:</v-col>
-            <v-col>{{ lastUpdated.toLocaleDateString('ge-GE') }}</v-col>
+            <v-col>{{ lastUpdated.toLocaleDateString('de-GE') }}</v-col>
           </v-row>
           <v-row class="mt-4" no-gutters>
             <v-col cols="2">Kategorie</v-col>
@@ -50,7 +50,7 @@
           </v-row>
           <v-row class="mt-4" no-gutters>
             <v-col cols="3">Erstelldatum </v-col>
-            <v-col>{{ createdOn.toLocaleDateString() }}</v-col>
+            <v-col>{{ createdOn.toString().split("-").reverse().join('.')}}</v-col>
           </v-row>
         </v-container>
       </v-card-text>
@@ -94,7 +94,7 @@ import {
         source: '',
         sourceLink: '',
         isLoading: true,
-        createdOn: null
+        createdOn: ''
       }
     },
     async fetch() {
