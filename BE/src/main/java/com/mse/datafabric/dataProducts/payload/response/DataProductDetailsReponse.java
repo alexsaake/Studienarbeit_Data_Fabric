@@ -5,16 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"description", "source", "sourceLink"})
+@JsonPropertyOrder({"description", "source", "sourceLink", "createdOn"})
 public class DataProductDetailsReponse implements Serializable
 {
     private final String description;
     private final String source;
     private final String sourceLink;
+    private final Date createdOn;
 
     @Override
     public boolean equals(Object obj) {

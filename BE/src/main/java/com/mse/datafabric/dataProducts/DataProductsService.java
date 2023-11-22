@@ -59,13 +59,14 @@ class DataProductsService implements IDataProductsService
     }
 
     public DataProductDetailsReponse getDataProductDetails(long dataProductId) {
-        String dataProductSql = "SELECT description, source, sourceLink FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(dataProductId);
+        String dataProductSql = "SELECT description, source, sourceLink, createdon FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(dataProductId);
         Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
 
         return new DataProductDetailsReponse(
             (String)databaseDataProduct.get("description"),
             (String)databaseDataProduct.get("source"),
-            (String)databaseDataProduct.get("sourceLink")
+            (String)databaseDataProduct.get("sourceLink"),
+                (java.sql.Date) databaseDataProduct.get("createdon")
         );
     }
 

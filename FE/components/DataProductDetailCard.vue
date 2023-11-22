@@ -48,6 +48,10 @@
             <v-col cols="3">Durchschnittliche Bewertung </v-col>
             <v-col>{{ averageRating.toFixed(2) }}</v-col>
           </v-row>
+          <v-row class="mt-4" no-gutters>
+            <v-col cols="3">Erstelldatum </v-col>
+            <v-col>{{ createdOn.toLocaleDateString() }}</v-col>
+          </v-row>
         </v-container>
       </v-card-text>
       <v-card v-if="showConfirmDeleteDialog" v-click-outside="onCloseConfirmDeleteRating" class="my-dialog">
@@ -80,6 +84,7 @@ import {
       accessRight: String,
       averageRating: Number,
       userName: String
+
     },
     data()
     {
@@ -88,7 +93,8 @@ import {
         description: '',
         source: '',
         sourceLink: '',
-        isLoading: true
+        isLoading: true,
+        createdOn: null
       }
     },
     async fetch() {
@@ -100,6 +106,7 @@ import {
         this.description = dataProductDetails.description;
         this.source = dataProductDetails.source;
         this.sourceLink = dataProductDetails.sourceLink;
+        this.createdOn = dataProductDetails.createdOn;
 
         this.isLoading = false;
       },

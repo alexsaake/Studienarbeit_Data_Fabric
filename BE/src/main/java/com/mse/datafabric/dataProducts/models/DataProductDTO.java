@@ -18,13 +18,14 @@ public class DataProductDTO {
     public String source;
     public String sourceLink;
     public String data;
+    public java.sql.Date createdOn;
 
     public String username;
     @JsonCreator
     public DataProductDTO(@JsonProperty("id")long id, @JsonProperty("title")String title, @JsonProperty("description")String description,
                           @JsonProperty("shortDescription")String shortDescription, @JsonProperty("source")String source, @JsonProperty("sourceLink")String sourceLink,
                           @JsonProperty("accessRight")int accessRightId, @JsonProperty("category")int categoryId, @JsonProperty("data") Object data,
-                          @JsonProperty("username") String username) {
+                          @JsonProperty("username") String username, @JsonProperty("createdon") java.sql.Date createdOn) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -34,6 +35,7 @@ public class DataProductDTO {
         this.accessRightId = accessRightId;
         this.categoryId = categoryId;
         this.username = username;
+        this.createdOn = createdOn;
         ObjectMapper mapper = new ObjectMapper();
         try {
             this.data = mapper.writeValueAsString(data);

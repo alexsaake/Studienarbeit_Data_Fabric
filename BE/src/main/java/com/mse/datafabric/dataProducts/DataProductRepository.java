@@ -42,7 +42,7 @@ public class DataProductRepository {
         }
     }
     public long insertDataProduct(DataProductDTO dto){
-        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?)) RETURNING dataproducts.id";
+        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid, createdon) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?), CURRENT_DATE) RETURNING dataproducts.id";
         Long id;
         try {
             id = jdbcTemplate.query(
@@ -99,7 +99,7 @@ public class DataProductRepository {
         }
     }
     public DataProductDTO getDataProduct(long id){
-        final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username FROM (dataproducts JOIN users ON users.id = dataproducts.userid) WHERE dataproducts.id = ?";
+        final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username, createdon FROM (dataproducts JOIN users ON users.id = dataproducts.userid) WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
@@ -120,7 +120,8 @@ public class DataProductRepository {
                                         rs.getInt(6),
                                         rs.getInt(7),
                                         rs.getString(8),
-                                        rs.getString(9)
+                                        rs.getString(9),
+                                        rs.getDate(10)
                                 );
                             }
                             return null;
