@@ -10,11 +10,12 @@ import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"id", "title", "lastUpdated", "categoryId"})
+@JsonPropertyOrder({"id", "title", "userName", "lastUpdated", "categoryId"})
 public class DataProductOverviewResponse implements Serializable
 {
     private long id;
     private String title;
+    private String userName;
     private Date lastUpdated;
     private long categoryId;
 
@@ -33,6 +34,9 @@ public class DataProductOverviewResponse implements Serializable
             return false;
         }
         if (!Objects.equals(this.title, other.title)) {
+            return false;
+        }
+        if (!Objects.equals(this.userName, other.userName)) {
             return false;
         }
         if (!Objects.equals(this.lastUpdated, other.lastUpdated)) {

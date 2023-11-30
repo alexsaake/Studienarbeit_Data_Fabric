@@ -27,7 +27,7 @@ class DataProductsService implements IDataProductsService
 
     public List<DataProductOverviewResponse> getDataProductsOverview()
     {
-        String dataProductsSql = "SELECT id, title, lastUpdated, categoryId FROM DataProducts WHERE isDeleted = FALSE";
+        String dataProductsSql = "SELECT dp.id, dp.title, usr.username, dp.lastUpdated, dp.categoryId FROM DataProducts dp JOIN Users usr ON dp.userid = usr.id WHERE isDeleted = FALSE";
         List<Map<String, Object>> databaseDataProducts = myJdbcTemplate.queryForList(dataProductsSql);
 
         List<DataProductOverviewResponse> dataProducts = new ArrayList<>();
@@ -37,6 +37,7 @@ class DataProductsService implements IDataProductsService
             DataProductOverviewResponse dataProduct = new DataProductOverviewResponse(
                 (Long) databaseDataProduct.get("id"),
                 (String) databaseDataProduct.get("title"),
+                (String) databaseDataProduct.get("username"),
                 new Date(((Timestamp) databaseDataProduct.get("lastUpdated")).getTime()),
                 (Long) databaseDataProduct.get("categoryId")
             );
@@ -46,14 +47,13 @@ class DataProductsService implements IDataProductsService
         return dataProducts;
     }
 
-    public DataProductSummaryReponse getDataProductSummary(long dataProductId) {
-        String dataProductSql = "SELECT dp.imageFileName, dp.shortDescription, users.username, dp.accessRightId FROM DataProducts dp JOIN users ON dp.userId = users.id WHERE dp.id = '%s' AND dp.isDeleted = FALSE".formatted(dataProductId);
+    public DataProductSummaryResponse getDataProductSummary(long dataProductId) {
+        String dataProductSql = "SELECT imageFileName, shortDescription, accessRightId FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(dataProductId);
         Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
 
-        return new DataProductSummaryReponse(
+        return new DataProductSummaryResponse(
                 (String) databaseDataProduct.get("imageFileName"),
                 (String) databaseDataProduct.get("shortDescription"),
-                (String) databaseDataProduct.get("username"),
                 (Long) databaseDataProduct.get("accessRightId")
         );
     }

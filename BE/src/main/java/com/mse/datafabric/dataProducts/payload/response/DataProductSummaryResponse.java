@@ -9,12 +9,11 @@ import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"imageFileName", "shortDescription", "userName", "accessRightsId"})
-public class DataProductSummaryReponse implements Serializable
+@JsonPropertyOrder({"imageFileName", "shortDescription", "accessRightsId"})
+public class DataProductSummaryResponse implements Serializable
 {
     private String imageFileName;
     private String shortDescription;
-    private String userName;
     private long accessRightId;
 
     @Override
@@ -27,14 +26,11 @@ public class DataProductSummaryReponse implements Serializable
             return false;
         }
 
-        final DataProductSummaryReponse other = (DataProductSummaryReponse) obj;
+        final DataProductSummaryResponse other = (DataProductSummaryResponse) obj;
         if (!Objects.equals(this.imageFileName, other.imageFileName)) {
             return false;
         }
         if (!Objects.equals(this.shortDescription, other.shortDescription)) {
-            return false;
-        }
-        if (!Objects.equals(this.userName, other.userName)) {
             return false;
         }
         if (!Objects.equals(this.accessRightId, other.accessRightId)) {

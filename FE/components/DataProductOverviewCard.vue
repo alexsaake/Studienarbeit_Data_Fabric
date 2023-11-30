@@ -43,6 +43,7 @@ import {getDataProduct} from "~/middleware/dataProductService";
     {
       id: Number,
       title: String,
+      userName: String,
       lastUpdated: Date,
       averageRating: Number,
       accessRightsCatalogue: Object
@@ -52,7 +53,6 @@ import {getDataProduct} from "~/middleware/dataProductService";
         imageFileName: '',
         shortDescription: '',
         accessRight: '',
-        userName: '',
         isLoading: true
       }
     },
@@ -69,7 +69,6 @@ import {getDataProduct} from "~/middleware/dataProductService";
         }
         this.shortDescription = dataProductSummary.shortDescription;
         this.accessRight = this.accessRightsCatalogue[dataProductSummary.accessRightId];
-        this.userName = dataProductSummary.userName;
 
         this.isLoading = false;
       }

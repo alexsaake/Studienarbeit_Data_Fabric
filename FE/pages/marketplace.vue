@@ -27,6 +27,7 @@
                 style="height: 100%"
                 :id="dataProductOverview.id"
                 :title="dataProductOverview.title"
+                :userName="dataProductOverview.userName"
                 :last-updated="dataProductOverview.lastUpdated"
                 :average-rating="dataProductOverview.averageRating"
                 :access-rights-catalogue="accessRightsCatalogue"
@@ -147,7 +148,14 @@ import {
           dataProduct.imageFileName = "defaultImage.jpg";
         }
 
-        this.onShowDataProduct(id, dataProduct.imageFileName, dataProductOverview.title, dataProduct.shortDescription, dataProductOverview.lastUpdated, this.accessRightsCatalogue[dataProduct.accessRightsId], dataProductOverview.averageRating, dataProduct.userName);
+        this.onShowDataProduct(id,
+            dataProduct.imageFileName,
+            dataProductOverview.title,
+            dataProduct.shortDescription,
+            dataProductOverview.lastUpdated,
+            this.accessRightsCatalogue[dataProduct.accessRightsId],
+            dataProductOverview.averageRating,
+            dataProductOverview.userName);
       }
     },
     methods: {
@@ -165,6 +173,7 @@ import {
             dataProductsOverview.push({
               id: dataProduct.id,
               title: dataProduct.title,
+              userName: dataProduct.userName,
               lastUpdated: new Date(dataProduct.lastUpdated),
               category: this.categoriesCatalogue[dataProduct.categoryId],
               averageRating: await getDataProductAvgRatings(this.$axios, dataProduct.id)

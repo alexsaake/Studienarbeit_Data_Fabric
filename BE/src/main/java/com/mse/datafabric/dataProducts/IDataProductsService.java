@@ -8,7 +8,7 @@ import java.util.List;
 public interface IDataProductsService
 {
     List<DataProductOverviewResponse> getDataProductsOverview();
-    DataProductSummaryReponse getDataProductSummary(long dataProductId);
+    DataProductSummaryResponse getDataProductSummary(long dataProductId);
     DataProductDetailsReponse getDataProductDetails(long dataProductId);
     boolean softDeleteDataProduct(String userName, long dataProductId);
     List<RatingReponse> getDataProductRatings(long dataProductId);

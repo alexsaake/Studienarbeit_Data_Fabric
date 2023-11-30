@@ -11,7 +11,7 @@ import com.mse.datafabric.dataProducts.payload.DataProductAllDTO;
 import com.mse.datafabric.dataProducts.payload.RatingDetailsDTO;
 import com.mse.datafabric.dataProducts.payload.response.DataProductDetailsReponse;
 import com.mse.datafabric.dataProducts.payload.response.DataProductOverviewResponse;
-import com.mse.datafabric.dataProducts.payload.response.DataProductSummaryReponse;
+import com.mse.datafabric.dataProducts.payload.response.DataProductSummaryResponse;
 import com.mse.datafabric.dataProducts.payload.response.RatingReponse;
 import com.mse.datafabric.utils.GoogleMapsAPI;
 import org.slf4j.Logger;
@@ -75,7 +75,7 @@ public class DataProductsController {
 
     @ShellMethod( "getDataProduct" )
     @GetMapping("/DataProduct/{dataProductId}")
-    public ResponseEntity<DataProductSummaryReponse> getDataProductSummary(@PathVariable long dataProductId){
+    public ResponseEntity<DataProductSummaryResponse> getDataProductSummary(@PathVariable long dataProductId){
         return ResponseEntity.ok(myDataProductsService.getDataProductSummary(dataProductId));
     }
 
