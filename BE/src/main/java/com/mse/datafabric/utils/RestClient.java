@@ -75,18 +75,19 @@ public class RestClient{
                 connection = (HttpURLConnection) url.openConnection();
             }
             connection.setRequestMethod(requestMethod);
-            if ((username != null) && (password != null)) {
-                String encoded = Base64.getEncoder().encodeToString((username+":"+password).getBytes(StandardCharsets.UTF_8));
-                connection.setRequestProperty("Authorization", "Basic "+encoded);
-            }
-            connection.setReadTimeout(timeoutInMs);
-            connection.setConnectTimeout(timeoutInMs);
 
             if (cutomRequestHeaders != null) {
                 for (final Map.Entry<String, String> entry : cutomRequestHeaders.entrySet()) {
                     connection.setRequestProperty(entry.getKey(), entry.getValue());
                 }
             }
+
+            if ((username != null) && (password != null)) {
+                String encoded = Base64.getEncoder().encodeToString((username+":"+password).getBytes(StandardCharsets.UTF_8));
+                connection.setRequestProperty("Authorization", "Basic "+encoded);
+            }
+            connection.setReadTimeout(timeoutInMs);
+            connection.setConnectTimeout(timeoutInMs);
 
             //Send Request
             if (body != null) {
