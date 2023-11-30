@@ -25,7 +25,7 @@ public class DataProductChartRepository {
 
     public DataProductChartsDTO[] getDataProductCharts(long id){
         List<DataProductChartsDTO> dtoList = new ArrayList<>();
-        String query = "SELECT * FROM dataproduct_charts JOIN dataproducts ON dataproducts.id = dataproduct_charts.dataproduct_id WHERE dataproducts.id = ? ORDER BY dataproduct_charts.id";
+        String query = "SELECT * FROM dataproduct_charts WHERE dataproduct_charts.dataproduct_id = ? ORDER BY dataproduct_charts.id";
         jdbcTemplate.query(
                 query, new PreparedStatementSetter() {
                     public void setValues(PreparedStatement preparedStatement) throws SQLException {
@@ -36,17 +36,18 @@ public class DataProductChartRepository {
                             DataAccessException {
                         while (resultSet.next()) {
                             DataProductChartsDTO dto = new DataProductChartsDTO(
+                                    resultSet.getInt("id"),
                                     resultSet.getInt("type"),
                                     resultSet.getString("x_axis_name"),
                                     resultSet.getString("y_axis_name"),
                                     resultSet.getString("x_axis_unit"),
                                     resultSet.getString("y_axis_unit"),
                                     resultSet.getString("x_axis_dataproduct_column"),
-                                    resultSet.getString("y_axis_dataproduct_column"),
                                     resultSet.getString("display_name"),
                                     resultSet.getInt("y_value_type"),
                                     resultSet.getInt("fill_chart")
                             );
+                            dto.datasets = getDataProductChartsDatasets(dto);
                             dtoList.add(dto);
                         }
                         return null;
@@ -54,6 +55,31 @@ public class DataProductChartRepository {
                 }
         );
         return dtoList.toArray(new DataProductChartsDTO[0]);
+    }
+    public DataProductChartsDatasetDTO[] getDataProductChartsDatasets(DataProductChartsDTO chart){
+        List<DataProductChartsDatasetDTO> dtoList = new ArrayList<>();
+        String query = "SELECT * FROM dataproduct_charts_datasets WHERE dataproduct_charts_id = ?";
+        jdbcTemplate.query(
+                query, new PreparedStatementSetter() {
+                    public void setValues(PreparedStatement preparedStatement) throws SQLException {
+                        preparedStatement.setLong(1, chart.id);
+                    }
+                },new ResultSetExtractor<>() {
+                    public Object extractData(ResultSet resultSet) throws SQLException,
+                            DataAccessException {
+                        while (resultSet.next()) {
+                            DataProductChartsDatasetDTO dto = new DataProductChartsDatasetDTO(
+                                    chart.id,
+                                    resultSet.getString("display_name"),
+                                    resultSet.getString("y_axis_dataproduct_column")
+                            );
+                            dtoList.add(dto);
+                        }
+                        return null;
+                    }
+                }
+        );
+        return dtoList.toArray(new DataProductChartsDatasetDTO[0]);
     }
 
     public Map<String, String>[] getChartTypes(){
@@ -66,7 +92,7 @@ public class DataProductChartRepository {
         }
     }
     public boolean insertCharts(long id, DataProductChartsDTO[] dto){
-        final String STATEMENT = "INSERT INTO dataproduct_charts (type, x_axis_name, y_axis_name, x_axis_unit, y_axis_unit, x_axis_dataproduct_column, y_axis_dataproduct_column, dataproduct_id, display_name) VALUES (?, ?, ?, ?, ?,?,?,?,?)";
+        final String STATEMENT = "INSERT INTO dataproduct_charts (type, x_axis_name, y_axis_name, x_axis_unit, y_axis_unit, x_axis_dataproduct_column, dataproduct_id, display_name) VALUES (?, ?, ?, ?, ?,?,?,?,?)";
         try {
             for(int i = 0;i< dto.length;i++){
                 int finalI = i;
@@ -78,9 +104,8 @@ public class DataProductChartRepository {
                     ps.setString(4, dto[finalI].xAxisUnit);
                     ps.setString(5, dto[finalI].yAxisUnit);
                     ps.setString(6, dto[finalI].xAxisDataproductColumn);
-                    ps.setString(7, dto[finalI].yAxisDataproductColumn);
-                    ps.setLong(8, dto[finalI].dataproductId);
-                    ps.setString(9, dto[finalI].displayName);
+                    ps.setLong(7, dto[finalI].dataproductId);
+                    ps.setString(8, dto[finalI].displayName);
                     return ps;
                 });
             }

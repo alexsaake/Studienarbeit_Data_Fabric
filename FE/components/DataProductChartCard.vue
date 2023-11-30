@@ -89,7 +89,6 @@ export default {
   fetchOnServer: false,
   methods: {
     createCharts() {
-      console.log('TESTSS');
       this.dataProductCharts.forEach(chart => {
         const ctx = document.getElementById('chart_'+chart.displayName);
         if(ctx !== null)
@@ -97,52 +96,66 @@ export default {
             type: this.getType(chart),
             data: {
               labels: chart.xAxisValues,
-              datasets: [{
-                label: chart.displayName,
-                data: chart.yAxisValues,
-                borderWidth: this.getBorderWidth(chart),
-                backgroundColor: this.getBackgroundColor(chart),
-                borderColor: this.getColor(chart),
-              }]
+              datasets: this.getDatasets(chart),
             },
             options: {
               responsive: true,
               scales: {
+                xAxes: [{
+                  display: this.showAxisLabel(chart),
+                  scaleLabel: {
+                    display: this.showAxisLabel(chart),
+                    labelString: chart.xAxisName
+                  }
+                }],
                 yAxes: [{
+                  display: this.showAxisLabel(chart),
+                  scaleLabel: {
+                    display: this.showAxisLabel(chart),
+                    labelString: chart.yAxisName
+                  },
                   ticks: {
                     beginAtZero: true
                   }
                 }]
-              }
+              },
             }
           }));
-        console.log(this.charts[this.charts.length-1]);
-        // this.setDatasetBorderColor(this.charts[this.charts.length-1].data.datasets, chart);
-        // this.setDatasetBackgroundColor(this.charts[this.charts.length-1].data.datasets, chart);
-        // this.charts[this.charts.length-1].update();
       });
+    },
+    getDatasets(chart){
+      const ret = [];
+      for(let i = 0;i < chart.datasets.length;i++){
+        ret.push({
+            label: chart.datasets[i].displayName,
+            data: chart.datasets[i].datasetValues,
+            borderWidth: this.getBorderWidth(chart),
+            backgroundColor: this.getBackgroundColor(chart, i),
+            borderColor: this.getColor(chart, i),
+          })
+      }
+      return ret;
     },
     getBorderWidth(chart){
       if(chart.type === 4)
         return 0;
       return 1;
     },
-    getColor(chart) {
+    getColor(chart, datasetIndex) {
       if(chart.type === 3 || chart.type === 5){
         return this.CHART_COLORS
       }
-      return this.CHART_COLORS[0];
+      return this.CHART_COLORS[datasetIndex];
     },
-    getBackgroundColor(chart) {
+    getBackgroundColor(chart, datasetIndex) {
       if(!chart.fillChart)
         return undefined;
       if(chart.type === 3 || chart.type === 5){
         return this.CHART_COLORS
       }
-      return this.CHART_COLORS[0];
+      return this.CHART_COLORS[datasetIndex];
     },
     getType(chart){
-      console.log(chart.type);
       switch (chart.type){
         case 1:
           return 'line';
@@ -155,6 +168,12 @@ export default {
         case 5:
           return 'doughnut';
       }
+    },
+    showAxisLabel(chart){
+      if(chart.type === 3 || chart.type === 5){
+        return false;
+      }
+      return true;
     },
     async fetchDataProductCharts(id) {
       const rawDataProductCharts = await getDataProductCharts(

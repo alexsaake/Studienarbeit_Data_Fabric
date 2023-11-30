@@ -83,13 +83,17 @@ export default {
             this.jsonData = this.parseJson(fileContent);
           }
         }
-        if(this.jsonData == null) {
+        if(!this.validateJSONData()) {
+          this.jsonData = null;
           this.form.file = null;
+          this.$root.VToast.show({message: 'Datei konnte nicht verarbeitet werden. Bitte überprüfe das Schema deiner Daten!', color: 'error', icon: 'mdi-close'});
           return;
         }
         this.setCountData(this.jsonData);
         //
         this.$emit('data', {data: this.jsonData});
+      }else{
+        this.jsonData = null;
       }
     },
     readFileAsync(file) {
@@ -98,6 +102,17 @@ export default {
         reader.onload = (e) => resolve(e.target.result);
         reader.readAsText(file);
       });
+    },
+    validateJSONData(){
+      if(this.jsonData == null)
+        return false;
+      if (!Array.isArray(this.jsonData))
+        return false;
+      for(const json of this.jsonData){
+        if(typeof json !== 'object' || Array.isArray(json) || json === null)
+          return false;
+      }
+      return true;
     },
     parseCsv(csvContent) {
       const lines = csvContent.split('\n');
