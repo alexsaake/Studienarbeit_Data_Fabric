@@ -1,17 +1,42 @@
 <template>
   <v-container style="margin-top: 50px">
+
     <v-row justify="center">
       <v-col class="col" cols="12" md="6">
-        <v-file-input
-          ref="file"
-          v-model="form.file"
-          :rules="[rules.required, rules.file]"
-          accept="application/JSON, .csv"
-          placeholder="Wähle deine Daten aus"
-          label="Rohdaten"
-          type="file"
-          @change="handleFileUpload"
-        ></v-file-input>
+        <v-tooltip bottom left>
+          <template v-slot:activator='{ on }'>
+          <v-file-input
+            ref="file"
+            v-model="form.file"
+            :rules="[rules.required, rules.file]"
+            accept="application/JSON, .csv"
+            placeholder="Wähle deine Daten aus"
+            label="Rohdaten"
+            type="file"
+            @change="handleFileUpload"
+            @mouseenter.native='on.mouseenter'
+            @mouseleave.native='on.mouseleave'>
+          ></v-file-input>
+          </template>
+          <span>CSV or JSON like:
+              [
+                {
+                  "id": 1,
+                  "jahr": "2021",
+                  "frauen": "3 699",
+                  "maenner": "4 275",
+                  "insgesamt": "4 100"
+                },
+                {
+                  "id": 2,
+                  "jahr": "2020",Marina 30 zusammen
+                  "frauen": "3 578",
+                  "maenner": "4 146",
+                  "insgesamt": "3 975"
+                }
+              ]
+          </span>
+        </v-tooltip>
       </v-col>
     </v-row>
     <v-row v-if="(jsonData !== null && jsonData.length > 0)" justify="center">
