@@ -25,7 +25,7 @@ public class DataProductCharts {
         //
         data = dataProductData.getData();
     }
-    public String[] getDataValues(String columnName){
+    public String[] getDataValuesS(String columnName){
         List<String> values = new ArrayList<>();
         data.forEach(row->{
             Object rowObj = row.get(columnName);
@@ -36,7 +36,7 @@ public class DataProductCharts {
         });
         return values.toArray(new String[0]);
     }
-    public Float[] getDataValuesFloat(String columnName){
+    public Float[] getDataValuesF(String columnName){
         List<Float> values = new ArrayList<>();
         data.forEach(row->{
             Object rowObj = row.get(columnName);
@@ -47,6 +47,20 @@ public class DataProductCharts {
         });
         return values.toArray(new Float[0]);
     }
+    public List<String[]> getDatasetValuesS(DataProductChartsDTO chart, String[] xValues){
+        List<String[]> values = new ArrayList<>();
+        for (DataProductChartsDatasetDTO dataset : chart.datasets) {
+            values.add(getDataValuesS(dataset.yAxisDataproductColumn));
+        }
+        return values;
+    }
+    public List<Float[]> getDatasetValuesF(DataProductChartsDTO chart){
+        List<Float[]> values = new ArrayList<>();
+        for (DataProductChartsDatasetDTO dataset : chart.datasets) {
+            values.add(getDataValuesF(dataset.yAxisDataproductColumn));
+        }
+        return values;
+    }
     public List<DataProductChartsDataDTO> sortData(List<DataProductChartsDataDTO> data){
         Comparator<DataProductChartsDataDTO> comparator;
         if (checkForDouble(data))
@@ -54,58 +68,82 @@ public class DataProductCharts {
         else
             comparator = Comparator.comparing(DataProductChartsDataDTO::getXValueS);
         data.sort(comparator);
-        // Liste sortieren
         return data;
     }
     public boolean checkForDouble(List<DataProductChartsDataDTO> data){
+        List<DataProductChartsDataDTO> removeData = new ArrayList<>();
         for (DataProductChartsDataDTO dataItem : data) {
             try {
+                if(dataItem.xValue.equals("")) {
+                    removeData.add(dataItem);
+                    continue;
+                }
                 Double.parseDouble(dataItem.xValue);
             }catch (Exception e){
                 return false;
             }
         }
+        for (DataProductChartsDataDTO removeDataItem : removeData) {
+            data.remove(removeDataItem);
+        }
         return true;
     }
-    public void setDataValues_YFloat(DataProductChartsDTO chart){
-        String[] xValues = getDataValues(chart.xAxisDataproductColumn);
-        Float[] yValues = getDataValuesFloat(chart.yAxisDataproductColumn);
+    public void setDataValues_Y(DataProductChartsDTO chart){
+        String[] xValues = getDataValuesS(chart.xAxisDataproductColumn);
+        List<String[]> datasetValuesS = getDatasetValuesS(chart, xValues);
         //
-        if(xValues.length != yValues.length)
-            return;
-        //
-        List<DataProductChartsDataDTO> data = new ArrayList<>();
-        for (int i = 0; i < xValues.length; i++){
-            DataProductChartsDataDTO item = dataListContainsXValue(data, xValues[i]);
-            if(item == null){
-                data.add(new DataProductChartsDataDTO(yValues[i],xValues[i]));
-            }else{
-                item.addData(yValues[i]);
+        for (int i = 0; i < chart.datasets.length; i++){
+            List<DataProductChartsDataDTO> data = new ArrayList<>();
+            for(int j = 0; j < datasetValuesS.get(i).length; j++) {
+                DataProductChartsDataDTO item = new DataProductChartsDataDTO(xValues[j]);
+                item.addDataS(datasetValuesS.get(i)[j]);
+                data.add(item);
             }
+            data = sortData(data);
+            //
+            chart.xAxisValues = getDataXValues(data);
+            chart.datasets[i].datasetValues = getDataYValuesS(data);
         }
+    }
+    public void setDataValues_YFloat(DataProductChartsDTO chart){
+        String[] xValues = getDataValuesS(chart.xAxisDataproductColumn);
+        List<Float[]> datasetValuesF = getDatasetValuesF(chart);
         //
-        data = sortData(data);
-        //
-        chart.xAxisValues = getDataXValues(data);
-        chart.yAxisValues = getDataYValuesF(data);
+        for (int i = 0; i < chart.datasets.length; i++){
+            List<DataProductChartsDataDTO> data = new ArrayList<>();
+            for(int j = 0; j < datasetValuesF.get(i).length; j++) {
+                DataProductChartsDataDTO item = dataListContainsXValue(data, xValues[j]);
+                if (item == null) {
+                    item = new DataProductChartsDataDTO(xValues[j]);
+                    data.add(item);
+                }
+                item.addDataF(datasetValuesF.get(i)[j]);
+            }
+            data = sortData(data);
+            //
+            chart.xAxisValues = getDataXValues(data);
+            chart.datasets[i].datasetValues = getDataYValuesF(data);
+        }
     }
     public void setDataValues_YCount(DataProductChartsDTO chart){
-        String[] xValues = getDataValues(chart.xAxisDataproductColumn);
+        String[] xValues = getDataValuesS(chart.xAxisDataproductColumn);
         //
-        List<DataProductChartsDataDTO> data = new ArrayList<>();
-        for (int i = 0; i < xValues.length; i++){
-            DataProductChartsDataDTO item = dataListContainsXValue(data, xValues[i]);
-            if(item == null){
-                data.add(new DataProductChartsDataDTO("",xValues[i]));
-            }else{
-                item.addData("");
+        for (int i = 0; i < chart.datasets.length; i++) {
+            List<DataProductChartsDataDTO> data = new ArrayList<>();
+            for (String xValue : xValues) {
+                DataProductChartsDataDTO item = dataListContainsXValue(data, xValue);
+                if (item == null) {
+                    item = new DataProductChartsDataDTO(xValue);
+                    data.add(item);
+                }
+                item.addDataS("");
             }
+            //
+            data = sortData(data);
+            //
+            chart.xAxisValues = getDataXValues(data);
+            chart.datasets[i].datasetValues = getDataYValues_Count(data);
         }
-        //
-        data = sortData(data);
-        //
-        chart.xAxisValues = getDataXValues(data);
-        chart.yAxisValues = getDataYValuesS(data);
     }
     public String[] getDataXValues(List<DataProductChartsDataDTO> data){
         List<String> values = new ArrayList<>();
@@ -124,6 +162,13 @@ public class DataProductCharts {
     public String[] getDataYValuesS(List<DataProductChartsDataDTO> data){
         List<String> values = new ArrayList<>();
         for (DataProductChartsDataDTO dataItem : data) {
+            values.add(String.valueOf(dataItem.dataS.get(0)));
+        }
+        return values.toArray(new String[0]);
+    }
+    public String[] getDataYValues_Count(List<DataProductChartsDataDTO> data){
+        List<String> values = new ArrayList<>();
+        for (DataProductChartsDataDTO dataItem : data) {
             values.add(String.valueOf(dataItem.dataS.size()));
         }
         return values.toArray(new String[0]);
@@ -133,8 +178,7 @@ public class DataProductCharts {
         for (DataProductChartsDTO chart : charts) {
             switch (chart.yValueType){
                 case 1:
-                    chart.xAxisValues = getDataValues(chart.xAxisDataproductColumn);
-                    chart.yAxisValues = getDataValues(chart.yAxisDataproductColumn);
+                    setDataValues_Y(chart);
                     break;
                 case 2:
                     setDataValues_YFloat(chart);

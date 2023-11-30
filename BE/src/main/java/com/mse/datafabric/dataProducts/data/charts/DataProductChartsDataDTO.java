@@ -8,28 +8,26 @@ public class DataProductChartsDataDTO {
     public List<String> dataS;
     public String xValue;
 
-    public float calcData;
-    public DataProductChartsDataDTO(float data, String xValue){
+    public Float calcData;
+    public DataProductChartsDataDTO(String xValue){
         this.xValue = xValue;
-        dataF  = new ArrayList<>();
-        dataF.add(data);
-        calcData = data;
+        dataS = new ArrayList<>();
+        dataF = new ArrayList<>();
     }
-    public DataProductChartsDataDTO(String data, String xValue){
-        this.xValue = xValue;
-        dataS  = new ArrayList<>();
+    public void addDataS(String data){
         dataS.add(data);
     }
-    public void addData(float data){
+    public void addDataF(Float data){
         dataF.add(data);
+        calcData = getCalcData(dataF);
+    }
+
+    public float getCalcData(List<Float> data){
         float sum = 0;
-        for (float dataSum : dataF ){
+        for (Float dataSum : data ){
             sum += dataSum;
         }
-        calcData = sum / dataF.size();
-    }
-    public void addData(String data){
-        dataS.add(data);
+        return sum / data.size();
     }
     public String getXValueS(){
         return xValue;

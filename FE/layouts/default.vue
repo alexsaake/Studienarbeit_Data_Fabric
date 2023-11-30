@@ -2,7 +2,7 @@
   <v-app dark>
     <v-navigation-drawer
       v-model="drawer"
-      :mini-variant="miniVariant"
+      :left="$vuetify.breakpoint.mdAndUp"
       :clipped="clipped"
       fixed
       app
@@ -14,6 +14,7 @@
           :to="page.to"
           router
           exact
+          @click="closeDrawerOnLoad"
         >
           <v-list-item-action>
             <v-icon>{{ page.icon }}</v-icon>
@@ -26,12 +27,12 @@
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
+<!--      <v-btn icon @click.stop="miniVariant = !miniVariant">-->
+<!--        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>-->
+<!--      </v-btn>-->
+<!--      <v-btn icon @click.stop="clipped = !clipped">-->
+<!--        <v-icon>mdi-application</v-icon>-->
+<!--      </v-btn>-->
       <v-toolbar-title v-if="!easterEggShow" @click="kaggleEasterEgg">{{ title }}</v-toolbar-title>
       <v-toolbar-title v-if="easterEggShow" ><a href="https://www.kaggle.com/" class="kaggle">KAGGLE</a> Fabric</v-toolbar-title>
       <v-spacer />
@@ -66,7 +67,7 @@ import VToast from '~/components/VToast.vue'
         easterEggCount: 0,
         easterEggShow: false,
         clipped: false,
-        drawer: false,
+        drawer: true,
         pages: [
           {
             icon: 'mdi-apps',
@@ -74,14 +75,16 @@ import VToast from '~/components/VToast.vue'
             to: '/',
           },
           {
-            icon: 'mdi-chart-bubble',
+            icon: 'mdi-store',
             title: 'Marketplace',
             to: '/marketplace',
+          },
+          {
+            icon: 'mdi-pencil',
+            title: 'Create product',
+            to: '/dataProduct',
           }
         ],
-        miniVariant: false,
-        right: true,
-        rightDrawer: false,
         title: 'Data Fabric'
       }
     },
@@ -92,12 +95,19 @@ import VToast from '~/components/VToast.vue'
             this.easterEggCount = 0;
           },
         deep: true
-      }
+      },
+
     },
     mounted() {
-      this.$root.VToast = this.$refs.VToast
+      this.$root.VToast = this.$refs.VToast;
+      this.closeDrawerOnLoad();
     },
     methods: {
+      closeDrawerOnLoad() {
+        this.$nextTick(() => {
+          this.drawer = false; // Set drawer to false after the component is mounted
+        });
+      },
       getLoggedInUserName()
       {
         if(this.$auth.loggedIn && this.$auth.user !== null)

@@ -126,6 +126,11 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: [/^vue2-google-maps($|\/)/]
+    transpile: [/^vue2-google-maps($|\/)/],
+    html:{
+      minify:{
+        collapseWhitespace: false
+      }
+    }
   },
 }
