@@ -5,15 +5,31 @@
     </v-card>
     <v-container v-else-if="dataProductsOverview.length > 0">
       <v-row>
-        <v-col cols="12" md="4">
-          <v-text-field v-model="search" label="Suche"></v-text-field>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-select v-model="filter" :items="filters" label="Kategorie"></v-select>
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-select v-model="sortOrder" :items="sortOrders" label="Sortierung"></v-select>
-        </v-col>
+        <template v-if="$auth.loggedIn">
+          <v-col cols="12" md="3">
+            <v-text-field v-model="search" label="Suche"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="3">
+            <v-select v-model="filter" :items="filters" label="Kategorie"></v-select>
+          </v-col>
+          <v-col cols="12" md="3">
+            <v-select v-model="sortOrder" :items="sortOrders" label="Sortierung"></v-select>
+          </v-col>
+          <v-col cols="12" md="3">
+            <v-checkbox v-model="showMyDataProducts" label="Meine Datenprodukte anzeigen"></v-checkbox>
+          </v-col>
+        </template>
+        <template v-else>
+          <v-col cols="12" md="4">
+            <v-text-field v-model="search" label="Suche"></v-text-field>
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-select v-model="filter" :items="filters" label="Kategorie"></v-select>
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-select v-model="sortOrder" :items="sortOrders" label="Sortierung"></v-select>
+          </v-col>
+        </template>
       </v-row>
       <v-row>
         <v-col
@@ -92,6 +108,7 @@ import {
         filters: [''],
         categoriesCatalogue: null,
         accessRightsCatalogue: null,
+        showMyDataProducts: false,
         sortOrder: 'Bewertung (abst.)',
         sortOrders: ['Bewertung (abst.)', 'Bewertung (aufst.)', 'Neueste (abst.)', 'Neueste (aufst.)'],
         dataProductsOverview: [],
@@ -125,14 +142,28 @@ import {
         }
 
         if (filter === '') {
-          return this.dataProductsOverview.filter((dataProduct) =>
-            dataProduct.title.toLowerCase().includes(search)
+          if (this.showMyDataProducts) {
+            return this.dataProductsOverview.filter((dataProduct) =>
+                dataProduct.title.toLowerCase().includes(search) &&
+                dataProduct.userName === this.$auth.user.userName
+            ).sort(sortFunction)
+          } else {
+            return this.dataProductsOverview.filter((dataProduct) =>
+                dataProduct.title.toLowerCase().includes(search)
+            ).sort(sortFunction)
+          }
+        } else if (this.showMyDataProducts) {
+          return this.dataProductsOverview.filter(
+              (dataProduct) =>
+                  dataProduct.title.toLowerCase().includes(search) &&
+                  dataProduct.category === filter &&
+                  dataProduct.userName === this.$auth.user.userName
           ).sort(sortFunction)
         } else {
           return this.dataProductsOverview.filter(
-            (dataProduct) =>
-              dataProduct.title.toLowerCase().includes(search) &&
-              dataProduct.category === filter
+              (dataProduct) =>
+                  dataProduct.title.toLowerCase().includes(search) &&
+                  dataProduct.category === filter
           ).sort(sortFunction)
         }
       }
