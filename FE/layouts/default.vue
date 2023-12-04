@@ -36,12 +36,14 @@
       <v-toolbar-title v-if="!easterEggShow" @click="kaggleEasterEgg">{{ title }}</v-toolbar-title>
       <v-toolbar-title v-if="easterEggShow" ><a href="https://www.kaggle.com/" class="kaggle">KAGGLE</a> Fabric</v-toolbar-title>
       <v-spacer />
-      <v-card-actions v-if="$auth.loggedIn">
-        <v-btn text to="/account">{{ getLoggedInUserName() }}</v-btn>
-      </v-card-actions>
-      <v-card-actions v-else>
-        <v-btn text to="/login">Login</v-btn>
-        <v-btn text to="/register">Register</v-btn>
+      <v-card-actions>
+        <div v-show="$auth.loggedIn">
+          <v-btn text to="/account">{{ getLoggedInUserName() }}</v-btn>
+        </div>
+        <div v-show="!$auth.loggedIn">
+          <v-btn text to="/login">Login</v-btn>
+          <v-btn text to="/register">Register</v-btn>
+        </div>
       </v-card-actions>
     </v-app-bar>
     <v-main>
