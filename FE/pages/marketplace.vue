@@ -218,18 +218,21 @@ import {
 
       onShowDataProduct(id, imageFileName, title, shortDescription, lastUpdated, accessRight, averageRating, userName)
       {
-        const category = this.dataProductsOverview.filter(obj => { return obj.id === id }).category;
-        this.selectedDataProduct = {
-          id,
-          imageFileName,
-          title,
-          shortDescription,
-          lastUpdated,
-          accessRight,
-          category,
-          averageRating,
-          userName
-        };
+        const objs = this.dataProductsOverview.filter(obj => { return obj.id === id });
+        if(objs.length > 0){
+          const category = objs[0].category;
+          this.selectedDataProduct = {
+            id,
+            imageFileName,
+            title,
+            shortDescription,
+            lastUpdated,
+            accessRight,
+            category,
+            averageRating,
+            userName
+          };
+        }
       },
       onCloseDataProduct()
       {
