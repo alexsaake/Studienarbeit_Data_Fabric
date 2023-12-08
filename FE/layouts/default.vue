@@ -1,4 +1,3 @@
-<meta name="theme-color" content="#000000" />
 <template>
   <v-app dark>
     <v-navigation-drawer
