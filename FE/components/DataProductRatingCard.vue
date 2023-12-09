@@ -1,6 +1,6 @@
 <template>
   <v-card class="my-card">
-    <v-card v-if="isLoading">
+    <v-card v-if="isLoading" class="loading-spinner-wrapper">
       <v-progress-circular :size="120" indeterminate color="white"/>
     </v-card>
     <v-card v-else>

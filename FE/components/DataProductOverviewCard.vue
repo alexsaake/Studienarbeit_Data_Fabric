@@ -1,6 +1,6 @@
 <template>
   <v-card class="d-flex flex-column" @click="$emit('on-select-data-product', id, imageFileName, title, shortDescription, lastUpdated, accessRight, averageRating, userName)">
-    <v-card v-if="isLoading">
+    <v-card v-if="isLoading" class="loading-spinner-wrapper">
       <v-progress-circular :size="120" indeterminate color="white"/>
     </v-card>
     <v-card v-else>

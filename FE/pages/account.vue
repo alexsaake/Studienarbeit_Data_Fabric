@@ -14,9 +14,6 @@
         <v-btn @click="onLogout()">Logout</v-btn>
         <v-btn @click="onEdit()">{{ editSaveButtonText }}</v-btn>
       </v-card-actions>
-        <v-row v-if="userRatings == null">
-          <v-progress-circular :size="120" indeterminate color="white"/>
-        </v-row>
         <h1>Your ratings</h1>
         <v-row v-if="userRatings.length==0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
         <v-row v-else-if="userRatings.length !=0" class="pb-10" no-gutters>

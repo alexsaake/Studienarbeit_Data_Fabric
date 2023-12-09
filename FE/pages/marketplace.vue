@@ -1,6 +1,6 @@
 <template>
-  <v-card>
-    <v-card v-if="isLoading" class="my-progress">
+  <v-card style="height: 100%;">
+    <v-card v-if="isLoading" class="loading-spinner-wrapper">
       <v-progress-circular :size="120" indeterminate color="white"/>
     </v-card>
     <v-container v-else-if="dataProductsOverview.length > 0">
@@ -264,13 +264,6 @@ import {
 </script>
 
 <style scoped>
-  .my-progress
-  {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
   .my-overlay
   {
     width: 100%;

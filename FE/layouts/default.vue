@@ -145,4 +145,12 @@ import VToast from '~/components/VToast.vue'
     color: #20BEFF !important;
     font-family: zeitung, sans-serif !important;
 }
+.loading-spinner-wrapper {
+  height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 16px; 
+    padding-bottom: 16px;
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="my-card">
+  <v-card class="loading-spinner-wrapper">
     <v-card v-if="isLoading">
       <v-progress-circular :size="120" indeterminate color="white"/>
     </v-card>
@@ -135,10 +135,6 @@ import {
 </script>
 
 <style scoped>
-.my-card
-{
-  position: relative;
-}
 .my-dialog
 {
   position: absolute;

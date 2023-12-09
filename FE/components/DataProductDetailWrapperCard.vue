@@ -1,6 +1,6 @@
 <template>
   <v-card class="my-details">
-    <v-card v-if="isLoading">
+    <v-card v-if="isLoading" class="loading-spinner-wrapper">
       <v-progress-circular :size="120" indeterminate color="white"/>
     </v-card>
     <v-card v-else>
@@ -165,6 +165,9 @@ import {
 </script>
 
 <style scoped>
+.v-progress-circular > svg {
+  height: auto;
+}
 .absolute-buttons{
     position: absolute;
     left: 20px;
@@ -177,13 +180,6 @@ import {
     top: 10px;
     z-index: 1;
 }
-  .my-progress
-  {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
   .my-details
   {
     height: 100%;

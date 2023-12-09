@@ -1,6 +1,6 @@
 <template>
   <v-card class="dataProductCharts">
-    <v-card v-if="!dataProductCharts">
+    <v-card v-if="!dataProductCharts" class="loading-spinner-wrapper">
       <v-progress-circular
         :size="120"
         indeterminate

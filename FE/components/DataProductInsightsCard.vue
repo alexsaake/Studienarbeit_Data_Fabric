@@ -1,6 +1,6 @@
 <template>
   <v-card class="dataProductInsights">
-    <v-card v-if="!dataProductInsights || !dataProductInsightFilters">
+    <v-card v-if="!dataProductInsights || !dataProductInsightFilters" class="loading-spinner-wrapper">
       <v-progress-circular
         :size="120"
         indeterminate
