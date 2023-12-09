@@ -92,6 +92,7 @@ import {
     name: 'Marketplace',
     components: {OverlayButton, DataProductDetailWrapperCard, DataProductOverviewCard},
     beforeRouteLeave (to, from, next) {
+      this.enableBackgroundScrolling();
       if(to.fullPath === '/login') {
         if(this.selectedDataProduct.id !== -1) {
           this.selectedDataProduct.id = -1;

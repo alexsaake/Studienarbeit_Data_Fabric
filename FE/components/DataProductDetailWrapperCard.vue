@@ -91,23 +91,6 @@ import {
     async fetch() {
       await this.refreshRatings();
     },
-    watch: {
-      showUseDataDialog(newVal) {
-        if (newVal) {
-          this.disableBackgroundScrolling();
-        } else {
-          this.enableBackgroundScrolling();
-        }
-      },
-
-      showRatingDialog(newVal) {
-        if (newVal) {
-          this.disableBackgroundScrolling();
-        } else {
-          this.enableBackgroundScrolling();
-        }
-      },
-    },
     mounted() {
       this.updateScreenWidth();
       this.onScreenResize();
