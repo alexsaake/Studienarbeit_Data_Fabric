@@ -11,7 +11,7 @@
             <v-btn color="primary" href="/marketplace">Jetzt entdecken!</v-btn>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row style="padding-top: 5px">
           <v-col>
             <v-btn color="primary" :href="$auth.loggedIn?'/dataProduct':'/login?page=dataProduct'">Eigenes Datenproduct anbieten</v-btn>
           </v-col>
@@ -22,8 +22,3 @@
 </template>
 <script setup>
 </script>
-<style>
-.row{
-    padding: 5px;
-}
-</style>

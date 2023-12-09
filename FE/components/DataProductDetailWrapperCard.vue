@@ -11,6 +11,13 @@
         <data-product-edit-rating-card :data-product-id="id" :is-update="isUpdate" :existing-rating="existingRating" @on-rating-added="onRatingAdded" @on-close-dialog="onCloseRating" />
       </v-card>
       <v-card v-else>
+        <v-card-actions  class="absolute-buttons">
+          <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
+          <v-btn v-if="$auth.loggedIn && canSubmit === true" @click="onCreateRating">Bewerten</v-btn>
+        </v-card-actions >
+        <v-card-actions v-if="screenWidth<600" class="back-button">
+          <v-btn @click="$emit('on-close-data-product');">Zurück</v-btn>
+        </v-card-actions>
         <data-product-detail-card
             :image-file-name="imageFileName"
             :id="id"
@@ -24,13 +31,6 @@
             @on-data-product-deleted="$emit('on-data-product-deleted');"
             @on-edit-data-product="$emit('on-edit-data-product')"
         />
-        <v-card-actions>
-          <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
-          <v-btn v-if="$auth.loggedIn && canSubmit === true" @click="onCreateRating">Datenprodukt bewerten</v-btn>
-        </v-card-actions>
-        <v-card-actions v-if="screenWidth<600">
-          <v-btn @click="$emit('on-close-data-product');">Zurück</v-btn>
-        </v-card-actions>
         <v-container class="pa-0">
           <v-row v-if="ratings == null">
             <v-progress-circular :size="120" indeterminate color="white"/>
@@ -90,6 +90,23 @@ import {
     },
     async fetch() {
       await this.refreshRatings();
+    },
+    watch: {
+      showUseDataDialog(newVal) {
+        if (newVal) {
+          this.disableBackgroundScrolling();
+        } else {
+          this.enableBackgroundScrolling();
+        }
+      },
+
+      showRatingDialog(newVal) {
+        if (newVal) {
+          this.disableBackgroundScrolling();
+        } else {
+          this.enableBackgroundScrolling();
+        }
+      },
     },
     mounted() {
       this.updateScreenWidth();
@@ -159,12 +176,24 @@ import {
       },
       updateScreenWidth() {
         this.screenWidth = window.innerWidth;
-      },
+      }
     }
   }
 </script>
 
 <style scoped>
+.absolute-buttons{
+    position: absolute;
+    left: 20px;
+    top: 240px;
+    z-index: 1;
+}
+.back-button{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 1;
+}
   .my-progress
   {
     height: 100%;

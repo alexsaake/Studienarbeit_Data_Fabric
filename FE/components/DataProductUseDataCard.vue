@@ -1,5 +1,8 @@
 <template>
   <v-card>
+    <v-card-actions>
+      <v-btn @click="$emit('on-close-dialog')">Zurück</v-btn>
+    </v-card-actions>
     <v-container>
       <v-row>
         <v-col cols="12" md="12" style="padding-bottom: 0">
@@ -39,9 +42,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-card-actions>
-      <v-btn @click="$emit('on-close-dialog')">Zurück</v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 

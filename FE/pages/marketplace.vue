@@ -192,6 +192,7 @@ import {
             averageRating,
             userName
           };
+          this.disableBackgroundScrolling();
         }
       },
       onCloseDataProduct()
@@ -199,6 +200,7 @@ import {
         if(document.activeElement.tagName === 'BODY' && sessionStorage.getItem("datePickerOpen") !== "true")
         {
           this.selectedDataProduct.id = -1;
+          this.enableBackgroundScrolling();
         }
       },
       async onDataProductDeleted()
@@ -209,7 +211,13 @@ import {
       onEditDataProduct()
       {
         this.$router.push('/dataProduct?id=' + this.selectedDataProduct.id);
-      }
+      },
+      disableBackgroundScrolling() {
+        document.documentElement.style.overflow = 'hidden';
+      },
+      enableBackgroundScrolling() {
+        document.documentElement.style.overflow = 'unset';
+      },
     },
   }
 </script>
