@@ -18,22 +18,22 @@
             @mouseleave.native='on.mouseleave'>
           ></v-file-input>
           </template>
-          <span>CSV or JSON like:
-              [
-                {
-                  "id": 1,
-                  "jahr": "2021",
-                  "frauen": "3 699",
-                  "maenner": "4 275",
-                  "insgesamt": "4 100"
-                },
-                {
-                  "id": 2,
-                  "jahr": "2020",Marina 30 zusammen
-                  "frauen": "3 578",
-                  "maenner": "4 146",
-                  "insgesamt": "3 975"
-                }
+          <span>CSV or JSON like:<br/>
+              [<br/>
+              &nbsp;{<br/>
+              &nbsp;&nbsp;"id": 1,<br/>
+              &nbsp;&nbsp;"jahr": "2021",<br/>
+              &nbsp;&nbsp;"frauen": "3 699",<br/>
+              &nbsp;&nbsp;"maenner": "4 275",<br/>
+              &nbsp;&nbsp;"insgesamt": "4 100"<br/>
+              &nbsp;},<br/>
+              &nbsp;{<br/>
+              &nbsp;&nbsp;"id": 2,<br/>
+              &nbsp;&nbsp;"jahr": "2020",Marina 30 zusammen<br/>
+              &nbsp;&nbsp;"frauen": "3 578",<br/>
+              &nbsp;&nbsp;"maenner": "4 146",<br/>
+              &nbsp;&nbsp;"insgesamt": "3 975"<br/>
+              &nbsp;}<br/>
               ]
           </span>
         </v-tooltip>
