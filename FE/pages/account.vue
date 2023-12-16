@@ -2,10 +2,10 @@
   <v-card v-if="$auth.loggedIn">
     <v-container>
     <v-form>
-      <h1>User details</h1>
-      <v-text-field v-model="user.firstName" type="text" class="form-control" label="First Name" :disabled="!isEditing" />
-      <v-text-field v-model="user.lastName" type="text" class="form-control" label="Last Name" :disabled="!isEditing" />
-      <v-text-field v-model="user.userName" type="text" class="form-control" label="User Name" disabled />
+      <h1>Benutzerdetails</h1>
+      <v-text-field v-model="user.firstName" type="text" class="form-control" label="Vorname" :disabled="!isEditing" />
+      <v-text-field v-model="user.lastName" type="text" class="form-control" label="Nachname" :disabled="!isEditing" />
+      <v-text-field v-model="user.userName" type="text" class="form-control" label="Benutzername" disabled />
       <v-text-field v-model="user.email" type="email" class="form-control" label="Email" :disabled="!isEditing" />
     </v-form>
     </v-container>
@@ -14,7 +14,7 @@
         <v-btn @click="onLogout()">Logout</v-btn>
         <v-btn @click="onEdit()">{{ editSaveButtonText }}</v-btn>
       </v-card-actions>
-        <h1>Your ratings</h1>
+        <h1>Deine Bewertungen</h1>
         <v-row v-if="userRatings.length==0" justify="center" >Keine eigenen Bewertungen gefunden</v-row>
         <v-row v-else-if="userRatings.length !=0" class="pb-10" no-gutters>
 
@@ -29,7 +29,7 @@
         </v-row>
     </v-container>
   </v-card>
-  <v-card-text v-else>No user logged in!</v-card-text>
+  <v-card-text v-else>Kein Benutzer eingeloggt!</v-card-text>
 </template>
 
 <script>

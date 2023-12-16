@@ -55,7 +55,7 @@
       </v-row>
     </v-container>
     <v-card v-else>
-      <p>No data products found.</p>
+      <p>Keine Datenprodukte gefunden.</p>
     </v-card>
     <v-overlay v-if="selectedDataProduct.id !== -1" class="my-overlay">
       <data-product-detail-wrapper-card

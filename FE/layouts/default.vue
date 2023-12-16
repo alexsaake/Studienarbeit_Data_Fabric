@@ -42,8 +42,8 @@
           <v-btn text to="/account">{{ getLoggedInUserName() }}</v-btn>
         </div>
         <div v-show="!$auth.loggedIn">
-          <v-btn text to="/login">Login</v-btn>
-          <v-btn text to="/register">Register</v-btn>
+          <v-btn text to="/login">Einloggen</v-btn>
+          <v-btn text to="/register">Registrieren</v-btn>
         </div>
       </v-card-actions>
     </v-app-bar>
@@ -74,17 +74,17 @@ import VToast from '~/components/VToast.vue'
         pages: [
           {
             icon: 'mdi-apps',
-            title: 'Welcome',
+            title: 'Startseite',
             to: '/',
           },
           {
             icon: 'mdi-store',
-            title: 'Marketplace',
+            title: 'Marktplatz',
             to: '/marketplace',
           },
           {
             icon: 'mdi-pencil',
-            title: 'Create product',
+            title: 'Datenprodukt erstellen',
             to: '/dataProduct',
           }
         ],

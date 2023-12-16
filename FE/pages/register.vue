@@ -1,15 +1,15 @@
 <template>
   <v-form v-if="!$auth.loggedIn" v-model="form" @submit.prevent="onSubmit">
-    <h1>Please register</h1>
-    <v-text-field v-model="firstName" type="text" class="form-control" label="First Name" :rules="[required]" clearable></v-text-field>
-    <v-text-field v-model="lastName" type="text" class="form-control" label="Last Name" :rules="[required]" clearable></v-text-field>
-    <v-text-field v-model="userName" type="text" class="form-control" label="User Name" :rules="[required]" clearable @input="clearError"></v-text-field>
+    <h1>Registrierung</h1>
+    <v-text-field v-model="firstName" type="text" class="form-control" label="Vorname" :rules="[required]" clearable></v-text-field>
+    <v-text-field v-model="lastName" type="text" class="form-control" label="Nachname" :rules="[required]" clearable></v-text-field>
+    <v-text-field v-model="userName" type="text" class="form-control" label="Benutzername" :rules="[required]" clearable @input="clearError"></v-text-field>
     <v-text-field v-model="email" type="email" class="form-control" label="Email" :rules="[required]" clearable @input="clearError"></v-text-field>
-    <v-text-field v-model="password" type="password" class="form-control" label="Password" :rules="[required]" clearable></v-text-field>
-    <v-btn :disabled="!form" type="submit">Submit</v-btn>
+    <v-text-field v-model="password" type="password" class="form-control" label="Passwort" :rules="[required]" clearable></v-text-field>
+    <v-btn :disabled="!form" type="submit">Registrieren</v-btn>
     <v-card-text class="red--text">{{error}}</v-card-text>
   </v-form>
-  <v-card-text v-else>Already logged in!</v-card-text>
+  <v-card-text v-else>Bereits eingeloggt!</v-card-text>
 </template>
 
 <script>

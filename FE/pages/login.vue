@@ -1,12 +1,12 @@
 <template>
   <v-form v-if="!$auth.loggedIn" v-model="form" @submit.prevent="onSubmit">
-    <h1>Please sign in</h1>
-    <v-text-field v-model="userName" type="text" class="form-control" label="User Name" :rules="[required]" clearable @input="clearError"></v-text-field>
-    <v-text-field v-model="password" type="password" class="form-control" label="Password" :rules="[required]" clearable @input="clearError"></v-text-field>
-    <v-btn :disabled="!form" type="submit">Sign in</v-btn>
+    <h1>Anmeldung</h1>
+    <v-text-field v-model="userName" type="text" class="form-control" label="Benutzername" :rules="[required]" clearable @input="clearError"></v-text-field>
+    <v-text-field v-model="password" type="password" class="form-control" label="Passwort" :rules="[required]" clearable @input="clearError"></v-text-field>
+    <v-btn :disabled="!form" type="submit">Anmelden</v-btn>
     <v-card-text class="red--text">{{error}}</v-card-text>
   </v-form>
-  <v-card-text v-else>Already logged in!</v-card-text>
+  <v-card-text v-else>Bereits eingeloggt!</v-card-text>
 </template>
 
 <script>
