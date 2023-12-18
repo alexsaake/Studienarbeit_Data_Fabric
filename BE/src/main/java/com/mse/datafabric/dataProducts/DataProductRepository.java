@@ -77,7 +77,7 @@ public class DataProductRepository {
         return id;
     }
     public void updateDataProduct(DataProductDTO dto, long id){
-        final String STATEMENT = "UPDATE dataproducts SET title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE dataproducts.id = ?";
+        final String STATEMENT = "UPDATE dataproducts SET lastupdated = CURRENT_TIMESTAMP, title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE dataproducts.id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
