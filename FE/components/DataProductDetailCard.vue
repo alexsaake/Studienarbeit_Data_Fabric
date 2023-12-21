@@ -18,39 +18,39 @@
       <v-card-text>
         <v-container class="pa-0">
           <v-row no-gutters>
-            <v-col>{{ description }}</v-col>
+            <v-col >{{ description }}</v-col>
           </v-row>
           <v-row class="mt-4" no-gutters>
-            <v-col cols="2">Ersteller</v-col>
-            <v-col>{{ userName }}</v-col>
+            <v-col cols="5">Ersteller</v-col>
+            <v-col class="value">{{ userName }}</v-col>
           </v-row>
           <v-row class="mt-4" no-gutters>
-            <v-col cols="2">Quelle</v-col>
-            <v-col>{{ source }}</v-col>
+            <v-col cols="5">Quelle</v-col>
+            <v-col class="value">{{ source }}</v-col>
           </v-row>
           <v-row class="mt-4" no-gutters>
-            <v-col cols="2">Quellen-Link:</v-col>
-            <v-col>{{ sourceLink }}</v-col>
+            <v-col cols="5">Quellen-Link</v-col>
+            <v-col class="value">{{ sourceLink }}</v-col>
           </v-row>
           <v-row class="mt-4" no-gutters>
-            <v-col cols="2">Zuletzt aktualisiert:</v-col>
-            <v-col>{{ lastUpdated.toLocaleDateString('de-GE') }}</v-col>
+            <v-col cols="5">Kategorie</v-col>
+            <v-col class="value">{{ category }}</v-col>
           </v-row>
           <v-row class="mt-4" no-gutters>
-            <v-col cols="2">Kategorie</v-col>
-            <v-col>{{ category }}</v-col>
+            <v-col cols="5">Zugriff</v-col>
+            <v-col class="value">{{ accessRight }}</v-col>
           </v-row>
           <v-row class="mt-4" no-gutters>
-            <v-col cols="2">Zugriff</v-col>
-            <v-col>{{ accessRight }}</v-col>
+            <v-col cols="5">Erstelldatum </v-col>
+            <v-col class="value">{{ createdOn.toString().split("-").reverse().join('.')}}</v-col>
           </v-row>
           <v-row class="mt-4" no-gutters>
-            <v-col cols="3">Durchschnittliche Bewertung </v-col>
-            <v-col>{{ averageRating.toFixed(2) }}</v-col>
+            <v-col cols="5">Zuletzt aktualisiert</v-col>
+            <v-col class="value">{{ lastUpdated.toLocaleDateString('de-GE') }}</v-col>
           </v-row>
           <v-row class="mt-4" no-gutters>
-            <v-col cols="3">Erstelldatum </v-col>
-            <v-col>{{ createdOn.toString().split("-").reverse().join('.')}}</v-col>
+            <v-col cols="5">Bewertung </v-col>
+            <v-col class="value">{{ averageRating.toFixed(2) }}</v-col>
           </v-row>
         </v-container>
       </v-card-text>
@@ -143,5 +143,8 @@ import {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.value{
+    font-style: italic;
 }
 </style>

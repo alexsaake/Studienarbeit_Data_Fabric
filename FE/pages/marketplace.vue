@@ -35,7 +35,7 @@
         <v-col
           v-for="dataProductOverview in filteredDataProductsOverview"
           :key="dataProductOverview.id"
-          cols="12" md="4"
+          cols="12" md="4" sm="6"
         >
           <v-lazy :min-height="200" :options="{'threshold':0.5}" transition="fade-transition">
             <v-card style="height: 100%">

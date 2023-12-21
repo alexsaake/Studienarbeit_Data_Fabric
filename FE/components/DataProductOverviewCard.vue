@@ -11,21 +11,23 @@
       <v-card-text>
         <v-container class="pa-0">
           <v-row no-gutters>
-            <v-col>Zuletzt aktualisiert:</v-col>
-            <v-col>{{ lastUpdated.toLocaleDateString('ge-GE') }}</v-col>
+            <v-col cols="8">Zuletzt aktualisiert</v-col>
+            <v-col cols="4" class="value">{{ lastUpdated.toLocaleDateString('ge-GE') }}</v-col>
           </v-row>
-          <v-row class="mt-4" no-gutters>
-            <v-col>Zugriff</v-col>
-            <v-col>{{ accessRight }}</v-col>
+          <v-row  no-gutters>
+            <v-col cols="8">Zugriff</v-col>
+            <v-col cols="4" class="value">{{ accessRight }}</v-col>
           </v-row>
-          <v-row class="mt-4" no-gutters>
-            <v-col>Durchschnittliche Bewertung</v-col>
-            <v-col><pre>{{ averageRating.toFixed(2) }}</pre></v-col>
-            <v-col><v-rating :value="averageRating" readonly half-increments></v-rating></v-col>
+          <v-row no-gutters>
+            <v-col cols="8">Ersteller</v-col>
+            <v-col cols="4" class="value">{{ userName }}</v-col>
           </v-row>
-          <v-row class="mt-4" no-gutters>
-            <v-col>Ersteller</v-col>
-            <v-col>{{ userName }}</v-col>
+          <v-row>
+            <v-col style="display: flex;align-items: center;justify-content: end" >
+              <v-rating :value="averageRating" readonly half-increments>
+              </v-rating>
+              <div>({{averageRating.toFixed(1)}})</div>
+            </v-col>
           </v-row>
         </v-container>
       </v-card-text>
@@ -75,3 +77,8 @@ import {getDataProduct} from "~/middleware/dataProductService";
     }
   }
 </script>
+<style scoped>
+.value{
+    font-style: italic;
+}
+</style>
