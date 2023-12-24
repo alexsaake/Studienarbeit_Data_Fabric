@@ -11,7 +11,7 @@
     </v-container>
     <v-container>
       <v-card-actions>
-        <v-btn @click="onLogout()">Logout</v-btn>
+        <v-btn @click="onLogout()">Ausloggen</v-btn>
         <v-btn @click="onEdit()">{{ editSaveButtonText }}</v-btn>
       </v-card-actions>
         <h1>Deine Bewertungen</h1>
@@ -47,7 +47,7 @@ import { updateUser, getUserRatings } from "~/middleware/userService";
         },
         userRatings: [],
         isEditing: false,
-        editSaveButtonText: 'Edit'
+        editSaveButtonText: 'Bearbeiten'
       }
     },
     async fetch() {

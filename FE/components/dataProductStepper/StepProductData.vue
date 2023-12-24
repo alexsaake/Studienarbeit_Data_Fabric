@@ -29,7 +29,7 @@
               &nbsp;},<br/>
               &nbsp;{<br/>
               &nbsp;&nbsp;"id": 2,<br/>
-              &nbsp;&nbsp;"jahr": "2020",Marina 30 zusammen<br/>
+              &nbsp;&nbsp;"jahr": "2020",<br/>
               &nbsp;&nbsp;"frauen": "3 578",<br/>
               &nbsp;&nbsp;"maenner": "4 146",<br/>
               &nbsp;&nbsp;"insgesamt": "3 975"<br/>
