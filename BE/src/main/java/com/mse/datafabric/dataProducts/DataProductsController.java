@@ -85,7 +85,7 @@ public class DataProductsController {
     public ResponseEntity<DataProductDetailsReponse> getDataProductDetails(@PathVariable long dataProductId){
         return ResponseEntity.ok(myDataProductsService.getDataProductDetails(dataProductId));
     }
-    //@PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping(value = "/DataProduct/{dataProductId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadDataProductImage(@PathVariable long dataProductId,
                                                          @RequestParam("image") MultipartFile image) {

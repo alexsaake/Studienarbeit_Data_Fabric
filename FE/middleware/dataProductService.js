@@ -21,6 +21,21 @@ export async function insertDataProduct(axios, data)
 {
   return await axios.$post(`api/Gateway/DataProduct`, data);
 }
+export async function uploadDataProductImage(axios, dataProductId, imageFile) {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+
+  try {
+    const response = await axios.$post(`api/Gateway/DataProduct/${dataProductId}/image`, formData, {
+      // Axios will set the 'Content-Type' to 'multipart/form-data' automatically
+    });
+
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 export async function updateDataProduct(axios, data, id)
 {
   return await axios.$patch(`api/Gateway/DataProduct/${id}`, data);
