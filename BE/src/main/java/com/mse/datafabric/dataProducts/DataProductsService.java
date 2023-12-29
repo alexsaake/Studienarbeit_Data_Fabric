@@ -8,8 +8,13 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.util.Date;
 import java.util.*;
@@ -19,6 +24,8 @@ import java.util.*;
 class DataProductsService implements IDataProductsService
 {
     JdbcTemplate myJdbcTemplate;
+    // Root location where the images should be saved
+    private final Path rootLocation = Paths.get("path/to/your/images/directory");
     @Autowired
     public DataProductsService(JdbcTemplate jdbcTemplate)
     {
@@ -45,6 +52,26 @@ class DataProductsService implements IDataProductsService
         }
 
         return dataProducts;
+    }
+    // Method to save image for a DataProduct
+    public String saveDataProductImage(long dataProductId, MultipartFile image) throws Exception {
+        // Generate a unique filename for the image, preserving the file extension
+        String originalFilename = image.getOriginalFilename();
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String filename = UUID.randomUUID().toString() + fileExtension;
+
+        // Determine the location where to save the file
+        Path destinationFile = rootLocation.resolve(filename).normalize();
+
+        // Save the image to the filesystem
+        Files.copy(image.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+
+        // Update the DataProduct record with the image filename
+        String updateSql = "UPDATE DataProducts SET imageFileName = ? WHERE id = ?";
+        myJdbcTemplate.update(updateSql, filename, dataProductId);
+
+        // Return the path for the saved image
+        return destinationFile.toString();
     }
 
     public DataProductSummaryResponse getDataProductSummary(long dataProductId) {

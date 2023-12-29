@@ -24,7 +24,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +37,6 @@ public class DataProductsController {
     private final Logger myLogger;
     private final IDataProductsService myDataProductsService;
     private final AuthenticationService myAuthenticationService;
-
     @Autowired
     public JdbcTemplate jdbcTemplate;
     @Autowired
@@ -84,7 +85,27 @@ public class DataProductsController {
     public ResponseEntity<DataProductDetailsReponse> getDataProductDetails(@PathVariable long dataProductId){
         return ResponseEntity.ok(myDataProductsService.getDataProductDetails(dataProductId));
     }
+    //@PreAuthorize("hasAuthority('USER')")
+    @PostMapping(value = "/DataProduct/{dataProductId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadDataProductImage(@PathVariable long dataProductId,
+                                                         @RequestParam("image") MultipartFile image) {
+        if (image.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
 
+        if (!image.getContentType().startsWith("image/")) {
+            return ResponseEntity.badRequest().body("File is not an image");
+        }
+
+        try {
+            String imagePath = myDataProductsService.saveDataProductImage(dataProductId, image);
+
+            return ResponseEntity.ok("Image uploaded successfully. Path: " + imagePath);
+        } catch (Exception e) {
+            // Handle exceptions (e.g., file not saved, DataProduct not found)
+            return ResponseEntity.internalServerError().body("Could not upload image");
+        }
+    }
     @PostMapping(
             value = "/DataProduct",
             produces = MediaType.APPLICATION_JSON_VALUE
