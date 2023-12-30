@@ -10,6 +10,8 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,12 +27,9 @@ class DataProductsService implements IDataProductsService
 {
     JdbcTemplate myJdbcTemplate;
     // Root location where the images should be saved
-    private final Path rootLocation = Paths.get("path/to/your/images/directory");
+    private final Path rootLocation = Paths.get("BE/src/main/resources");
     @Autowired
-    public DataProductsService(JdbcTemplate jdbcTemplate)
-    {
-        myJdbcTemplate = jdbcTemplate;
-    }
+    public DataProductsService(JdbcTemplate jdbcTemplate) {myJdbcTemplate = jdbcTemplate;}
 
     public List<DataProductOverviewResponse> getDataProductsOverview()
     {
@@ -73,7 +72,24 @@ class DataProductsService implements IDataProductsService
         // Return the path for the saved image
         return destinationFile.toString();
     }
+    public String getDataProductImagePath(long dataProductId) throws Exception {
+        // SQL query to retrieve the image file name for the given dataProductId
+        String selectSql = "SELECT imageFileName FROM DataProducts WHERE id = ?";
 
+        // Retrieve the image file name from the database
+        String imageFileName = myJdbcTemplate.queryForObject(selectSql, new Object[]{dataProductId}, String.class);
+
+        // Check if the image file name is not null or empty
+        if (imageFileName == null || imageFileName.isEmpty()) {
+            throw new FileNotFoundException("No image found for data product with ID: " + dataProductId);
+        }
+
+        // Construct the full path to the image file
+        Path imagePath = rootLocation.resolve(imageFileName).normalize();
+
+        // Return the string representation of the image path
+        return imagePath.toString();
+    }
     public DataProductSummaryResponse getDataProductSummary(long dataProductId) {
         String dataProductSql = "SELECT imageFileName, shortDescription, accessRightId FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(dataProductId);
         Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);

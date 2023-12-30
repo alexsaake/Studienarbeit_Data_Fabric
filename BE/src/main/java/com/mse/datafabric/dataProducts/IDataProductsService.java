@@ -20,4 +20,5 @@ public interface IDataProductsService
     boolean updateDataProductsRating(String userName, long ratingId, RatingDetailsDTO ratingDetails);
     boolean markAsDeletedDataProductRating(String userName, long ratingId);
     String saveDataProductImage(long dataProductId, MultipartFile image) throws Exception;
+    public String getDataProductImagePath(long dataProductId) throws Exception;
 }

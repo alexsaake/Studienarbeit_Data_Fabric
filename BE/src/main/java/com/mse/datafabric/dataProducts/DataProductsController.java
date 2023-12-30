@@ -17,6 +17,9 @@ import com.mse.datafabric.utils.GoogleMapsAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,7 +29,11 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +92,7 @@ public class DataProductsController {
     public ResponseEntity<DataProductDetailsReponse> getDataProductDetails(@PathVariable long dataProductId){
         return ResponseEntity.ok(myDataProductsService.getDataProductDetails(dataProductId));
     }
-    @PreAuthorize("hasAuthority('USER')")
+    //@PreAuthorize("hasAuthority('USER')")
     @PostMapping(value = "/DataProduct/{dataProductId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadDataProductImage(@PathVariable long dataProductId,
                                                          @RequestParam("image") MultipartFile image) {
@@ -103,7 +110,40 @@ public class DataProductsController {
             return ResponseEntity.ok("Image uploaded successfully. Path: " + imagePath);
         } catch (Exception e) {
             // Handle exceptions (e.g., file not saved, DataProduct not found)
-            return ResponseEntity.internalServerError().body("Could not upload image");
+            return ResponseEntity.internalServerError().body("Could not upload image" + ' ' + e.getMessage());
+        }
+    }
+    @GetMapping(value = "/DataProduct/{dataProductId}/image", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<Resource> getDataProductImage(@PathVariable long dataProductId) {
+        try {
+            // Use the service method to get the image path
+            String imagePath = myDataProductsService.getDataProductImagePath(dataProductId);
+
+            // Create a Resource object for the image
+            Path path = Paths.get(imagePath);
+            Resource imageResource = new UrlResource(path.toUri());
+
+            // Check if the resource exists and is readable
+            if (!imageResource.exists() || !imageResource.isReadable()) {
+                throw new FileNotFoundException("Could not read file: " + imagePath);
+            }
+
+            // Determine the content type of the image
+            String contentType = Files.probeContentType(path);
+            if (contentType == null) {
+                contentType = "application/octet-stream"; // default content type
+            }
+
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(imageResource);
+
+        } catch (Exception e) {
+            myLogger.error("Error loading image for data product ID " + dataProductId, e);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
         }
     }
     @PostMapping(
