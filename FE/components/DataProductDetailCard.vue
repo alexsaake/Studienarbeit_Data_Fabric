@@ -109,8 +109,13 @@ import {
           this.sourceLink = dataProductDetails.sourceLink;
           this.createdOn = dataProductDetails.createdOn;
 
-          // Fetch the image URL and assign it to imageUrl
-          this.imageFileName = await getDataProductImage(this.$axios, this.id);
+          try {
+            const imageUrl = await getDataProductImage(this.$axios, this.id);
+            this.imageFileName = imageUrl || 'defaultImage.jpg'; // Fallback to default image
+          } catch (error) {
+            console.error('Error fetching image:', error);
+            this.imageFileName = 'defaultImage.jpg'; // Fallback to default image
+          }
         } catch (error) {
           console.error('Error fetching data product details:', error);
         } finally {

@@ -55,7 +55,7 @@ import {getDataProduct, getDataProductImage} from "~/middleware/dataProductServi
         imageFileName: '',
         shortDescription: '',
         accessRight: '',
-        isLoading: true
+        isLoading: true,
       }
     },
     async created() {
@@ -64,11 +64,15 @@ import {getDataProduct, getDataProductImage} from "~/middleware/dataProductServi
     methods: {
       async fetchData() {
         const dataProductSummary = await getDataProduct(this.$axios, this.id);
-        if(dataProductSummary.imageFileName === null) {
-          this.imageFileName = "defaultImage.jpg";
-        } else {
-          this.imageFileName = await getDataProductImage(this.$axios, this.id)
+
+        try {
+          const imageUrl = await getDataProductImage(this.$axios, this.id);
+          this.imageFileName = imageUrl || 'defaultImage.jpg'; // Fallback to default image
+        } catch (error) {
+          console.error('Error fetching image:', error);
+          this.imageFileName = 'defaultImage.jpg'; // Fallback to default image
         }
+
         this.shortDescription = dataProductSummary.shortDescription;
         this.accessRight = this.accessRightsCatalogue[dataProductSummary.accessRightId];
 
