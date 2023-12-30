@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import {getDataProduct} from "~/middleware/dataProductService";
+import {getDataProduct, getDataProductImage} from "~/middleware/dataProductService";
 
   export default
   {
@@ -67,7 +67,7 @@ import {getDataProduct} from "~/middleware/dataProductService";
         if(dataProductSummary.imageFileName === null) {
           this.imageFileName = "defaultImage.jpg";
         } else {
-          this.imageFileName = dataProductSummary.imageFileName;
+          this.imageFileName = await getDataProductImage(this.$axios, this.id)
         }
         this.shortDescription = dataProductSummary.shortDescription;
         this.accessRight = this.accessRightsCatalogue[dataProductSummary.accessRightId];

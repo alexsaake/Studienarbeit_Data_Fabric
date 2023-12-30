@@ -95,12 +95,28 @@
           ></v-select>
         </v-col>
       </v-row>
+      <v-row justify="center">
+        <v-col class="col" cols="12" md="6">
+          <v-file-input
+              label="Bild hochladen"
+              @change="onFileSelected"
+              accept="image/*"
+              outlined
+          ></v-file-input>
+          <v-btn
+              :disabled="!selectedFile"
+              color="primary"
+              @click="uploadImage"
+          >Hochladen</v-btn>
+        </v-col>
+      </v-row>
+
     </v-container>
   </v-card>
 </template>
 
 <script>
-import { getDataProductCategories, getDataProductAccessRights  } from "~/middleware/dataProductService";
+import { getDataProductCategories, getDataProductAccessRights, uploadDataProductImage  } from "~/middleware/dataProductService";
 
 export default {
   props: ['clickedNext', 'currentStep','dataProductPreselect'],
@@ -108,6 +124,7 @@ export default {
     return {
       dataProductCategories: null,
       dataProductAccessRights: null,
+      selectedFile: null,
       form: {
         title: '',
         shortDescription: '',
@@ -184,6 +201,27 @@ export default {
   },
   fetchOnServer: false,
   methods:{
+    onFileSelected(file) {
+      if (file) {
+        this.selectedFile = file;
+      } else {
+        this.selectedFile = null;
+      }
+    },
+    async uploadImage() {
+      if (!this.selectedFile) return;
+
+      // Assuming 'id' is available in the component's data
+      const id = this.dataProductPreselect.metaData.id;
+      try {
+        const response = await uploadDataProductImage(this.$axios, id, this.selectedFile);
+        console.log('Upload response:', response);
+        // Handle the successful upload here (e.g., show a success message or update the UI)
+      } catch (error) {
+        console.error('Upload error:', error.toString());
+        // Handle the error here (e.g., show an error message)
+      }
+    },
     async fetchDataProductCategories() {
       const rawData = await getDataProductCategories(
         this.$axios,
