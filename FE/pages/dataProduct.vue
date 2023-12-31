@@ -9,6 +9,20 @@
       @active-step="isStepActive"
       @stepper-finished="uploadData"
     ></horizontal-stepper>
+    <v-row justify="center" v-if="dataProductPreselect.state">
+      <v-col class="col" cols="12" md="6">
+        <v-file-input
+            label="Bild hochladen"
+            @change="onFileSelected"
+            accept="image/*"
+            outlined
+        ></v-file-input>
+        <v-btn
+            color="primary"
+            @click="uploadImage"
+        >Hochladen</v-btn>
+      </v-col>
+    </v-row>
     <v-snackbar
       v-model="snackbar"
       :timeout="timeout"
@@ -38,6 +52,7 @@ import {
   getDataProductDataAll,
   insertDataProduct,
   updateDataProduct,
+  uploadDataProductImage
 } from "~/middleware/dataProductService";
 export default {
   name: "newDataProduct",
@@ -99,6 +114,27 @@ export default {
       this.$router.push('/login?page=dataProduct');
   },
   methods: {
+    onFileSelected(file) {
+      if (file) {
+        this.selectedFile = file;
+      } else {
+        this.selectedFile = null;
+      }
+    },
+    async uploadImage() {
+      if (!this.selectedFile) return;
+
+      // Assuming 'id' is available in the component's data
+      const id = this.dataProductPreselect.metaData.id;
+      try {
+        const response = await uploadDataProductImage(this.$axios, id, this.selectedFile);
+        console.log('Upload response:', response);
+        // Handle the successful upload here (e.g., show a success message or update the UI)
+      } catch (error) {
+        console.error('Upload error:', error.toString());
+        // Handle the error here (e.g., show an error message)
+      }
+    },
     async uploadDataProduct(data) {
       return await insertDataProduct(
         this.$axios, data
