@@ -9,6 +9,20 @@
       @active-step="isStepActive"
       @stepper-finished="uploadData"
     ></horizontal-stepper>
+    <v-row justify="center" v-if="!dataProductPreselect.state">
+      <v-col class="col" cols="12" md="6">
+        <v-file-input
+            label="Bild hochladen"
+            @change="onFileSelected"
+            accept="image/*"
+            outlined
+        ></v-file-input>
+        <v-btn
+            color="primary"
+            @click="uploadImageNoId"
+        >Hochladen</v-btn>
+      </v-col>
+    </v-row>
     <v-row justify="center" v-if="dataProductPreselect.state">
       <v-col class="col" cols="12" md="6">
         <v-file-input
@@ -52,7 +66,8 @@ import {
   getDataProductDataAll,
   insertDataProduct,
   updateDataProduct,
-  uploadDataProductImage
+  uploadDataProductImage,
+  uploadDataProductImageNoId
 } from "~/middleware/dataProductService";
 export default {
   name: "newDataProduct",
@@ -128,6 +143,18 @@ export default {
       const id = this.dataProductPreselect.metaData.id;
       try {
         const response = await uploadDataProductImage(this.$axios, id, this.selectedFile);
+        console.log('Upload response:', response);
+        // Handle the successful upload here (e.g., show a success message or update the UI)
+      } catch (error) {
+        console.error('Upload error:', error.toString());
+        // Handle the error here (e.g., show an error message)
+      }
+    },
+    async uploadImageNoId() {
+      if (!this.selectedFile) return;
+
+      try {
+        const response = await uploadDataProductImageNoId(this.$axios, this.selectedFile);
         console.log('Upload response:', response);
         // Handle the successful upload here (e.g., show a success message or update the UI)
       } catch (error) {

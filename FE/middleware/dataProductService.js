@@ -17,25 +17,9 @@ export async function deleteDataProduct(axios, id)
 {
   return await axios.$delete(`api/Gateway/DataProduct/${id}`);
 }
-export async function insertDataProduct(axios, data, imageFile = null) {
-  const formData = new FormData();
-  formData.append('dataProductInfo', JSON.stringify(data)); // Append data as JSON string
-
-  if (imageFile) {
-    formData.append('image', imageFile); // Append image file if it's provided
-  }
-
-  try {
-    // Making a POST request with formData
-    // Axios will automatically set the 'Content-Type' to 'multipart/form-data'
-    const response = await axios.post(`api/Gateway/DataProduct`, formData);
-
-    // Extract and return the data product ID from the response
-    return response.data; // Assuming the server returns the ID directly
-  } catch (error) {
-    console.error(error);
-    return -1; // Return -1 in case of an error
-  }
+export async function insertDataProduct(axios, data)
+{
+  return await axios.$post(`api/Gateway/DataProduct`, data);
 }
 export async function uploadDataProductImage(axios, dataProductId, imageFile) {
   const formData = new FormData();
@@ -43,7 +27,6 @@ export async function uploadDataProductImage(axios, dataProductId, imageFile) {
 
   try {
     const response = await axios.$post(`api/Gateway/DataProduct/${dataProductId}/image`, formData, {
-      // Axios will set the 'Content-Type' to 'multipart/form-data' automatically
     });
 
     return response;
@@ -52,6 +35,22 @@ export async function uploadDataProductImage(axios, dataProductId, imageFile) {
     throw error;
   }
 }
+export async function uploadDataProductImageNoId(axios, imageFile) {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+
+  try {
+    const response = await axios.$post(`api/Gateway/DataProduct`, formData, {
+      // Axios will set the 'Content-Type' to 'multipart/form-data' automatically
+    });
+
+    return response;
+  } catch (error) {
+    console.error(error.toString());
+    throw error;
+  }
+}
+
 
 export async function getDataProductImage(axios, dataProductId) {
   try {

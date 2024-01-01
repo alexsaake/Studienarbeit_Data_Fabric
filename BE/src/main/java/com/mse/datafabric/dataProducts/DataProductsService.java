@@ -21,6 +21,8 @@ import java.sql.*;
 import java.util.Date;
 import java.util.*;
 
+import static org.hibernate.grammars.hql.HqlParser.CURRENT_TIMESTAMP;
+
 @ShellComponent
 @Component
 class DataProductsService implements IDataProductsService
@@ -64,6 +66,9 @@ class DataProductsService implements IDataProductsService
 
         // Save the image to the filesystem
         Files.copy(image.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
+        //Create record of the future data product with dummy data
+        String insertSql = "INSERT INTO DataProducts (title, shortdescription, description, source, sourcelink, lastupdated, categoryid, userid) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)";
+        myJdbcTemplate.update(insertSql, "Dummy Title", "Dummy Short Description", "Dummy Description", "DummySource", "Dummy Source Link", 1, 1);
 
         // Update the DataProduct record with the image filename
         String updateSql = "UPDATE DataProducts SET imageFileName = ? WHERE id = ?";

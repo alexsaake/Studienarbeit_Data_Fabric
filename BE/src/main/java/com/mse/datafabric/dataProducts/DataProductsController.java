@@ -92,7 +92,7 @@ public class DataProductsController {
     public ResponseEntity<DataProductDetailsReponse> getDataProductDetails(@PathVariable long dataProductId){
         return ResponseEntity.ok(myDataProductsService.getDataProductDetails(dataProductId));
     }
-    //@PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping(value = "/DataProduct/{dataProductId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadDataProductImage(@PathVariable long dataProductId,
                                                          @RequestParam("image") MultipartFile image) {
@@ -106,6 +106,29 @@ public class DataProductsController {
 
         try {
             String imagePath = myDataProductsService.saveDataProductImage(dataProductId, image);
+
+            return ResponseEntity.ok("Image uploaded successfully. Path: " + imagePath);
+        } catch (Exception e) {
+            // Handle exceptions (e.g., file not saved, DataProduct not found)
+            return ResponseEntity.internalServerError().body("Could not upload image" + ' ' + e.getMessage());
+        }
+    }
+    //@PreAuthorize("hasAuthority('USER')")
+    @PostMapping(value = "/DataProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadDataProductImageNoId(@RequestParam(value ="image") MultipartFile image) {
+        if (image.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+
+        if (!image.getContentType().startsWith("image/")) {
+            return ResponseEntity.badRequest().body("File is not an image");
+        }
+
+        long idTemp = dataProductRepository.generateDataProductId();
+
+        try {
+            String imagePath = myDataProductsService.saveDataProductImage(idTemp, image);
+            //make image available on the /id/image Endpoint
 
             return ResponseEntity.ok("Image uploaded successfully. Path: " + imagePath);
         } catch (Exception e) {
@@ -149,32 +172,21 @@ public class DataProductsController {
 
     @PostMapping(
             value = "/DataProduct",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('USER')")
-    public long createDataProduct(
-            @RequestPart("dataProductInfo") String dataProductInfo,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
-
+    public long createDataProduct(@RequestBody String requestBodyJson){
+        DataProductAllDTO dto;
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            DataProductAllDTO dto = mapper.readValue(dataProductInfo, DataProductAllDTO.class);
-
-            long dataProductId = productData.createDataProduct(dto); // Using productData from DataProductsController
-
-            if (dataProductId != -1 && image != null && !image.isEmpty()) {
-                // Handle image uploading
-                // Assuming saveDataProductImage method handles saving the image and associating it with the data product
-                myDataProductsService.saveDataProductImage(dataProductId, image);
-            }
-
-            return dataProductId; // Returns the ID of the created product or -1 in case of error
-        } catch (Exception e) {
-            myLogger.error("Error in createDataProduct", e);
-            return -1;
+            dto = mapper.readValue(requestBodyJson, DataProductAllDTO.class);
+            return productData.createDataProduct(dto);
         }
+        catch (JsonProcessingException e) {
+            myLogger.error("Could not parse json " + e);
+        }
+        return -1;
     }
 
 
