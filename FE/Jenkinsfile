@@ -32,7 +32,7 @@ pipeline {
         stage('NPM Run prod') {
           steps {
             dir('FE/') {
-                sh 'npm run prod'
+                sh 'npm run build && npm run start'
             }
           }
         }
