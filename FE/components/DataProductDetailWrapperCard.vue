@@ -40,7 +40,7 @@
               <v-lazy :min-height="200" :options="{'threshold':0.5}" transition="fade-transition">
                 <data-product-rating-card
                     :rating-id="rating.id"
-                    @on-rating-deleted="refreshRatings"
+                    @on-rating-deleted="onRatingDeleted"
                     @on-edit-rating="onUpdateRating"
                 />
               </v-lazy>
@@ -144,7 +144,13 @@ import {
       onRatingAdded()
       {
         this.refreshRatings();
+        this.$emit('on-data-product-refresh-average-rating');
         this.onCloseRating();
+      },
+      onRatingDeleted()
+      {
+        this.refreshRatings();
+        this.$emit('on-data-product-refresh-average-rating');
       },
       onCloseRating()
       {

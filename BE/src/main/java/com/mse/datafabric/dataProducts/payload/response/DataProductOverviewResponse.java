@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"id", "title", "userName", "lastUpdated", "categoryId"})
+@JsonPropertyOrder({"id", "title", "userName", "lastUpdated", "categoryId", "averageRating"})
 public class DataProductOverviewResponse implements Serializable
 {
     private long id;
@@ -18,6 +18,7 @@ public class DataProductOverviewResponse implements Serializable
     private String userName;
     private Date lastUpdated;
     private long categoryId;
+    private float averageRating;
 
     @Override
     public boolean equals(Object obj) {
@@ -43,6 +44,9 @@ public class DataProductOverviewResponse implements Serializable
             return false;
         }
         if (!Objects.equals(this.categoryId, other.categoryId)) {
+            return false;
+        }
+        if (!Objects.equals(this.averageRating, other.averageRating)) {
             return false;
         }
 

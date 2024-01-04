@@ -160,11 +160,11 @@ public class DataProductsController {
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{dataProductId}/Ratings/Averages",
+            value = "/DataProduct/{dataProductId}/Ratings/Average",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Float getAvgRatings(@PathVariable long dataProductId){
-        return dataProductRepository.getAvgRatings(dataProductId);
+    public Float getAvgRating(@PathVariable long dataProductId){
+        return dataProductRepository.getAvgRating(dataProductId);
     }
 
     @ShellMethod("getDataProduct")
