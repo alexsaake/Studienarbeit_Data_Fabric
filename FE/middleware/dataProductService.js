@@ -35,22 +35,6 @@ export async function uploadDataProductImage(axios, dataProductId, imageFile) {
     throw error;
   }
 }
-export async function uploadDataProductImageNoId(axios, imageFile) {
-  const formData = new FormData();
-  formData.append('image', imageFile);
-
-  try {
-    const response = await axios.$post(`api/Gateway/DataProduct`, formData, {
-      // Axios will set the 'Content-Type' to 'multipart/form-data' automatically
-    });
-
-    return response;
-  } catch (error) {
-    console.error(error.toString());
-    throw error;
-  }
-}
-
 
 export async function getDataProductImage(axios, dataProductId) {
   try {

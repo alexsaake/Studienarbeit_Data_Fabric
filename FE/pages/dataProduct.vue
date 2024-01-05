@@ -66,8 +66,7 @@ import {
   getDataProductDataAll,
   insertDataProduct,
   updateDataProduct,
-  uploadDataProductImage,
-  uploadDataProductImageNoId
+  uploadDataProductImage
 } from "~/middleware/dataProductService";
 export default {
   name: "newDataProduct",
@@ -143,18 +142,6 @@ export default {
       const id = this.dataProductPreselect.metaData.id;
       try {
         const response = await uploadDataProductImage(this.$axios, id, this.selectedFile);
-        console.log('Upload response:', response);
-        // Handle the successful upload here (e.g., show a success message or update the UI)
-      } catch (error) {
-        console.error('Upload error:', error.toString());
-        // Handle the error here (e.g., show an error message)
-      }
-    },
-    async uploadImageNoId() {
-      if (!this.selectedFile) return;
-
-      try {
-        const response = await uploadDataProductImageNoId(this.$axios, this.selectedFile);
         console.log('Upload response:', response);
         // Handle the successful upload here (e.g., show a success message or update the UI)
       } catch (error) {

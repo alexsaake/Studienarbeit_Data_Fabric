@@ -17,6 +17,7 @@ import com.mse.datafabric.utils.GoogleMapsAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -92,7 +93,7 @@ public class DataProductsController {
     public ResponseEntity<DataProductDetailsReponse> getDataProductDetails(@PathVariable long dataProductId){
         return ResponseEntity.ok(myDataProductsService.getDataProductDetails(dataProductId));
     }
-    @PreAuthorize("hasAuthority('USER')")
+    //@PreAuthorize("hasAuthority('USER')")
     @PostMapping(value = "/DataProduct/{dataProductId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadDataProductImage(@PathVariable long dataProductId,
                                                          @RequestParam("image") MultipartFile image) {
@@ -105,57 +106,30 @@ public class DataProductsController {
         }
 
         try {
-            String imagePath = myDataProductsService.saveDataProductImage(dataProductId, image);
+            String filename = myDataProductsService.saveDataProductImage(dataProductId, image, jdbcTemplate);
 
-            return ResponseEntity.ok("Image uploaded successfully. Path: " + imagePath);
+            return ResponseEntity.ok("Image uploaded successfully. Filename: " + filename);
         } catch (Exception e) {
             // Handle exceptions (e.g., file not saved, DataProduct not found)
-            return ResponseEntity.internalServerError().body("Could not upload image" + ' ' + e.getMessage());
+            return ResponseEntity.internalServerError().body("Could not upload image: " + e.getMessage());
         }
     }
-    //@PreAuthorize("hasAuthority('USER')")
-    @PostMapping(value = "/DataProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadDataProductImageNoId(@RequestParam(value ="image") MultipartFile image) {
-        if (image.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty");
-        }
-
-        if (!image.getContentType().startsWith("image/")) {
-            return ResponseEntity.badRequest().body("File is not an image");
-        }
-
-        long idTemp = dataProductRepository.generateDataProductId();
-
-        try {
-            String imagePath = myDataProductsService.saveDataProductImage(idTemp, image);
-            //make image available on the /id/image Endpoint
-
-            return ResponseEntity.ok("Image uploaded successfully. Path: " + imagePath);
-        } catch (Exception e) {
-            // Handle exceptions (e.g., file not saved, DataProduct not found)
-            return ResponseEntity.internalServerError().body("Could not upload image" + ' ' + e.getMessage());
-        }
-    }
-    @GetMapping(value = "/DataProduct/{dataProductId}/image", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/DataProduct/{dataProductId}/image")
     public ResponseEntity<Resource> getDataProductImage(@PathVariable long dataProductId) {
         try {
-            // Use the service method to get the image path
-            String imagePath = myDataProductsService.getDataProductImagePath(dataProductId);
+            // Use the service method to get the image data as a byte array
+            byte[] imageData = myDataProductsService.getDataProductImageData(dataProductId);
 
-            // Create a Resource object for the image
-            Path path = Paths.get(imagePath);
-            Resource imageResource = new UrlResource(path.toUri());
-
-            // Check if the resource exists and is readable
-            if (!imageResource.exists() || !imageResource.isReadable()) {
-                throw new FileNotFoundException("Could not read file: " + imagePath);
+            if (imageData == null) {
+                return ResponseEntity.notFound().build();
             }
+
+            // Create a ByteArrayResource object for the image data
+            Resource imageResource = new ByteArrayResource(imageData);
 
             // Determine the content type of the image
-            String contentType = Files.probeContentType(path);
-            if (contentType == null) {
-                contentType = "application/octet-stream"; // default content type
-            }
+            // This is a placeholder - you would ideally determine this based on the image data
+            String contentType = "image/png"; // Default content type, adjust as necessary
 
             return ResponseEntity
                     .ok()
@@ -169,6 +143,7 @@ public class DataProductsController {
                     .body(null);
         }
     }
+
 
     @PostMapping(
             value = "/DataProduct",

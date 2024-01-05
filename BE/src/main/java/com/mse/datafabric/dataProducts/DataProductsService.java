@@ -54,46 +54,42 @@ class DataProductsService implements IDataProductsService
 
         return dataProducts;
     }
-    // Method to save image for a DataProduct
-    public String saveDataProductImage(long dataProductId, MultipartFile image) throws Exception {
+    public String saveDataProductImage(long dataProductId, MultipartFile image, JdbcTemplate myJdbcTemplate) throws Exception {
         // Generate a unique filename for the image, preserving the file extension
         String originalFilename = image.getOriginalFilename();
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String filename = UUID.randomUUID().toString() + fileExtension;
 
-        // Determine the location where to save the file
-        Path destinationFile = rootLocation.resolve(filename).normalize();
+        byte[] imageData;
+        try {
+            // Convert the MultipartFile into a byte array
+            imageData = image.getBytes();
+        } catch (IOException e) {
+            throw new Exception("Error while converting image to byte array", e);
+        }
 
-        // Save the image to the filesystem
-        Files.copy(image.getInputStream(), destinationFile, StandardCopyOption.REPLACE_EXISTING);
-        //Create record of the future data product with dummy data
-        String insertSql = "INSERT INTO DataProducts (title, shortdescription, description, source, sourcelink, lastupdated, categoryid, userid) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)";
-        myJdbcTemplate.update(insertSql, "Dummy Title", "Dummy Short Description", "Dummy Description", "DummySource", "Dummy Source Link", 1, 1);
+        // Insert the image data into the image_table
+        String insertImageSql = "INSERT INTO image_table (dataProductId, imageData) VALUES (?, ?)" +
+                                "ON CONFLICT (dataProductId) DO UPDATE SET imageData = EXCLUDED.imageData";
+            myJdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(insertImageSql);
+            ps.setLong(1, dataProductId);
+            ps.setBytes(2, imageData);
+            return ps;
+        });
 
         // Update the DataProduct record with the image filename
         String updateSql = "UPDATE DataProducts SET imageFileName = ? WHERE id = ?";
         myJdbcTemplate.update(updateSql, filename, dataProductId);
 
-        // Return the path for the saved image
-        return destinationFile.toString();
+        // Return the generated filename
+        return filename;
     }
-    public String getDataProductImagePath(long dataProductId) throws Exception {
-        // SQL query to retrieve the image file name for the given dataProductId
-        String selectSql = "SELECT imageFileName FROM DataProducts WHERE id = ?";
 
-        // Retrieve the image file name from the database
-        String imageFileName = myJdbcTemplate.queryForObject(selectSql, new Object[]{dataProductId}, String.class);
-
-        // Check if the image file name is not null or empty
-        if (imageFileName == null || imageFileName.isEmpty()) {
-            throw new FileNotFoundException("No image found for data product with ID: " + dataProductId);
-        }
-
-        // Construct the full path to the image file
-        Path imagePath = rootLocation.resolve(imageFileName).normalize();
-
-        // Return the string representation of the image path
-        return imagePath.toString();
+    public byte[] getDataProductImageData(long dataProductId) throws SQLException {
+        // SQL query to fetch the image data
+        String sql = "SELECT imageData FROM image_table WHERE dataProductId = ?";
+        return myJdbcTemplate.queryForObject(sql, new Object[]{dataProductId}, (rs, rowNum) -> rs.getBytes("imageData"));
     }
     public DataProductSummaryResponse getDataProductSummary(long dataProductId) {
         String dataProductSql = "SELECT imageFileName, shortDescription, accessRightId FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(dataProductId);
