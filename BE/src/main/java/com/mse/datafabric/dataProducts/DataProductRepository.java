@@ -22,7 +22,6 @@ public class DataProductRepository {
     public JdbcTemplate jdbcTemplate;
     @Autowired
     public GoogleMapsAPI googleMapsAPI;
-    public boolean generatedID = false;
 
     public DataProductRepository() {
 
@@ -42,84 +41,40 @@ public class DataProductRepository {
 
         }
     }
-    public long generateDataProductId() {
-        final String STATEMENT = "SELECT last_value FROM dataproducts_id_seq";
-        try {
-            Long lastId = jdbcTemplate.queryForObject(STATEMENT, Long.class);
-            if (lastId != null) {
-                generatedID = true;
-                return lastId + 1;
-
-            } else {
-                // Assuming that if there are no entries in the table, you want to start from 1
-                return 1;
-            }
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Error while generating new Data Product ID", e);
-        }
-
-    }
     public long insertDataProduct(DataProductDTO dto){
-        if(!generatedID) {
-            final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid, createdon) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?), CURRENT_DATE) RETURNING dataproducts.id";
-            Long id;
-            try {
-                id = jdbcTemplate.query(
-                        STATEMENT, new PreparedStatementSetter() {
-                            public void setValues(PreparedStatement ps) throws SQLException {
-                                ps.setString(1, dto.title);
-                                ps.setString(2, dto.shortDescription);
-                                ps.setString(3, dto.description);
-                                ps.setString(4, dto.source);
-                                ps.setString(5, dto.sourceLink);
-                                ps.setInt(6, dto.categoryId);
-                                ps.setInt(7, dto.accessRightId);
-                                ps.setString(8, dto.data);
-                                ps.setString(9, dto.username);
-                            }
-                        },
-                        new ResultSetExtractor<>() {
-                            public Long extractData(ResultSet rs) throws SQLException,
+        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid, createdon) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?), CURRENT_DATE) RETURNING dataproducts.id";
+        Long id;
+        try {
+            id = jdbcTemplate.query(
+                    STATEMENT, new PreparedStatementSetter() {
+                        public void setValues(PreparedStatement ps) throws SQLException {
+                            ps.setString(1, dto.title);
+                            ps.setString(2, dto.shortDescription);
+                            ps.setString(3, dto.description);
+                            ps.setString(4, dto.source);
+                            ps.setString(5, dto.sourceLink);
+                            ps.setInt(6, dto.categoryId);
+                            ps.setInt(7, dto.accessRightId);
+                            ps.setString(8, dto.data);
+                            ps.setString(9, dto.username);
+                        }
+                    },new ResultSetExtractor<>() {
+                        public Long extractData(ResultSet rs) throws SQLException,
                                 DataAccessException {
-                                if (rs.next()) {
+                            if (rs.next()) {
                                 return rs.getLong("id");
-                                }
-                                return null;}
                             }
-             );
-                if(id == null)
-                    return -1;
-            }
-            catch (Exception e) {
+                            return null;
+                        }
+                    }
+            );
+            if(id == null)
                 return -1;
-            }
-            return id;
         }
-        else {
-            //select previously generated dataProductId, now last_id
-            final String StatmentLastId = "SELECT id FROM dataProducts ORDER BY id DESC LIMIT 1";
-            Long last_Id = jdbcTemplate.queryForObject(StatmentLastId, Long.class);
-            final String StamentUpdate ="UPDATE dataProducts SET title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE id = last_Id ";
-            try {
-                jdbcTemplate.update(connection -> {
-                    PreparedStatement ps = connection.prepareStatement(StamentUpdate);
-                    ps.setString(1, dto.title);
-                    ps.setString(2, dto.shortDescription);
-                    ps.setString(3, dto.description);
-                    ps.setString(4, dto.source);
-                    ps.setString(5, dto.sourceLink);
-                    ps.setInt(6, dto.categoryId);
-                    ps.setInt(7, dto.accessRightId);
-                    ps.setString(8, dto.data);
-                    ps.setString(9, dto.username);
-                    return ps;
-                });
-            }
-            catch (Exception e){
-                return -1;
-            }
-            return last_Id;
+        catch (Exception e) {
+            return -1;
         }
+        return id;
     }
     public void updateDataProduct(DataProductDTO dto, long id){
         final String STATEMENT = "UPDATE dataproducts SET lastupdated = CURRENT_TIMESTAMP, title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE dataproducts.id = ?";
@@ -252,8 +207,8 @@ public class DataProductRepository {
             return null;
         }
     }
-    public Float getAvgRatings(long dataProductId){
-        final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.id = ?";
+    public Float getAvgRating(long dataProductId){
+        final String queryAvg = "SELECT AVG(rate.rating) FROM dataproduct_ratings rate JOIN dataproducts dp ON dp.id = rate.id_dataproducts WHERE rate.id_dataproducts = ? AND dp.isdeleted = FALSE AND rate.isdeleted = FALSE";
 
         try {
             return parseFloat(jdbcTemplate.queryForObject(queryAvg, new Object[]{dataProductId}, String.class));
@@ -296,13 +251,13 @@ public class DataProductRepository {
         final String STATEMENT = "SELECT data FROM dataproducts WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
-                STATEMENT, preparedStatement ->
-                        preparedStatement.setLong(1, dataProductId),
-                (ResultSetExtractor<String>) resultSet -> {
-                    if (resultSet.next())
-                        return resultSet.getString(1);
-                    return null;
-                }
+                    STATEMENT, preparedStatement ->
+                            preparedStatement.setLong(1, dataProductId),
+                    (ResultSetExtractor<String>) resultSet -> {
+                        if (resultSet.next())
+                            return resultSet.getString(1);
+                        return null;
+                    }
             );
         }
         catch (Exception e) {
