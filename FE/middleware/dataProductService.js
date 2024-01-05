@@ -151,9 +151,9 @@ export async function setDataProductRating(axios, dataProductId, title, comment,
   );
 }
 
-export async function getDataProductAvgRatings(axios, dataProductId)
+export async function getDataProductAvgRating(axios, dataProductId)
 {
-  return await axios.$get(`api/Gateway/DataProduct/${dataProductId}/Ratings/Averages`);
+  return await axios.$get(`api/Gateway/DataProduct/${dataProductId}/Ratings/Average`);
 }
 
 export async function updateDataProductRating(axios, ratingId, title, comment, rating)
