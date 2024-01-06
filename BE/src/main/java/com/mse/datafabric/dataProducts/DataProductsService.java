@@ -36,7 +36,7 @@ class DataProductsService implements IDataProductsService
 
     public List<DataProductOverviewResponse> getDataProductsOverview()
     {
-        String dataProductsSql = "SELECT dp.id, dp.title, usr.username, dp.lastUpdated, dp.categoryId, AVG(rate.rating)::REAL averageRating FROM DataProducts dp JOIN Users usr ON dp.userid = usr.id JOIN dataproduct_ratings rate ON dp.id = rate.id_dataproducts WHERE dp.isDeleted = FALSE AND rate.isDeleted = FALSE GROUP BY dp.id, dp.title, usr.username, dp.lastUpdated, dp.categoryId";
+        String dataProductsSql = "SELECT dp.id, dp.title, usr.username, dp.lastUpdated, dp.categoryId, AVG(COALESCE(rate.rating, 0))::REAL averageRating FROM DataProducts dp JOIN Users usr ON dp.userid = usr.id LEFT JOIN dataproduct_ratings rate ON dp.id = rate.id_dataproducts WHERE dp.isDeleted = FALSE AND (rate.isDeleted = FALSE OR rate.isDeleted IS NULL) GROUP BY dp.id, dp.title, usr.username, dp.lastUpdated, dp.categoryId";
         List<Map<String, Object>> databaseDataProducts = myJdbcTemplate.queryForList(dataProductsSql);
 
         List<DataProductOverviewResponse> dataProducts = new ArrayList<>();
