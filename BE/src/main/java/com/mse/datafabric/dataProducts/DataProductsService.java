@@ -3,6 +3,7 @@ package com.mse.datafabric.dataProducts;
 import com.mse.datafabric.dataProducts.payload.RatingDetailsDTO;
 import com.mse.datafabric.dataProducts.payload.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
@@ -79,11 +80,16 @@ class DataProductsService implements IDataProductsService
             return ps;
         });
 
-        // Update the DataProduct record with the image filename
-        String updateSql = "UPDATE DataProducts SET imageFileName = ? WHERE id = ?";
-        myJdbcTemplate.update(updateSql, filename, dataProductId);
+        //update imageFilename only if the record with the id already exists in dataproducts
+        String updateSql = "UPDATE dataproducts SET imageFileName = ? WHERE id = ? AND EXISTS (SELECT 1 FROM dataproducts WHERE id = ?)";
+        myJdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(updateSql);
+            ps.setString(1, filename);
+            ps.setLong(2, dataProductId);
+            ps.setLong(3, dataProductId);
+            return ps;
+        });
 
-        // Return the generated filename
         return filename;
     }
 
@@ -91,6 +97,22 @@ class DataProductsService implements IDataProductsService
         // SQL query to fetch the image data
         String sql = "SELECT imageData FROM image_table WHERE dataProductId = ?";
         return myJdbcTemplate.queryForObject(sql, new Object[]{dataProductId}, (rs, rowNum) -> rs.getBytes("imageData"));
+    }
+    public long generateNextDataProductId() {
+        final String STATEMENT = "SELECT last_value FROM dataproducts_id_seq";
+        try {
+            Long lastId = myJdbcTemplate.queryForObject(STATEMENT, Long.class);
+            if (lastId != null) {
+                return lastId + 1;
+
+            } else  {
+                //if there are no entries in the table
+                return -1;
+            }
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error while generating new Data Product ID", e);
+        }
+
     }
     public DataProductSummaryResponse getDataProductSummary(long dataProductId) {
         String dataProductSql = "SELECT imageFileName, shortDescription, accessRightId FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(dataProductId);

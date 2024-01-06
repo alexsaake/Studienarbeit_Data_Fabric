@@ -23,4 +23,6 @@ public interface IDataProductsService
     boolean markAsDeletedDataProductRating(String userName, long ratingId);
     public String saveDataProductImage(long dataProductId, MultipartFile image, JdbcTemplate myJdbcTemplate) throws Exception;
     public byte[] getDataProductImageData(long dataProductId) throws SQLException;
+
+    public long generateNextDataProductId();
 }

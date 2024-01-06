@@ -53,6 +53,7 @@ public class DataProductsController {
     public GoogleMapsAPI googleMapsAPI;
     @Autowired
     private DataProductData productData;
+    private String pathLastImage;
 
     @Autowired
     public DataProductsController(IDataProductsService dataProductsProvider, AuthenticationService authenticationService)
@@ -93,7 +94,7 @@ public class DataProductsController {
     public ResponseEntity<DataProductDetailsReponse> getDataProductDetails(@PathVariable long dataProductId){
         return ResponseEntity.ok(myDataProductsService.getDataProductDetails(dataProductId));
     }
-    //@PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping(value = "/DataProduct/{dataProductId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadDataProductImage(@PathVariable long dataProductId,
                                                          @RequestParam("image") MultipartFile image) {
@@ -112,6 +113,30 @@ public class DataProductsController {
         } catch (Exception e) {
             // Handle exceptions (e.g., file not saved, DataProduct not found)
             return ResponseEntity.internalServerError().body("Could not upload image: " + e.getMessage());
+        }
+    }
+    @PreAuthorize("hasAuthority('USER')")
+    @PostMapping(value = "/DataProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadDataProductImageNoId(@RequestParam(value ="image") MultipartFile image) {
+        if (image.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+
+        if (!image.getContentType().startsWith("image/")) {
+            return ResponseEntity.badRequest().body("File is not an image");
+        }
+
+        long idTemp = myDataProductsService.generateNextDataProductId();
+
+        try {
+            String imagePath = myDataProductsService.saveDataProductImage(idTemp, image, jdbcTemplate);
+            //make image available on the /id/image Endpoint
+            pathLastImage = imagePath;
+
+            return ResponseEntity.ok("Image uploaded successfully. Path: " + imagePath);
+        } catch (Exception e) {
+            // Handle exceptions (e.g., file not saved, DataProduct not found)
+            return ResponseEntity.internalServerError().body("Could not upload image" + ' ' + e.getMessage());
         }
     }
     @GetMapping(value = "/DataProduct/{dataProductId}/image")
@@ -156,7 +181,21 @@ public class DataProductsController {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             dto = mapper.readValue(requestBodyJson, DataProductAllDTO.class);
-            return productData.createDataProduct(dto);
+
+            long idPuffer = productData.createDataProduct(dto);
+
+            //check if an entry for the dataproductid to be inserted already exists
+            //in image_table (a.k.a image has been uploaded before clicking on create dataproduct)
+            String checkSql = "SELECT COUNT(*) FROM image_table WHERE dataProductId = ?";
+            int count = jdbcTemplate.queryForObject(checkSql, new Object[]{idPuffer}, Integer.class);
+
+            if (count > 0) {
+
+                String updateSql = "UPDATE dataproducts SET imageFileName = ? WHERE id = ?";
+                jdbcTemplate.update(updateSql, pathLastImage, idPuffer);
+            }
+
+            return idPuffer;
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
