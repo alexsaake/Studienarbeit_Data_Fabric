@@ -9,10 +9,12 @@
       @active-step="isStepActive"
       @stepper-finished="uploadData"
     ></horizontal-stepper>
-    <v-row justify="center" v-if="!dataProductPreselect.state">
+    <v-row justify="center" v-if="!dataProductPreselect.state && !isUploadSuccessful">
       <v-col class="col" cols="12" md="6">
         <v-file-input
-            label="Bild hochladen"
+            label="Bild hochladen (nur .jpg und .png)"
+            hint="Akzeptierte Formate: .jpg, .png"
+            persistent-hint
             @change="onFileSelected"
             accept="image/*"
             outlined
@@ -23,10 +25,12 @@
         >Hochladen</v-btn>
       </v-col>
     </v-row>
-    <v-row justify="center" v-if="dataProductPreselect.state">
+    <v-row justify="center" v-if="dataProductPreselect.state && !isUploadSuccessful">
       <v-col class="col" cols="12" md="6">
         <v-file-input
-            label="Bild hochladen"
+            label="Bild hochladen (nur .jpg und .png)"
+            hint="Akzeptierte Formate: .jpg, .png"
+            persistent-hint
             @change="onFileSelected"
             accept="image/*"
             outlined
@@ -41,14 +45,10 @@
       v-model="snackbar"
       :timeout="timeout"
     >
-      {{snackbarText}}
+      {{snackbarMessage}}
 
-      <template v-slot:actions>
-        <v-btn
-          color="primary"
-          variant="text"
-          @click="snackbar = false"
-        >
+      <template v-slot:action="{ attrs }">
+        <v-btn color="red" text v-bind="attrs" @click="snackbar = false">
           Close
         </v-btn>
       </template>
@@ -77,6 +77,9 @@ export default {
   data() {
     return {
       id: -1,
+      isUploadSuccessful: false,
+      snackbar: false,
+      snackbarMessage: '',
       steps: [
         {
           name: 'metaData',
@@ -131,7 +134,14 @@ export default {
   methods: {
     onFileSelected(file) {
       if (file) {
-        this.selectedFile = file;
+        const validTypes = ['image/jpeg', 'image/png'];
+        if (!validTypes.includes(file.type)) {
+          this.snackbarMessage = 'Falsches Dateiformat';
+          this.snackbar = true;
+          this.selectedFile = null;
+        } else {
+          this.selectedFile = file;
+        }
       } else {
         this.selectedFile = null;
       }
@@ -139,15 +149,17 @@ export default {
     async uploadImage() {
       if (!this.selectedFile) return;
 
-      // Assuming 'id' is available in the component's data
       const id = this.dataProductPreselect.metaData.id;
       try {
         const response = await uploadDataProductImage(this.$axios, id, this.selectedFile);
         console.log('Upload response:', response);
-        // Handle the successful upload here (e.g., show a success message or update the UI)
+        this.isUploadSuccessful = true;
+        this.snackbarMessage = 'Bild hochgeladen';
+        this.snackbar = true;
       } catch (error) {
         console.error('Upload error:', error.toString());
-        // Handle the error here (e.g., show an error message)
+        this.snackbarMessage = 'Fehler beim Hochladen';
+        this.snackbar = true;
       }
     },
     async uploadImageNoId() {
@@ -156,10 +168,13 @@ export default {
       try {
         const response = await uploadDataProductImageNoId(this.$axios, this.selectedFile);
         console.log('Upload response:', response);
-        // Handle the successful upload here (e.g., show a success message or update the UI)
+        this.isUploadSuccessful = true;
+        this.snackbarMessage = 'Bild hochgeladen';
+        this.snackbar = true;
       } catch (error) {
         console.error('Upload error:', error.toString());
-        // Handle the error here (e.g., show an error message)
+        this.snackbarMessage = 'Fehler beim Hochladen';
+        this.snackbar = true;
       }
     },
     async uploadDataProduct(data) {
