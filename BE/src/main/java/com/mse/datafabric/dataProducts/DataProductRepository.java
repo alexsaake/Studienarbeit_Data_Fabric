@@ -48,15 +48,15 @@ public class DataProductRepository {
             id = jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
                         public void setValues(PreparedStatement ps) throws SQLException {
-                                    ps.setString(1, dto.title);
-                                    ps.setString(2, dto.shortDescription);
-                                    ps.setString(3, dto.description);
-                                    ps.setString(4, dto.source);
-                                    ps.setString(5, dto.sourceLink);
-                                    ps.setInt(6, dto.categoryId);
-                                    ps.setInt(7, dto.accessRightId);
-                                    ps.setString(8, dto.data);
-                                    ps.setString(9, dto.username);
+                            ps.setString(1, dto.title);
+                            ps.setString(2, dto.shortDescription);
+                            ps.setString(3, dto.description);
+                            ps.setString(4, dto.source);
+                            ps.setString(5, dto.sourceLink);
+                            ps.setInt(6, dto.categoryId);
+                            ps.setInt(7, dto.accessRightId);
+                            ps.setString(8, dto.data);
+                            ps.setString(9, dto.username);
                         }
                     },new ResultSetExtractor<>() {
                         public Long extractData(ResultSet rs) throws SQLException,
@@ -207,8 +207,8 @@ public class DataProductRepository {
             return null;
         }
     }
-    public Float getAvgRatings(long dataProductId){
-        final String queryAvg = "SELECT AVG(rating) FROM dataproduct_ratings JOIN dataproducts ON dataproducts.id = dataproduct_ratings.id_dataproducts WHERE dataproducts.id = ?";
+    public Float getAvgRating(long dataProductId){
+        final String queryAvg = "SELECT AVG(rate.rating) FROM dataproduct_ratings rate JOIN dataproducts dp ON dp.id = rate.id_dataproducts WHERE rate.id_dataproducts = ? AND dp.isdeleted = FALSE AND rate.isdeleted = FALSE";
 
         try {
             return parseFloat(jdbcTemplate.queryForObject(queryAvg, new Object[]{dataProductId}, String.class));
@@ -251,13 +251,13 @@ public class DataProductRepository {
         final String STATEMENT = "SELECT data FROM dataproducts WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
-                STATEMENT, preparedStatement ->
-                        preparedStatement.setLong(1, dataProductId),
-                (ResultSetExtractor<String>) resultSet -> {
-                    if (resultSet.next())
-                        return resultSet.getString(1);
-                    return null;
-                }
+                    STATEMENT, preparedStatement ->
+                            preparedStatement.setLong(1, dataProductId),
+                    (ResultSetExtractor<String>) resultSet -> {
+                        if (resultSet.next())
+                            return resultSet.getString(1);
+                        return null;
+                    }
             );
         }
         catch (Exception e) {

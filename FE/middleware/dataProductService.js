@@ -21,6 +21,54 @@ export async function insertDataProduct(axios, data)
 {
   return await axios.$post(`api/Gateway/DataProduct`, data);
 }
+export async function uploadDataProductImage(axios, dataProductId, imageFile) {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+
+  try {
+    const response = await axios.$post(`api/Gateway/DataProduct/${dataProductId}/image`, formData, {
+    });
+
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function uploadDataProductImageNoId(axios, imageFile) {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+
+  try {
+    const response = await axios.$post(`api/Gateway/DataProduct`, formData, {
+      // Axios will set the 'Content-Type' to 'multipart/form-data' automatically
+    });
+
+    return response;
+  } catch (error) {
+    console.error(error.toString());
+    throw error;
+  }
+}
+
+export async function getDataProductImage(axios, dataProductId) {
+  try {
+    // Make a request to the endpoint to get the image
+    // Setting the responseType to 'blob' since we are expecting binary data
+    const response = await axios.get(`api/Gateway/DataProduct/${dataProductId}/image`, { responseType: 'blob' });
+
+    // Creating a URL for the blob data
+    const imageUrl = URL.createObjectURL(response.data);
+
+    // Returning the URL, which can be used as the src attribute of an <img> tag
+    return imageUrl;
+  } catch (error) {
+    console.error('Error fetching data product image:', error);
+    // Handle the error as needed
+    throw error;
+  }
+}
 export async function updateDataProduct(axios, data, id)
 {
   return await axios.$patch(`api/Gateway/DataProduct/${id}`, data);
@@ -119,9 +167,9 @@ export async function setDataProductRating(axios, dataProductId, title, comment,
   );
 }
 
-export async function getDataProductAvgRatings(axios, dataProductId)
+export async function getDataProductAvgRating(axios, dataProductId)
 {
-  return await axios.$get(`api/Gateway/DataProduct/${dataProductId}/Ratings/Averages`);
+  return await axios.$get(`api/Gateway/DataProduct/${dataProductId}/Ratings/Average`);
 }
 
 export async function updateDataProductRating(axios, ratingId, title, comment, rating)

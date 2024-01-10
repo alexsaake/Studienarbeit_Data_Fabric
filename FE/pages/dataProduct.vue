@@ -9,18 +9,46 @@
       @active-step="isStepActive"
       @stepper-finished="uploadData"
     ></horizontal-stepper>
+    <v-row justify="center" v-if="!dataProductPreselect.state && !isUploadSuccessful">
+      <v-col class="col" cols="12" md="6">
+        <v-file-input
+            label="Bild hochladen (nur .jpg und .png)"
+            hint="Akzeptierte Formate: .jpg, .png"
+            persistent-hint
+            @change="onFileSelected"
+            accept="image/*"
+            outlined
+        ></v-file-input>
+        <v-btn
+            color="primary"
+            @click="uploadImageNoId"
+        >Hochladen</v-btn>
+      </v-col>
+    </v-row>
+    <v-row justify="center" v-if="dataProductPreselect.state && !isUploadSuccessful">
+      <v-col class="col" cols="12" md="6">
+        <v-file-input
+            label="Bild hochladen (nur .jpg und .png)"
+            hint="Akzeptierte Formate: .jpg, .png"
+            persistent-hint
+            @change="onFileSelected"
+            accept="image/*"
+            outlined
+        ></v-file-input>
+        <v-btn
+            color="primary"
+            @click="uploadImage"
+        >Hochladen</v-btn>
+      </v-col>
+    </v-row>
     <v-snackbar
       v-model="snackbar"
       :timeout="timeout"
     >
-      {{snackbarText}}
+      {{snackbarMessage}}
 
-      <template v-slot:actions>
-        <v-btn
-          color="primary"
-          variant="text"
-          @click="snackbar = false"
-        >
+      <template v-slot:action="{ attrs }">
+        <v-btn color="red" text v-bind="attrs" @click="snackbar = false">
           Close
         </v-btn>
       </template>
@@ -38,6 +66,8 @@ import {
   getDataProductDataAll,
   insertDataProduct,
   updateDataProduct,
+  uploadDataProductImage,
+  uploadDataProductImageNoId
 } from "~/middleware/dataProductService";
 export default {
   name: "newDataProduct",
@@ -47,6 +77,9 @@ export default {
   data() {
     return {
       id: -1,
+      isUploadSuccessful: false,
+      snackbar: false,
+      snackbarMessage: '',
       steps: [
         {
           name: 'metaData',
@@ -99,6 +132,51 @@ export default {
       this.$router.push('/login?page=dataProduct');
   },
   methods: {
+    onFileSelected(file) {
+      if (file) {
+        const validTypes = ['image/jpeg', 'image/png'];
+        if (!validTypes.includes(file.type)) {
+          this.snackbarMessage = 'Falsches Dateiformat';
+          this.snackbar = true;
+          this.selectedFile = null;
+        } else {
+          this.selectedFile = file;
+        }
+      } else {
+        this.selectedFile = null;
+      }
+    },
+    async uploadImage() {
+      if (!this.selectedFile) return;
+
+      const id = this.dataProductPreselect.metaData.id;
+      try {
+        const response = await uploadDataProductImage(this.$axios, id, this.selectedFile);
+        console.log('Upload response:', response);
+        this.isUploadSuccessful = true;
+        this.snackbarMessage = 'Bild hochgeladen';
+        this.snackbar = true;
+      } catch (error) {
+        console.error('Upload error:', error.toString());
+        this.snackbarMessage = 'Fehler beim Hochladen';
+        this.snackbar = true;
+      }
+    },
+    async uploadImageNoId() {
+      if (!this.selectedFile) return;
+
+      try {
+        const response = await uploadDataProductImageNoId(this.$axios, this.selectedFile);
+        console.log('Upload response:', response);
+        this.isUploadSuccessful = true;
+        this.snackbarMessage = 'Bild hochgeladen';
+        this.snackbar = true;
+      } catch (error) {
+        console.error('Upload error:', error.toString());
+        this.snackbarMessage = 'Fehler beim Hochladen';
+        this.snackbar = true;
+      }
+    },
     async uploadDataProduct(data) {
       return await insertDataProduct(
         this.$axios, data

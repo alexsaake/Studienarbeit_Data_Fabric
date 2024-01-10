@@ -68,14 +68,13 @@
 <script>
 import {
   deleteDataProduct,
-  getDataProductDetails
+  getDataProductDetails, getDataProductImage
 } from "~/middleware/dataProductService";
 
   export default {
     name: 'DataProductDetailCard',
     props:
     {
-      imageFileName: String,
       id: Number,
       title: String,
       shortDescription: String,
@@ -94,7 +93,8 @@ import {
         source: '',
         sourceLink: '',
         isLoading: true,
-        createdOn: ''
+        createdOn: '',
+        imageFileName: ''
       }
     },
     async fetch() {
@@ -102,13 +102,25 @@ import {
     },
     methods:{
       async fetchDataProductDetail() {
-        const dataProductDetails = await getDataProductDetails(this.$axios, this.id);
-        this.description = dataProductDetails.description;
-        this.source = dataProductDetails.source;
-        this.sourceLink = dataProductDetails.sourceLink;
-        this.createdOn = dataProductDetails.createdOn;
+        try {
+          const dataProductDetails = await getDataProductDetails(this.$axios, this.id);
+          this.description = dataProductDetails.description;
+          this.source = dataProductDetails.source;
+          this.sourceLink = dataProductDetails.sourceLink;
+          this.createdOn = dataProductDetails.createdOn;
 
-        this.isLoading = false;
+          try {
+            const imageUrl = await getDataProductImage(this.$axios, this.id);
+            this.imageFileName = imageUrl || 'defaultImage.jpg'; // Fallback to default image
+          } catch (error) {
+            console.error('Error fetching image:', error);
+            this.imageFileName = 'defaultImage.jpg'; // Fallback to default image
+          }
+        } catch (error) {
+          console.error('Error fetching data product details:', error);
+        } finally {
+          this.isLoading = false;
+        }
       },
       async onConfirmDeleteRating()
       {

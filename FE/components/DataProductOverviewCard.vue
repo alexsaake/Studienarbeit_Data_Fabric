@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import {getDataProduct} from "~/middleware/dataProductService";
+import {getDataProduct, getDataProductImage} from "~/middleware/dataProductService";
 
   export default
   {
@@ -55,7 +55,7 @@ import {getDataProduct} from "~/middleware/dataProductService";
         imageFileName: '',
         shortDescription: '',
         accessRight: '',
-        isLoading: true
+        isLoading: true,
       }
     },
     async created() {
@@ -64,11 +64,15 @@ import {getDataProduct} from "~/middleware/dataProductService";
     methods: {
       async fetchData() {
         const dataProductSummary = await getDataProduct(this.$axios, this.id);
-        if(dataProductSummary.imageFileName === null) {
-          this.imageFileName = "defaultImage.jpg";
-        } else {
-          this.imageFileName = dataProductSummary.imageFileName;
+
+        try {
+          const imageUrl = await getDataProductImage(this.$axios, this.id);
+          this.imageFileName = imageUrl || 'defaultImage.jpg'; // Fallback to default image
+        } catch (error) {
+          console.error('Error fetching image:', error);
+          this.imageFileName = 'defaultImage.jpg'; // Fallback to default image
         }
+
         this.shortDescription = dataProductSummary.shortDescription;
         this.accessRight = this.accessRightsCatalogue[dataProductSummary.accessRightId];
 

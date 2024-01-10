@@ -71,7 +71,8 @@
           :user-name="selectedDataProduct.userName"
           @on-close-data-product="onCloseDataProduct"
           @on-data-product-deleted="onDataProductDeleted"
-          @on-edit-data-product="onEditDataProduct" />
+          @on-edit-data-product="onEditDataProduct"
+          @on-data-product-refresh-average-rating="onRefreshAverageRating(selectedDataProduct.id)" />
     </v-overlay>
     <overlay-button @custom-click="$auth.loggedIn?$router.push('/dataProduct'):$router.push('/login?page=dataProduct');"></overlay-button>
   </v-card>
@@ -80,7 +81,7 @@
 <script>
 import {
   getDataProducts,
-  getDataProductAvgRatings,
+  getDataProductAvgRating,
   getDataProduct,
   getDataProductAccessRights, getDataProductCategories
 } from "~/middleware/dataProductService";
@@ -208,7 +209,7 @@ import {
               userName: dataProduct.userName,
               lastUpdated: new Date(dataProduct.lastUpdated),
               category: this.categoriesCatalogue[dataProduct.categoryId],
-              averageRating: await getDataProductAvgRatings(this.$axios, dataProduct.id)
+              averageRating: dataProduct.averageRating
             });
           }
           this.dataProductsOverview = dataProductsOverview;
@@ -259,7 +260,12 @@ import {
       enableBackgroundScrolling() {
         document.documentElement.style.overflow = 'unset';
       },
-    },
+      async onRefreshAverageRating(dataProductId) {
+        this.selectedDataProduct.averageRating = await getDataProductAvgRating(this.$axios, this.selectedDataProduct.id);
+        const index = this.dataProductsOverview.findIndex(dataProduct => { return dataProduct.id === dataProductId});
+        this.dataProductsOverview[index].averageRating = await getDataProductAvgRating(this.$axios, this.dataProductsOverview[index].id);
+      }
+    }
   }
 </script>
 

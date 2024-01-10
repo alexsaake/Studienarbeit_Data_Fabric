@@ -19,6 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,7 +31,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +57,7 @@ public class DataProductsController {
     public GoogleMapsAPI googleMapsAPI;
     @Autowired
     private DataProductData productData;
+    private String pathLastImage;
 
     @Value("${server.environment}")
     private String serverEnvironment;
@@ -90,6 +101,81 @@ public class DataProductsController {
     public ResponseEntity<DataProductDetailsReponse> getDataProductDetails(@PathVariable long dataProductId){
         return ResponseEntity.ok(myDataProductsService.getDataProductDetails(dataProductId));
     }
+    @PreAuthorize("hasAuthority('USER')")
+    @PostMapping(value = "/DataProduct/{dataProductId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadDataProductImage(@PathVariable long dataProductId,
+                                                         @RequestParam("image") MultipartFile image) {
+        if (image.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+
+        if (!image.getContentType().startsWith("image/")) {
+            return ResponseEntity.badRequest().body("File is not an image");
+        }
+
+        try {
+            String filename = myDataProductsService.saveDataProductImage(dataProductId, image, jdbcTemplate);
+
+            return ResponseEntity.ok("Image uploaded successfully. Filename: " + filename);
+        } catch (Exception e) {
+            // Handle exceptions (e.g., file not saved, DataProduct not found)
+            return ResponseEntity.internalServerError().body("Could not upload image: " + e.getMessage());
+        }
+    }
+    @PreAuthorize("hasAuthority('USER')")
+    @PostMapping(value = "/DataProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadDataProductImageNoId(@RequestParam(value ="image") MultipartFile image) {
+        if (image.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+
+        if (!image.getContentType().startsWith("image/")) {
+            return ResponseEntity.badRequest().body("File is not an image");
+        }
+
+        long idTemp = myDataProductsService.generateNextDataProductId();
+
+        try {
+            String imagePath = myDataProductsService.saveDataProductImage(idTemp, image, jdbcTemplate);
+            //make image available on the /id/image Endpoint
+            pathLastImage = imagePath;
+
+            return ResponseEntity.ok("Image uploaded successfully. Path: " + imagePath);
+        } catch (Exception e) {
+            // Handle exceptions (e.g., file not saved, DataProduct not found)
+            return ResponseEntity.internalServerError().body("Could not upload image" + ' ' + e.getMessage());
+        }
+    }
+    @GetMapping(value = "/DataProduct/{dataProductId}/image")
+    public ResponseEntity<Resource> getDataProductImage(@PathVariable long dataProductId) {
+        try {
+            // Use the service method to get the image data as a byte array
+            byte[] imageData = myDataProductsService.getDataProductImageData(dataProductId);
+
+            if (imageData == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Create a ByteArrayResource object for the image data
+            Resource imageResource = new ByteArrayResource(imageData);
+
+            // Determine the content type of the image
+            // This is a placeholder - you would ideally determine this based on the image data
+            String contentType = "image/png"; // Default content type, adjust as necessary
+
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(imageResource);
+
+        } catch (Exception e) {
+            myLogger.error("Error loading image for data product ID " + dataProductId, e);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
 
     @PostMapping(
             value = "/DataProduct",
@@ -102,13 +188,29 @@ public class DataProductsController {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             dto = mapper.readValue(requestBodyJson, DataProductAllDTO.class);
-            return productData.createDataProduct(dto);
+
+            long idPuffer = productData.createDataProduct(dto);
+
+            //check if an entry for the dataproductid to be inserted already exists
+            //in image_table (a.k.a image has been uploaded before clicking on create dataproduct)
+            String checkSql = "SELECT COUNT(*) FROM image_table WHERE dataProductId = ?";
+            int count = jdbcTemplate.queryForObject(checkSql, new Object[]{idPuffer}, Integer.class);
+
+            if (count > 0) {
+
+                String updateSql = "UPDATE dataproducts SET imageFileName = ? WHERE id = ?";
+                jdbcTemplate.update(updateSql, pathLastImage, idPuffer);
+            }
+
+            return idPuffer;
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);
         }
         return -1;
     }
+
+
     @PatchMapping(
             value = "/DataProduct/{dataProductId}",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -166,11 +268,11 @@ public class DataProductsController {
 
     @ShellMethod( "getDataProduct" )
     @GetMapping(
-            value = "/DataProduct/{dataProductId}/Ratings/Averages",
+            value = "/DataProduct/{dataProductId}/Ratings/Average",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Float getAvgRatings(@PathVariable long dataProductId){
-        return dataProductRepository.getAvgRatings(dataProductId);
+    public Float getAvgRating(@PathVariable long dataProductId){
+        return dataProductRepository.getAvgRating(dataProductId);
     }
 
     @ShellMethod("getDataProduct")

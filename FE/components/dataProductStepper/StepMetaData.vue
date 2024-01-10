@@ -100,7 +100,7 @@
 </template>
 
 <script>
-import { getDataProductCategories, getDataProductAccessRights  } from "~/middleware/dataProductService";
+import { getDataProductCategories, getDataProductAccessRights } from "~/middleware/dataProductService";
 
 export default {
   props: ['clickedNext', 'currentStep','dataProductPreselect'],
@@ -108,6 +108,7 @@ export default {
     return {
       dataProductCategories: null,
       dataProductAccessRights: null,
+      selectedFile: null,
       form: {
         title: '',
         shortDescription: '',
