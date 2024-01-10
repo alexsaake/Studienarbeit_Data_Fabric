@@ -14,12 +14,15 @@ import com.mse.datafabric.dataProducts.payload.response.DataProductOverviewRespo
 import com.mse.datafabric.dataProducts.payload.response.DataProductSummaryResponse;
 import com.mse.datafabric.dataProducts.payload.response.RatingReponse;
 import com.mse.datafabric.utils.GoogleMapsAPI;
+import com.mse.datafabric.utils.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -44,6 +47,9 @@ public class DataProductsController {
     public GoogleMapsAPI googleMapsAPI;
     @Autowired
     private DataProductData productData;
+
+    @Value("${server.environment}")
+    private String serverEnvironment;
 
     @Autowired
     public DataProductsController(IDataProductsService dataProductsProvider, AuthenticationService authenticationService)
@@ -225,6 +231,13 @@ public class DataProductsController {
     @GetMapping("/DataProduct/Rating/MaxLengths")
     public ResponseEntity<RatingMaxLengthsResponse> getDataProductRatingCommentMaxLength(){
         return ResponseEntity.ok(myDataProductsService.getDataProductRatingMaxLengths());
+    }
+
+    @ShellMethod( "contactHealtcheckIO" )
+    @Scheduled(cron="0 0/30 * * * *") //every half an hour
+    public void contactHealtcheckIO() throws JsonProcessingException {
+        RestClient.execute("https://hc-ping.com/de51a01c-28aa-49d2-83cd-d9f191d28faa");
+        System.out.println("contactHealtcheckIO serverEnvironment: "+serverEnvironment);
     }
 }
 
