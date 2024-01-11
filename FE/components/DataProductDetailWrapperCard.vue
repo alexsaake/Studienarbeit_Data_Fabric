@@ -12,8 +12,8 @@
       </v-card>
       <v-card v-else>
         <v-card-actions  class="absolute-buttons">
-          <v-btn @click="onOpenUseData">Datenprodukt abrufen</v-btn>
-          <v-btn v-if="$auth.loggedIn && canSubmit === true" @click="onCreateRating">Bewerten</v-btn>
+          <v-btn v-if="showButtons" @click="onOpenUseData">Datenprodukt abrufen</v-btn>
+          <v-btn v-if="showButtons && $auth.loggedIn && canSubmit === true" @click="onCreateRating">Bewerten</v-btn>
         </v-card-actions >
         <v-card-actions v-if="screenWidth<600" class="back-button">
           <v-btn @click="$emit('on-close-data-product');">Zurück</v-btn>
@@ -30,6 +30,7 @@
             :user-name="userName"
             @on-data-product-deleted="$emit('on-data-product-deleted');"
             @on-edit-data-product="$emit('on-edit-data-product')"
+            @image-loaded="handleImageLoaded"
         />
         <v-container class="pa-0">
           <v-row v-if="ratings == null">
@@ -85,7 +86,8 @@ import {
         isUpdate: false,
         existingRating: null,
         screenWidth: null,
-        isLoading: true
+        isLoading: true,
+        showButtons: false
       }
     },
     async fetch() {
@@ -96,6 +98,9 @@ import {
       this.onScreenResize();
     },
     methods: {
+      handleImageLoaded() {
+        this.showButtons = true;
+      },
       async fetchRatings() {
         const rawRatings = await getDataProductRatings(this.$axios, this.id);
         const ratings = [];
