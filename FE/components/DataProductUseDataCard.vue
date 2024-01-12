@@ -1,8 +1,5 @@
 <template>
   <v-card>
-    <v-card-actions>
-      <v-btn @click="$emit('on-close-dialog')">Zurück</v-btn>
-    </v-card-actions>
     <v-container>
       <v-row>
         <v-col cols="12" md="12" style="padding-bottom: 0">
@@ -40,6 +37,11 @@
         <v-col cols="12" md="12">
           <data-product-insights-card :id="id" />
         </v-col>
+      </v-row>
+      <v-row>
+        <v-card-actions class="pl-3 pb-3">
+          <v-btn @click="$emit('on-close-dialog')">Zurück</v-btn>
+        </v-card-actions>
       </v-row>
     </v-container>
   </v-card>
