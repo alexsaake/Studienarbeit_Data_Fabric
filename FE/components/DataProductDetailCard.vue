@@ -4,7 +4,7 @@
       <v-progress-circular :size="120" indeterminate color="white"/>
     </v-card>
     <v-card v-else>
-      <v-img :src="imageFileName" height="300px" />
+      <v-img :src="imageFileName" height="300px" @load="imageLoaded"/>
       <v-card-actions style="position: absolute; top: 310px; right: 20px;">
         <v-btn v-show="$auth.loggedIn && $auth.user.userName === userName" icon @click="onShowConfirmDeleteRating" >
           <v-icon>mdi-delete</v-icon>
@@ -101,6 +101,10 @@ import {
       await this.fetchDataProductDetail();
     },
     methods:{
+      imageLoaded() {
+        // Emit an 'image-loaded' event when the image has finished loading
+        this.$emit('image-loaded');
+      },
       async fetchDataProductDetail() {
         try {
           const dataProductDetails = await getDataProductDetails(this.$axios, this.id);

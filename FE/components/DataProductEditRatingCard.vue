@@ -1,13 +1,15 @@
 <template>
   <v-card>
-    <v-form v-model="form" @submit.prevent="onSubmitRating">
-      <h1>Please rate the data product</h1>
-      <v-text-field v-model="title" type="text" class="form-control" label="Title" clearable :counter="ratingTitleMaxLength" :maxlength="ratingTitleMaxLength"></v-text-field>
-      <v-textarea v-model="comment" type="text" class="form-control" label="Comment" clearable :counter="ratingCommentMaxLength" :maxlength="ratingCommentMaxLength"></v-textarea>
-      <v-input :value="rating" :rules="[required]"><v-rating v-model="rating" class="form-control"></v-rating></v-input>
-      <v-btn :disabled="!form" type="submit">Submit</v-btn>
-      <v-btn @click="cancelRating()">Zurück</v-btn>
-    </v-form>
+    <v-container>
+      <v-form v-model="form" @submit.prevent="onSubmitRating">
+        <h1>Bitte bewerten Sie das Datenprodukt</h1>
+        <v-text-field v-model="title" type="text" class="form-control" label="Titel" clearable :counter="ratingTitleMaxLength" :maxlength="ratingTitleMaxLength"></v-text-field>
+        <v-textarea v-model="comment" type="text" class="form-control" label="Rezension" clearable :counter="ratingCommentMaxLength" :maxlength="ratingCommentMaxLength"></v-textarea>
+        <v-input :value="rating" :rules="[required]"><v-rating v-model="rating" class="form-control"></v-rating></v-input>
+        <v-btn :disabled="!form" type="submit">Absenden</v-btn>
+        <v-btn @click="cancelRating()">Zurück</v-btn>
+      </v-form>
+    </v-container>
   </v-card>
 </template>
 
