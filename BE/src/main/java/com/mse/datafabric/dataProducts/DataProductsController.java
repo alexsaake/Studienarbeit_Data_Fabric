@@ -338,8 +338,10 @@ public class DataProductsController {
     @ShellMethod( "contactHealtcheckIO" )
     @Scheduled(cron="0 0/30 * * * *") //every half an hour
     public void contactHealtcheckIO() throws JsonProcessingException {
-        RestClient.execute("https://hc-ping.com/de51a01c-28aa-49d2-83cd-d9f191d28faa");
-        System.out.println("contactHealtcheckIO serverEnvironment: "+serverEnvironment);
+        if (serverEnvironment.equals("prod")) {
+            RestClient.execute("https://hc-ping.com/de51a01c-28aa-49d2-83cd-d9f191d28faa");
+        }
+        //System.out.println("contactHealtcheckIO serverEnvironment: "+serverEnvironment);
     }
 }
 
