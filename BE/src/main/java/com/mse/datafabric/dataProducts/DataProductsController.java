@@ -341,7 +341,7 @@ public class DataProductsController {
         if (serverEnvironment.equals("prod")) {
             RestClient.execute("https://hc-ping.com/de51a01c-28aa-49d2-83cd-d9f191d28faa");
         }
-        //System.out.println("contactHealtcheckIO serverEnvironment: "+serverEnvironment);
+        System.out.println("contactHealtcheckIO serverEnvironment: "+serverEnvironment);
     }
 }
 
