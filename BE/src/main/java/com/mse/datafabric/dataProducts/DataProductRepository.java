@@ -42,7 +42,7 @@ public class DataProductRepository {
         }
     }
     public long insertDataProduct(DataProductDTO dto){
-        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid, createdon) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?), CURRENT_DATE) RETURNING dataproducts.id";
+        final String STATEMENT = "INSERT INTO DATAPRODUCTS ( title, shortdescription, description, source, sourceLink, categoryid, accessrightid, data, userid, createdon, image) VALUES (?, ?, ?, ?, ?, ?, ?, cast(? as jsonb), (SELECT id FROM users WHERE username = ?), CURRENT_DATE, ?) RETURNING dataproducts.id";
         Long id;
         try {
             id = jdbcTemplate.query(
@@ -57,6 +57,7 @@ public class DataProductRepository {
                             ps.setInt(7, dto.accessRightId);
                             ps.setString(8, dto.data);
                             ps.setString(9, dto.username);
+                            ps.setBytes(10, dto.image);
                         }
                     },new ResultSetExtractor<>() {
                         public Long extractData(ResultSet rs) throws SQLException,
@@ -77,7 +78,7 @@ public class DataProductRepository {
         return id;
     }
     public void updateDataProduct(DataProductDTO dto, long id){
-        final String STATEMENT = "UPDATE dataproducts SET lastupdated = CURRENT_TIMESTAMP, title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?) WHERE dataproducts.id = ?";
+        final String STATEMENT = "UPDATE dataproducts SET lastupdated = CURRENT_TIMESTAMP, title = ?, shortdescription = ?, description = ?, source = ?, sourceLink = ?, categoryid = ?, accessrightid = ?, data = cast(? as jsonb), userid = (SELECT id FROM users WHERE username = ?), image = ? WHERE dataproducts.id = ?";
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(STATEMENT);
@@ -90,7 +91,8 @@ public class DataProductRepository {
                 ps.setInt(7, dto.accessRightId);
                 ps.setString(8, dto.data);
                 ps.setString(9, dto.username);
-                ps.setLong(10, id);
+                ps.setBytes(10, dto.image);
+                ps.setLong(11, id);
                 return ps;
             });
         }
@@ -99,7 +101,7 @@ public class DataProductRepository {
         }
     }
     public DataProductDTO getDataProduct(long id){
-        final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username, createdon FROM (dataproducts JOIN users ON users.id = dataproducts.userid) WHERE dataproducts.id = ?";
+        final String STATEMENT = "SELECT title, shortdescription, description, source, sourceLink, accessrightid, categoryid, data, users.username, createdon, image FROM (dataproducts JOIN users ON users.id = dataproducts.userid) WHERE dataproducts.id = ?";
         try {
             return jdbcTemplate.query(
                     STATEMENT, new PreparedStatementSetter() {
@@ -121,7 +123,8 @@ public class DataProductRepository {
                                         rs.getInt(7),
                                         rs.getString(8),
                                         rs.getString(9),
-                                        rs.getDate(10)
+                                        rs.getDate(10),
+                                        rs.getBytes(11)
                                 );
                             }
                             return null;

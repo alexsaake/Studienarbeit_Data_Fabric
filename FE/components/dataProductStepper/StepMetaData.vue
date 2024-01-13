@@ -95,17 +95,37 @@
           ></v-select>
         </v-col>
       </v-row>
+      <v-row justify="center">
+        <v-col class="col" cols="12" md="6">
+          <v-file-input
+            ref="fileInputRef"
+            label="Bild hochladen (nur .jpg und .png)"
+            persistent-hint
+            @change="onFileSelected"
+            accept="image/*"
+            outlined
+          ></v-file-input>
+        </v-col>
+      </v-row>
     </v-container>
   </v-card>
 </template>
 
 <script>
-import { getDataProductCategories, getDataProductAccessRights } from "~/middleware/dataProductService";
+
+import {
+  getDataProductCategories,
+  getDataProductAccessRights,
+  uploadDataProductImage, uploadDataProductImageNoId
+} from "~/middleware/dataProductService";
 
 export default {
   props: ['clickedNext', 'currentStep','dataProductPreselect'],
   data() {
     return {
+      isUploadSuccessful: false,
+      snackbar: false,
+      snackbarMessage: '',
       dataProductCategories: null,
       dataProductAccessRights: null,
       selectedFile: null,
@@ -117,7 +137,8 @@ export default {
         sourceLink: '',
         lastUpdate: '',
         category: '',
-        accessRight: ''
+        accessRight: '',
+        image: null,
       },
       rules: {
         required: value => !!value || 'Notwendig.',
@@ -132,7 +153,6 @@ export default {
   watch: {
     dataProductPreselect:{
       handler: function (val) {
-        console.log(this.dataProductPreselect.metaData);
         this.form.title = this.dataProductPreselect.metaData.title;
         this.form.shortDescription = this.dataProductPreselect.metaData.shortDescription;
         this.form.description = this.dataProductPreselect.metaData.description;
@@ -141,6 +161,10 @@ export default {
         this.form.lastUpdate = this.dataProductPreselect.metaData.lastUpdate;
         this.form.category = this.dataProductPreselect.metaData.categoryId + "";
         this.form.accessRight = this.dataProductPreselect.metaData.accessRightId + "";
+        this.form.image = this.dataProductPreselect.metaData.image;
+
+        if(this.dataProductPreselect.insights.length > 0)
+          this.$emit("maps-visible-set", true);
       },
       deep: true
     },
@@ -165,7 +189,8 @@ export default {
             source: this.form.source,
             sourceLink: this.form.sourceLink,
             category: this.form.category,
-            accessRight: this.form.accessRight
+            accessRight: this.form.accessRight,
+            image: this.form.image
           }
         });
       },
@@ -185,6 +210,75 @@ export default {
   },
   fetchOnServer: false,
   methods:{
+    onFileSelected() {
+      const fileInput = this.$refs.fileInputRef.$el.querySelector('input[type="file"]');
+      const file = fileInput.files[0];
+      if (file) {
+        this.readFileAsByteArray(file);
+      }
+    },
+    readFileAsByteArray(file) {
+      this.form.image = null;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        this.form.image = reader.result.split(',')[1];
+
+        const validTypes = ['image/jpeg', 'image/png'];
+        if (!validTypes.includes(file.type)) {
+          this.form.image = null;
+          this.$refs.fileInputRef.value = null
+          this.$root.VToast.show({ message: 'Falsches Dateiformat!', color: 'error', icon: 'mdi-close' });
+        }
+      };
+    },
+    onFileSelected2(file) {
+      if (file) {
+        const validTypes = ['image/jpeg', 'image/png'];
+        if (!validTypes.includes(file.type)) {
+          this.$root.VToast.show({message: 'Falsches Dateiformat!', color: 'error', icon: 'mdi-close'});
+          this.form.image = null;
+          this.form.imageModel = '';
+        } else {
+          console.log(file);
+          this.form.image = file;
+        }
+      } else {
+        this.form.image = null;
+        this.form.imageModel = '';
+      }
+    },
+    async uploadImage() {
+      if (!this.form.image) return;
+
+      const id = this.dataProductPreselect.metaData.id;
+      try {
+        const response = await uploadDataProductImage(this.$axios, id, this.form.image);
+        console.log('Upload response:', response);
+        this.isUploadSuccessful = true;
+        this.snackbarMessage = 'Bild hochgeladen';
+        this.snackbar = true;
+      } catch (error) {
+        console.error('Upload error:', error.toString());
+        this.snackbarMessage = 'Fehler beim Hochladen';
+        this.snackbar = true;
+      }
+    },
+    async uploadImageNoId() {
+      if (!this.form.image) return;
+
+      try {
+        const response = await uploadDataProductImageNoId(this.$axios, this.form.image);
+        console.log('Upload response:', response);
+        this.isUploadSuccessful = true;
+        this.snackbarMessage = 'Bild hochgeladen';
+        this.snackbar = true;
+      } catch (error) {
+        console.error('Upload error:', error.toString());
+        this.snackbarMessage = 'Fehler beim Hochladen';
+        this.snackbar = true;
+      }
+    },
     async fetchDataProductCategories() {
       const rawData = await getDataProductCategories(
         this.$axios,

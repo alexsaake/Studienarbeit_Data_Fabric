@@ -92,20 +92,58 @@ public class DataProductChartRepository {
         }
     }
     public boolean insertCharts(long id, DataProductChartsDTO[] dto){
-        final String STATEMENT = "INSERT INTO dataproduct_charts (type, x_axis_name, y_axis_name, x_axis_unit, y_axis_unit, x_axis_dataproduct_column, dataproduct_id, display_name) VALUES (?, ?, ?, ?, ?,?,?,?,?)";
+        Long chartId;
+        final String STATEMENT = "INSERT INTO dataproduct_charts (type, x_axis_name, y_axis_name, x_axis_unit, y_axis_unit, x_axis_dataproduct_column, dataproduct_id, display_name, y_value_type, fill_chart) VALUES (?, ?, ?, ?, ?,?,?,?,?,?) RETURNING id";
         try {
             for(int i = 0;i< dto.length;i++){
                 int finalI = i;
+                chartId = jdbcTemplate.query(
+                        STATEMENT, new PreparedStatementSetter() {
+                            public void setValues(PreparedStatement ps) throws SQLException {
+                                ps.setInt(1, dto[finalI].type);
+                                ps.setString(2, dto[finalI].xAxisName);
+                                ps.setString(3, dto[finalI].yAxisName);
+                                ps.setString(4, dto[finalI].xAxisUnit);
+                                ps.setString(5, dto[finalI].yAxisUnit);
+                                ps.setString(6, dto[finalI].xAxisDataproductColumn);
+                                ps.setLong(7, id);
+                                ps.setString(8, dto[finalI].displayName);
+                                ps.setInt(9, dto[finalI].yValueType);
+                                ps.setInt(10, dto[finalI].fillChart);
+                            }
+                        },new ResultSetExtractor<>() {
+                            public Long extractData(ResultSet rs) throws SQLException,
+                                    DataAccessException {
+                                if (rs.next()) {
+                                    return rs.getLong("id");
+                                }
+                                return null;
+                            }
+                        }
+                );
+                if(chartId == null)
+                    return false;
+                if(!insertChartDatasets(dto[finalI].datasets, chartId))
+                    return false;
+            }
+        }
+        catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+    public boolean insertChartDatasets(DataProductChartsDatasetDTO[] dto, Long chartId){
+        final String STATEMENT = "INSERT INTO dataproduct_charts_datasets (dataproduct_charts_id, display_name, y_axis_dataproduct_column) VALUES (?, ?, ?)";
+        try {
+            for(int i = 0;i< dto.length;i++){
+                if(dto[i].displayName.equals(""))
+                    continue;
+                int finalI = i;
                 jdbcTemplate.update(connection -> {
                     PreparedStatement ps = connection.prepareStatement(STATEMENT);
-                    ps.setInt(1, dto[finalI].type);
-                    ps.setString(2, dto[finalI].xAxisName);
-                    ps.setString(3, dto[finalI].yAxisName);
-                    ps.setString(4, dto[finalI].xAxisUnit);
-                    ps.setString(5, dto[finalI].yAxisUnit);
-                    ps.setString(6, dto[finalI].xAxisDataproductColumn);
-                    ps.setLong(7, dto[finalI].dataproductId);
-                    ps.setString(8, dto[finalI].displayName);
+                    ps.setLong(1, chartId);
+                    ps.setString(2, dto[finalI].displayName);
+                    ps.setString(3, dto[finalI].yAxisDataproductColumn);
                     return ps;
                 });
             }
@@ -128,35 +166,6 @@ public class DataProductChartRepository {
             return false;
         }
         return true;
-    }
-    public DataProductInsightDataDTO[] getInsightsData(long id){
-        final String STATEMENT = "SELECT type, display_name, unit, dataproduct_column, dataproduct_id FROM dataproduct_insights JOIN dataproducts ON dataproduct_insights.dataproduct_id = dataproducts.id WHERE dataproducts.id = ?";
-        try {
-            return jdbcTemplate.query(
-                    STATEMENT, new PreparedStatementSetter() {
-                        public void setValues(PreparedStatement ps) throws SQLException {
-                            ps.setLong(1, id);
-                        }
-                    },new ResultSetExtractor<>() {
-                        public DataProductInsightDataDTO[] extractData(ResultSet rs) throws SQLException,
-                                DataAccessException {
-                            List<DataProductInsightDataDTO> list = new ArrayList<>();
-                            while (rs.next()) {
-                                list.add( new DataProductInsightDataDTO(
-                                        rs.getInt(1),
-                                        rs.getString(2),
-                                        rs.getString(3),
-                                        rs.getString(4)
-                                ));
-                            }
-                            return list.toArray(new DataProductInsightDataDTO[0]);
-                        }
-                    }
-            );
-        }
-        catch (Exception e) {
-            return null;
-        }
     }
     public Map<String, String>[] getKeyValue(ResultSet resultSet){
         try {

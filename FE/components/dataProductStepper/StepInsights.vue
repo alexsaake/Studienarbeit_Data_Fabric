@@ -139,7 +139,7 @@
 import { getInsightFilterTypes, getInsightTypes } from "~/middleware/dataProductService";
 
 export default {
-  props: ['clickedNext', 'currentStep','dataProduct','dataProductPreselect'],
+  props: ['steps','clickedNext', 'currentStep','dataProduct','dataProductPreselect'],
   data() {
     return {
       tabs: null,
@@ -201,6 +201,8 @@ export default {
       handler: function (val) {
         this.setValidation();
         this.$emit('data', {insights: this.form.insights.slice(0,-1), filter: this.form.insightFilters.slice(0,-1)});
+        this.mapsStepVisibleSet(this.form.generateInsights === 'Ja');
+        console.log(this.steps);
       },
       deep: true
     },
@@ -367,6 +369,9 @@ export default {
           dataProductColumn: '',
           displayName: '',
         });
+    },
+    mapsStepVisibleSet(visible){
+      this.$emit("maps-visible-set", visible);
     }
   }
 }

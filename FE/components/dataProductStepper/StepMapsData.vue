@@ -61,6 +61,11 @@ export default {
       }
     }
   },
+  computed: {
+    linkToMaps(){
+      return this.form.linkToMaps;
+    }
+  },
   watch: {
     form: {
       handler: function (val) {
@@ -80,6 +85,10 @@ export default {
         this.form.$touch();
       }
     },
+    linkToMaps(){
+      if(this.form.linkToMaps === 'Ja' && this.dataProductPreselect.insights.length <= 0)
+        this.$root.VToast.show({message: 'Du kannst jetzt deine Insights auch auf Daten von Google Maps filtern (z.B. Postleitzahl)!', color: 'info', icon: 'mdi-mdiInformationBox'});
+    }
   },
   mounted() {
     this.preset();

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mse.datafabric.dataProducts.DataProductRepository;
+import com.mse.datafabric.dataProducts.data.charts.DataProductChartRepository;
+import com.mse.datafabric.dataProducts.data.charts.DataProductChartsDTO;
 import com.mse.datafabric.dataProducts.data.insights.DataProductInsightDataDTO;
 import com.mse.datafabric.dataProducts.data.insights.DataProductInsightRepository;
 import com.mse.datafabric.dataProducts.data.insights.InsightFilterDTO;
@@ -24,6 +26,8 @@ public class DataProductData {
     private DataProductRepository dataProductRepository;
     @Autowired
     private DataProductInsightRepository dataProductInsightRepository;
+    @Autowired
+    private DataProductChartRepository dataProductChartRepository;
     private long id;
     @Autowired
     private ObjectMapper objectMapper;
@@ -72,8 +76,12 @@ public class DataProductData {
     public long createDataProduct(DataProductAllDTO dto){
         long id = dataProductRepository.insertDataProduct(dto.metaData);
         createInsightData(dto, id);
+        createChartData(dto, id);
         //
         return id;
+    }
+    private void createChartData(DataProductAllDTO dto, long id){
+        dataProductChartRepository.insertCharts(id,dto.chartData);
     }
     private void createInsightData(DataProductAllDTO dto, long id){
         dataProductInsightRepository.insertInsights(id,dto.insights);
@@ -89,8 +97,10 @@ public class DataProductData {
         dataProductInsightRepository.deleteInsights(dataProductId);
         dataProductInsightRepository.deleteInsightsFilter(dataProductId);
         dataProductRepository.deleteAddressColumns(dataProductId);
+        dataProductChartRepository.deleteCharts(dataProductId);
         //
         createInsightData(dto, dataProductId);
+        createChartData(dto, dataProductId);
         return true;
     }
     public DataProductAllDTO getDataProductAll(long dataProductId){
@@ -98,8 +108,9 @@ public class DataProductData {
         DataProductInsightDataDTO[] insightData = dataProductInsightRepository.getInsightsData(dataProductId);
         InsightFilterDTO[] insightFilter = dataProductInsightRepository.getInsightFiltersData(dataProductId);
         GoogleMapsAddressDTO mapsData = dataProductRepository.getMapsData(dataProductId);
+        DataProductChartsDTO[] chartData = dataProductChartRepository.getDataProductCharts(dataProductId);
         //
-        return new DataProductAllDTO(dataProduct,insightData,insightFilter,mapsData);
+        return new DataProductAllDTO(dataProduct,insightData,insightFilter,mapsData,chartData);
     }
 
     private boolean dataContainsMapsData(Map<String, Object> dataRow){
