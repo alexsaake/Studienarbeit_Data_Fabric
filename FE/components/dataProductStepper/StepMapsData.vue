@@ -22,6 +22,8 @@
             label="Adresse (Stadt)"
             :rules="form.linkToMaps==='Ja'?[rules.required, rules.validColumn]:[]"
             :items="getDataColumns()"
+            hint="Format: 90402 Nürnberg Gleißbühl"
+            persistent-hint
           ></v-select>
           <v-select
             ref="mapsAddressStreet"
@@ -29,6 +31,8 @@
             label="Adresse (Straße)"
             :rules="form.linkToMaps==='Ja'?[rules.required, rules.validColumn]:[]"
             :items="getDataColumns()"
+            hint="Format: Ansbacher Straße 132"
+            persistent-hint
           ></v-select>
         </v-card>
       </v-col>
