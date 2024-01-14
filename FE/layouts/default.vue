@@ -4,11 +4,12 @@
     <v-navigation-drawer
       v-model="drawer"
       :left="$vuetify.breakpoint.mdAndUp"
+      temporary
       :clipped="clipped"
       fixed
       app
     >
-      <div  style="display: flex; flex-direction: column; justify-content: space-between; height: 100%">
+      <div  style="display: flex; flex-direction: column; justify-content: space-between; height: 100dvh">
         <v-list>
           <v-list-item
             v-for="(page, i) in pages"
