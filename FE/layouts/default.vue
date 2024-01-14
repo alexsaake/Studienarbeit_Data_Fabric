@@ -8,43 +8,44 @@
       fixed
       app
     >
-      <v-list>
-        <v-list-item
-          v-for="(page, i) in pages"
-          :key="i"
-          :to="page.to"
-          router
-          exact
-          style="margin-top: auto"
-          @click="closeDrawerOnLoad"
-        >
-          <v-list-item-action>
-            <v-icon>{{ page.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>{{ page.title }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-
-      <v-list style="bottom: 0; position: absolute; width: 100%;">
-        <v-list-item
-          v-for="(page, i) in bottomPages"
-          :key="i"
-          :to="page.to"
-          router
-          exact
-          style="margin-top: auto"
-          @click="closeDrawerOnLoad"
-        >
-          <v-list-item-action>
-            <v-icon>{{ page.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>{{ page.title }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
+      <div  style="display: flex; flex-direction: column; justify-content: space-between; height: 100%">
+        <v-list>
+          <v-list-item
+            v-for="(page, i) in pages"
+            :key="i"
+            :to="page.to"
+            router
+            exact
+            style="margin-top: auto"
+            @click="closeDrawerOnLoad"
+          >
+            <v-list-item-action>
+              <v-icon>{{ page.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ page.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-list>
+          <v-list-item
+            v-for="(page, i) in bottomPages"
+            :key="i"
+            :to="page.to"
+            router
+            exact
+            style="margin-top: auto"
+            @click="closeDrawerOnLoad"
+          >
+            <v-list-item-action>
+              <v-icon>{{ page.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ page.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </div>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
