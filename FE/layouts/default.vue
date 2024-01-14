@@ -15,6 +15,26 @@
           :to="page.to"
           router
           exact
+          style="margin-top: auto"
+          @click="closeDrawerOnLoad"
+        >
+          <v-list-item-action>
+            <v-icon>{{ page.icon }}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>{{ page.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+
+      <v-list style="bottom: 0; position: absolute; width: 100%;">
+        <v-list-item
+          v-for="(page, i) in bottomPages"
+          :key="i"
+          :to="page.to"
+          router
+          exact
+          style="margin-top: auto"
           @click="closeDrawerOnLoad"
         >
           <v-list-item-action>
@@ -28,12 +48,6 @@
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-<!--      <v-btn icon @click.stop="miniVariant = !miniVariant">-->
-<!--        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>-->
-<!--      </v-btn>-->
-<!--      <v-btn icon @click.stop="clipped = !clipped">-->
-<!--        <v-icon>mdi-application</v-icon>-->
-<!--      </v-btn>-->
       <v-toolbar-title v-if="!easterEggShow" @click="kaggleEasterEgg">{{ title }}</v-toolbar-title>
       <v-toolbar-title v-if="easterEggShow" ><a href="https://www.kaggle.com/" class="kaggle">KAGGLE</a> Fabric</v-toolbar-title>
       <v-spacer />
@@ -41,7 +55,7 @@
         <div v-show="$auth.loggedIn">
           <v-btn text to="/account">{{ getLoggedInUserName() }}</v-btn>
         </div>
-        <div v-show="!$auth.loggedIn">
+        <div v-show="!$auth.loggedIn" id="account-bottons" >
           <v-btn text to="/login">Einloggen</v-btn>
           <v-btn text to="/register">Registrieren</v-btn>
         </div>
@@ -86,6 +100,18 @@ import VToast from '~/components/VToast.vue'
             icon: 'mdi-pencil',
             title: 'Datenprodukt erstellen',
             to: '/dataProduct',
+          }
+        ],
+        bottomPages: [
+          {
+            icon: 'mdi-account',
+            title: 'Einloggen',
+            to: '/login',
+          },
+          {
+            icon: 'mdi-account-plus',
+            title: 'Registrieren',
+            to: '/register',
           }
         ],
         title: 'Data Fabric'
@@ -152,5 +178,10 @@ import VToast from '~/components/VToast.vue'
     align-items: center;
     padding-top: 16px; 
     padding-bottom: 16px;
+}
+@media screen and (max-width: 500px) {
+    #account-bottons{
+        display: none;
+    }
 }
 </style>
