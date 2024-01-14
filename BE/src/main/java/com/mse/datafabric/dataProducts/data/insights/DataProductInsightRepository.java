@@ -45,7 +45,7 @@ public class DataProductInsightRepository {
     }
     public DataProductInsightDataDTO[] getDataProductInsights(long id){
         List<DataProductInsightDataDTO> dtoList = new ArrayList<>();
-        String query = "SELECT * FROM dataproduct_insights JOIN dataproducts ON dataproducts.id = dataproduct_insights.dataproduct_id WHERE dataproducts.id = ? ORDER BY dataproduct_insights.id";
+        String query = "SELECT type,display_name,unit,dataproduct_column FROM dataproduct_insights JOIN dataproducts ON dataproducts.id = dataproduct_insights.dataproduct_id WHERE dataproducts.id = ? ORDER BY dataproduct_insights.id";
         jdbcTemplate.query(
                 query, new PreparedStatementSetter() {
                     public void setValues(PreparedStatement preparedStatement) throws SQLException {
@@ -72,7 +72,7 @@ public class DataProductInsightRepository {
     }
     public InsightFilterDTO[] getInsightFilters(long id){
         List<InsightFilterDTO> dtoList = new ArrayList<>();
-        String query = "SELECT * FROM insight_filters JOIN dataproducts ON dataproducts.id = insight_filters.dataproduct_id WHERE dataproducts.id = ? ORDER BY insight_filters.type_id DESC";
+        String query = "SELECT type_id,filter_id,display_name FROM insight_filters JOIN dataproducts ON dataproducts.id = insight_filters.dataproduct_id WHERE dataproducts.id = ? ORDER BY insight_filters.type_id DESC";
         jdbcTemplate.query(
                 query, new PreparedStatementSetter() {
                     public void setValues(PreparedStatement preparedStatement) throws SQLException {
