@@ -59,7 +59,7 @@ public class DataProductsController {
     private DataProductData productData;
     private String pathLastImage;
 
-    @Value("${server.environment}")
+    @Value("${serv.environment}")
     private String serverEnvironment;
 
     @Autowired
