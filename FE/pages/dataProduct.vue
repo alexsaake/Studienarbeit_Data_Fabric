@@ -8,51 +8,8 @@
       @completed-step="completeStep"
       @active-step="isStepActive"
       @stepper-finished="uploadData"
+      @maps-visible-set="mapsVisibleSet"
     ></horizontal-stepper>
-    <v-row justify="center" v-if="!dataProductPreselect.state && !isUploadSuccessful">
-      <v-col class="col" cols="12" md="6">
-        <v-file-input
-            label="Bild hochladen (nur .jpg und .png)"
-            hint="Akzeptierte Formate: .jpg, .png"
-            persistent-hint
-            @change="onFileSelected"
-            accept="image/*"
-            outlined
-        ></v-file-input>
-        <v-btn
-            color="primary"
-            @click="uploadImageNoId"
-        >Hochladen</v-btn>
-      </v-col>
-    </v-row>
-    <v-row justify="center" v-if="dataProductPreselect.state && !isUploadSuccessful">
-      <v-col class="col" cols="12" md="6">
-        <v-file-input
-            label="Bild hochladen (nur .jpg und .png)"
-            hint="Akzeptierte Formate: .jpg, .png"
-            persistent-hint
-            @change="onFileSelected"
-            accept="image/*"
-            outlined
-        ></v-file-input>
-        <v-btn
-            color="primary"
-            @click="uploadImage"
-        >Hochladen</v-btn>
-      </v-col>
-    </v-row>
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="timeout"
-    >
-      {{snackbarMessage}}
-
-      <template v-slot:action="{ attrs }">
-        <v-btn color="red" text v-bind="attrs" @click="snackbar = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
   </v-card>
 </template>
 
@@ -66,9 +23,8 @@ import {
   getDataProductDataAll,
   insertDataProduct,
   updateDataProduct,
-  uploadDataProductImage,
-  uploadDataProductImageNoId
 } from "~/middleware/dataProductService";
+import StepCharts from "~/components/dataProductStepper/StepCharts.vue";
 export default {
   name: "newDataProduct",
   components: {
@@ -77,37 +33,46 @@ export default {
   data() {
     return {
       id: -1,
-      isUploadSuccessful: false,
-      snackbar: false,
-      snackbarMessage: '',
       steps: [
         {
           name: 'metaData',
           title: 'Grunddaten',
           subtitle: 'Gebe hier die Grunddaten deines Produktes ein',
           component: StepMetaData,
-          completed: false
+          completed: false,
+          visible: true
         },
         {
           name: 'dataProduct',
           title: 'Datenprodukt',
           subtitle: 'Lade dein Datenprodukt hoch',
           component: StepProductData,
-          completed: false
-        },
-        {
-          name: 'mapsData',
-          title: 'Google Maps Verbindung',
-          subtitle: 'Verbinde dein Datenprodukt mit Google Maps und erhalte somit genaue Standorte zu deinen Daten',
-          component: StepMapsData,
-          completed: false
+          completed: false,
+          visible: true
         },
         {
           name: 'insights',
           title: 'Generiere Insights',
           subtitle: 'Erstelle deine eigenen Insights zu deinem Datenprodukt, um dieses noch interessanter zu machen',
           component: StepInsights,
-          completed: false
+          completed: false,
+          visible: true
+        },
+        {
+          name: 'mapsData',
+          title: 'Google Maps Verbindung',
+          subtitle: 'Verbinde dein Datenprodukt mit Google Maps und erhalte somit genaue Standorte zu deinen Daten',
+          component: StepMapsData,
+          completed: false,
+          visible: false
+        },
+        {
+          name: 'charts',
+          title: 'Erstelle Diagramme',
+          subtitle: 'Gib deinem Datenprodukt mehr Aussagekraft, indem du Diagramme erstellst',
+          component: StepCharts,
+          completed: false,
+          visible: true
         },
       ],
       activeStep: 0,
@@ -117,6 +82,7 @@ export default {
         insights: [],
         filter: [],
         mapsData: {},
+        chartData: [],
       }
     }
   },
@@ -132,51 +98,6 @@ export default {
       this.$router.push('/login?page=dataProduct');
   },
   methods: {
-    onFileSelected(file) {
-      if (file) {
-        const validTypes = ['image/jpeg', 'image/png'];
-        if (!validTypes.includes(file.type)) {
-          this.snackbarMessage = 'Falsches Dateiformat';
-          this.snackbar = true;
-          this.selectedFile = null;
-        } else {
-          this.selectedFile = file;
-        }
-      } else {
-        this.selectedFile = null;
-      }
-    },
-    async uploadImage() {
-      if (!this.selectedFile) return;
-
-      const id = this.dataProductPreselect.metaData.id;
-      try {
-        const response = await uploadDataProductImage(this.$axios, id, this.selectedFile);
-        console.log('Upload response:', response);
-        this.isUploadSuccessful = true;
-        this.snackbarMessage = 'Bild hochgeladen';
-        this.snackbar = true;
-      } catch (error) {
-        console.error('Upload error:', error.toString());
-        this.snackbarMessage = 'Fehler beim Hochladen';
-        this.snackbar = true;
-      }
-    },
-    async uploadImageNoId() {
-      if (!this.selectedFile) return;
-
-      try {
-        const response = await uploadDataProductImageNoId(this.$axios, this.selectedFile);
-        console.log('Upload response:', response);
-        this.isUploadSuccessful = true;
-        this.snackbarMessage = 'Bild hochgeladen';
-        this.snackbar = true;
-      } catch (error) {
-        console.error('Upload error:', error.toString());
-        this.snackbarMessage = 'Fehler beim Hochladen';
-        this.snackbar = true;
-      }
-    },
     async uploadDataProduct(data) {
       return await insertDataProduct(
         this.$axios, data
@@ -210,6 +131,9 @@ export default {
         }
         if(data.mapsData !== undefined) {
           this.dataProductPreselect.mapsData = data.mapsData;
+        }
+        if(data.chartData !== undefined) {
+          this.dataProductPreselect.chartData = data.chartData;
         }
       }
     },
@@ -251,6 +175,12 @@ export default {
         await this.$router.push('/marketplace?id='+this.id);
       }else{
         this.$root.VToast.show({message: 'Datenprodukt konnte nicht gespeichert werden!', color: 'error', icon: 'mdi-close'});
+      }
+    },
+    mapsVisibleSet(visible){
+      for(let i=0;i<this.steps.length;i++){
+        if(this.steps[i].name === 'mapsData')
+          this.steps[i].visible = visible;
       }
     }
   }

@@ -58,11 +58,12 @@ export async function getDataProductImage(axios, dataProductId) {
     // Setting the responseType to 'blob' since we are expecting binary data
     const response = await axios.get(`api/Gateway/DataProduct/${dataProductId}/image`, { responseType: 'blob' });
 
+    if(response.data === undefined || response.data.size === 0)
+      return null;
     // Creating a URL for the blob data
-    const imageUrl = URL.createObjectURL(response.data);
+    return URL.createObjectURL(response.data);
 
     // Returning the URL, which can be used as the src attribute of an <img> tag
-    return imageUrl;
   } catch (error) {
     console.error('Error fetching data product image:', error);
     // Handle the error as needed
@@ -118,6 +119,10 @@ export async function getInsightTypes(axios)
 export async function getInsightFilterTypes(axios)
 {
   return await axios.$get(`api/Gateway/DataProducts/Insights/FilterTypes`);
+}
+export async function getChartTypes(axios)
+{
+  return await axios.$get(`api/Gateway/DataProducts/Charts/Types`);
 }
 export async function getDataProductInsightFilters(axios, id)
 {

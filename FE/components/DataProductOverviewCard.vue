@@ -64,10 +64,12 @@ import {getDataProduct, getDataProductImage} from "~/middleware/dataProductServi
     methods: {
       async fetchData() {
         const dataProductSummary = await getDataProduct(this.$axios, this.id);
-
         try {
           const imageUrl = await getDataProductImage(this.$axios, this.id);
-          this.imageFileName = imageUrl || 'defaultImage.jpg'; // Fallback to default image
+          if(imageUrl === null)
+            this.imageFileName = 'defaultImage.jpg';
+          else
+            this.imageFileName = imageUrl; // Fallback to default image
         } catch (error) {
           console.error('Error fetching image:', error);
           this.imageFileName = 'defaultImage.jpg'; // Fallback to default image

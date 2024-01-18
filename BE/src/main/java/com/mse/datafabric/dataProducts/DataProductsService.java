@@ -56,70 +56,17 @@ class DataProductsService implements IDataProductsService
 
         return dataProducts;
     }
-    public String saveDataProductImage(long dataProductId, MultipartFile image, JdbcTemplate myJdbcTemplate) throws Exception {
-        // Generate a unique filename for the image, preserving the file extension
-        String originalFilename = image.getOriginalFilename();
-        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String filename = UUID.randomUUID().toString() + fileExtension;
-
-        byte[] imageData;
-        try {
-            // Convert the MultipartFile into a byte array
-            imageData = image.getBytes();
-        } catch (IOException e) {
-            throw new Exception("Error while converting image to byte array", e);
-        }
-
-        // Insert the image data into the image_table
-        String insertImageSql = "INSERT INTO image_table (dataProductId, imageData) VALUES (?, ?)" +
-                                "ON CONFLICT (dataProductId) DO UPDATE SET imageData = EXCLUDED.imageData";
-            myJdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insertImageSql);
-            ps.setLong(1, dataProductId);
-            ps.setBytes(2, imageData);
-            return ps;
-        });
-
-        //update imageFilename only if the record with the id already exists in dataproducts
-        String updateSql = "UPDATE dataproducts SET imageFileName = ? WHERE id = ? AND EXISTS (SELECT 1 FROM dataproducts WHERE id = ?)";
-        myJdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(updateSql);
-            ps.setString(1, filename);
-            ps.setLong(2, dataProductId);
-            ps.setLong(3, dataProductId);
-            return ps;
-        });
-
-        return filename;
-    }
-
     public byte[] getDataProductImageData(long dataProductId) throws SQLException {
         // SQL query to fetch the image data
-        String sql = "SELECT imageData FROM image_table WHERE dataProductId = ?";
-        return myJdbcTemplate.queryForObject(sql, new Object[]{dataProductId}, (rs, rowNum) -> rs.getBytes("imageData"));
-    }
-    public long generateNextDataProductId() {
-        final String STATEMENT = "SELECT last_value FROM dataproducts_id_seq";
-        try {
-            Long lastId = myJdbcTemplate.queryForObject(STATEMENT, Long.class);
-            if (lastId != null) {
-                return lastId + 1;
-
-            } else  {
-                //if there are no entries in the table
-                return -1;
-            }
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Error while generating new Data Product ID", e);
-        }
-
+        String sql = "SELECT image FROM dataproducts WHERE id = ?";
+        return myJdbcTemplate.queryForObject(sql, new Object[]{dataProductId}, (rs, rowNum) -> rs.getBytes("image"));
     }
     public DataProductSummaryResponse getDataProductSummary(long dataProductId) {
-        String dataProductSql = "SELECT imageFileName, shortDescription, accessRightId FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(dataProductId);
+        String dataProductSql = "SELECT shortDescription, accessRightId FROM DataProducts WHERE id = '%s' AND isDeleted = FALSE".formatted(dataProductId);
         Map<String, Object> databaseDataProduct = myJdbcTemplate.queryForMap(dataProductSql);
 
         return new DataProductSummaryResponse(
-                (String) databaseDataProduct.get("imageFileName"),
+                (String) null,
                 (String) databaseDataProduct.get("shortDescription"),
                 (Long) databaseDataProduct.get("accessRightId")
         );

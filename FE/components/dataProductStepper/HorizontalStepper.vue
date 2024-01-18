@@ -1,7 +1,7 @@
 <template>
   <div class="stepper-box">
     <div class="top">
-      <div class="divider-line" :style="{width: `${(100/(steps.length) * (steps.length - 1)) - 10}%`}"></div>
+      <div class="divider-line" :style="{width: `${(100/(getVisibelStepLength()) * (getVisibelStepLength() - 1)) - 10}%`}"></div>
       <div class="steps-wrapper">
         <template v-if="topButtons">
           <div v-if="currentStep.index > 0" class="stepper-button-top previous" @click="backStep()">
@@ -9,7 +9,7 @@
           </div>
         </template>
         <template v-for="(step, index) in steps">
-          <div :key="index" :class="['step', isStepActive(index, step)]" :style="{width: `${100 / steps.length}%`}">
+          <div v-if="step.visible" :key="index" :class="['step', isStepActive(index, step)]" :style="{width: `${100 / getVisibelStepLength()}%`}">
             <div class="circle">
               <i class="material-icons md-18">
                 {{ (step.completed) ? 'done' : step.icon }}
@@ -30,10 +30,10 @@
       <transition :enter-active-class="enterAnimation" :leave-active-class="leaveAnimation" mode="out-in">
         <!--If keep alive-->
         <keep-alive v-if="keepAliveData">
-          <component :is="steps[currentStep.index].component" :clicked-next="nextButton[currentStep.name]" :current-step="currentStep" :data-product="dataProduct" :data-product-preselect="dataProductPreselect" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData"></component>
+          <component :is="steps[currentStep.index].component" :clicked-next="nextButton[currentStep.name]" :steps="steps" :current-step="currentStep" :data-product="dataProduct" :data-product-preselect="dataProductPreselect" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData" @maps-visible-set="mapsVisibleSet"></component>
         </keep-alive>
         <!--If not show component and destroy it in each step change-->
-        <component  :is="steps[currentStep.index].component" v-else :clicked-next="nextButton[currentStep.name]"   :current-step="currentStep" :data-product="dataProduct" :data-product-preselect="dataProductPreselect" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData"></component>
+        <component  :is="steps[currentStep.index].component" v-else :clicked-next="nextButton[currentStep.name]" :steps="steps"   :current-step="currentStep" :data-product="dataProduct" :data-product-preselect="dataProductPreselect" @can-continue="proceed" @change-next="changeNextBtnValue" @data="setData" @maps-visible-set="mapsVisibleSet"></component>
       </transition>
     </div>
     <div :class="['bottom', (currentStep.index > 0) ? '' : 'only-next']">
@@ -85,6 +85,7 @@ export default {
           insights: [],
           filter: [],
           mapsData: {},
+          chartData: [],
           }
       }
     },
@@ -102,6 +103,7 @@ export default {
         insights: [],
         filter: [],
         mapsData: {},
+        chartData: [],
       }
     };
   },
@@ -154,8 +156,11 @@ export default {
         this.dataProduct.filter = payload.filter;
       if(payload.mapsData !== undefined)
         this.dataProduct.mapsData = payload.mapsData;
+      if(payload.chartData !== undefined)
+        this.dataProduct.chartData = payload.chartData;
 
-      console.log(JSON.stringify(this.dataProduct));
+      console.log(this.dataProduct.metaData);
+
     },
     isStepActive(index, step) {
       if (this.currentStep.index === index) {
@@ -171,7 +176,7 @@ export default {
           name: this.steps[index].name,
           index
         };
-        if (index + 1 === this.steps.length) {
+        if (this.isLastStep(index)) {
           this.finalStep = true;
         } else {
           this.finalStep = false;
@@ -188,7 +193,7 @@ export default {
         if (this.finalStep) {
           this.$emit("stepper-finished", this.dataProduct);
         }
-        const currentIndex = this.currentStep.index + 1;
+        const currentIndex = this.getNextVisibleIndex();
         this.activateStep(currentIndex);
       }
       this.canContinue = false;
@@ -208,7 +213,7 @@ export default {
     },
     backStep() {
       this.$emit("clicking-back");
-      const currentIndex = this.currentStep.index - 1;
+      const currentIndex = this.getLastVisibleIndex();
       if (currentIndex >= 0) {
         this.activateStep(currentIndex, true);
       }
@@ -226,6 +231,47 @@ export default {
       this.steps.forEach(step => {
         this.nextButton[step.name] = false;
       });
+    },
+    mapsVisibleSet(visible){
+      this.$emit("maps-visible-set", visible);
+      this.activateStep(this.currentStep.index)
+    },
+    getVisibelStepLength(){
+      let count = 0;
+      for(let i=0;i<this.steps.length;i++){
+        if(this.steps[i].visible === true)
+          count++;
+      }
+      return count;
+    },
+    getNextVisibleIndex(){
+      let index = this.currentStep.index + 1;
+      for(let i = 0;i < this.steps.length;i++){
+        if(this.steps[i].visible === true && i >= index) {
+          index = i;
+          break;
+        }
+      }
+      return index;
+    },
+    getLastVisibleIndex(){
+      let index = this.currentStep.index - 1;
+      for(let i = this.steps.length - 1;i >= 0;i--){
+        if(this.steps[i].visible === true && i <= index) {
+          index = i;
+          break;
+        }
+      }
+      return index;
+    },
+    isLastStep(index){
+      let lastStepIndex = 0;
+      for(let i = 0;i < this.steps.length;i++){
+        if(this.steps[i].visible === true) {
+          lastStepIndex = i;
+        }
+      }
+      return (lastStepIndex === index);
     }
   }
 };

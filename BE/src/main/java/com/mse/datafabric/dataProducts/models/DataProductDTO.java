@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.primitives.Bytes;
 
 import java.util.Date;
 
@@ -21,11 +22,13 @@ public class DataProductDTO {
     public java.sql.Date createdOn;
 
     public String username;
+
+    public byte[] image;
     @JsonCreator
     public DataProductDTO(@JsonProperty("id")long id, @JsonProperty("title")String title, @JsonProperty("description")String description,
                           @JsonProperty("shortDescription")String shortDescription, @JsonProperty("source")String source, @JsonProperty("sourceLink")String sourceLink,
                           @JsonProperty("accessRight")int accessRightId, @JsonProperty("category")int categoryId, @JsonProperty("data") Object data,
-                          @JsonProperty("username") String username, @JsonProperty("createdon") java.sql.Date createdOn) {
+                          @JsonProperty("username") String username, @JsonProperty("createdon") java.sql.Date createdOn, @JsonProperty("image") byte[] image) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -36,6 +39,7 @@ public class DataProductDTO {
         this.categoryId = categoryId;
         this.username = username;
         this.createdOn = createdOn;
+        this.image = image;
         ObjectMapper mapper = new ObjectMapper();
         try {
             this.data = mapper.writeValueAsString(data);

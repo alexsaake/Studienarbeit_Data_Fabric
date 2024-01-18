@@ -105,14 +105,14 @@ export default {
                   display: this.showAxisLabel(chart),
                   scaleLabel: {
                     display: this.showAxisLabel(chart),
-                    labelString: chart.xAxisName
+                    labelString: chart.xAxisName + (chart.xAxisUnit !== ''?' in ':'') + chart.xAxisUnit
                   }
                 }],
                 yAxes: [{
                   display: this.showAxisLabel(chart),
                   scaleLabel: {
                     display: this.showAxisLabel(chart),
-                    labelString: chart.yAxisName
+                    labelString: chart.yAxisName + (chart.yAxisUnit !== ''?' in ':'') + chart.yAxisUnit
                   },
                   ticks: {
                     beginAtZero: true

@@ -101,51 +101,6 @@ public class DataProductsController {
     public ResponseEntity<DataProductDetailsReponse> getDataProductDetails(@PathVariable long dataProductId){
         return ResponseEntity.ok(myDataProductsService.getDataProductDetails(dataProductId));
     }
-    @PreAuthorize("hasAuthority('USER')")
-    @PostMapping(value = "/DataProduct/{dataProductId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadDataProductImage(@PathVariable long dataProductId,
-                                                         @RequestParam("image") MultipartFile image) {
-        if (image.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty");
-        }
-
-        if (!image.getContentType().startsWith("image/")) {
-            return ResponseEntity.badRequest().body("File is not an image");
-        }
-
-        try {
-            String filename = myDataProductsService.saveDataProductImage(dataProductId, image, jdbcTemplate);
-
-            return ResponseEntity.ok("Image uploaded successfully. Filename: " + filename);
-        } catch (Exception e) {
-            // Handle exceptions (e.g., file not saved, DataProduct not found)
-            return ResponseEntity.internalServerError().body("Could not upload image: " + e.getMessage());
-        }
-    }
-    @PreAuthorize("hasAuthority('USER')")
-    @PostMapping(value = "/DataProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadDataProductImageNoId(@RequestParam(value ="image") MultipartFile image) {
-        if (image.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty");
-        }
-
-        if (!image.getContentType().startsWith("image/")) {
-            return ResponseEntity.badRequest().body("File is not an image");
-        }
-
-        long idTemp = myDataProductsService.generateNextDataProductId();
-
-        try {
-            String imagePath = myDataProductsService.saveDataProductImage(idTemp, image, jdbcTemplate);
-            //make image available on the /id/image Endpoint
-            pathLastImage = imagePath;
-
-            return ResponseEntity.ok("Image uploaded successfully. Path: " + imagePath);
-        } catch (Exception e) {
-            // Handle exceptions (e.g., file not saved, DataProduct not found)
-            return ResponseEntity.internalServerError().body("Could not upload image" + ' ' + e.getMessage());
-        }
-    }
     @GetMapping(value = "/DataProduct/{dataProductId}/image")
     public ResponseEntity<Resource> getDataProductImage(@PathVariable long dataProductId) {
         try {
@@ -153,7 +108,7 @@ public class DataProductsController {
             byte[] imageData = myDataProductsService.getDataProductImageData(dataProductId);
 
             if (imageData == null) {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.ok().build();
             }
 
             // Create a ByteArrayResource object for the image data
@@ -189,20 +144,7 @@ public class DataProductsController {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             dto = mapper.readValue(requestBodyJson, DataProductAllDTO.class);
 
-            long idPuffer = productData.createDataProduct(dto);
-
-            //check if an entry for the dataproductid to be inserted already exists
-            //in image_table (a.k.a image has been uploaded before clicking on create dataproduct)
-            String checkSql = "SELECT COUNT(*) FROM image_table WHERE dataProductId = ?";
-            int count = jdbcTemplate.queryForObject(checkSql, new Object[]{idPuffer}, Integer.class);
-
-            if (count > 0) {
-
-                String updateSql = "UPDATE dataproducts SET imageFileName = ? WHERE id = ?";
-                jdbcTemplate.update(updateSql, pathLastImage, idPuffer);
-            }
-
-            return idPuffer;
+            return productData.createDataProduct(dto);
         }
         catch (JsonProcessingException e) {
             myLogger.error("Could not parse json " + e);

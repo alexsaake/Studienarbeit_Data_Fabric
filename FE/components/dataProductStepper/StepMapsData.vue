@@ -22,6 +22,8 @@
             label="Adresse (Stadt)"
             :rules="form.linkToMaps==='Ja'?[rules.required, rules.validColumn]:[]"
             :items="getDataColumns()"
+            hint="Format: 90402 Nürnberg Gleißbühl"
+            persistent-hint
           ></v-select>
           <v-select
             ref="mapsAddressStreet"
@@ -29,6 +31,8 @@
             label="Adresse (Straße)"
             :rules="form.linkToMaps==='Ja'?[rules.required, rules.validColumn]:[]"
             :items="getDataColumns()"
+            hint="Format: Ansbacher Straße 132"
+            persistent-hint
           ></v-select>
         </v-card>
       </v-col>
@@ -57,6 +61,11 @@ export default {
       }
     }
   },
+  computed: {
+    linkToMaps(){
+      return this.form.linkToMaps;
+    }
+  },
   watch: {
     form: {
       handler: function (val) {
@@ -76,6 +85,10 @@ export default {
         this.form.$touch();
       }
     },
+    linkToMaps(){
+      if(this.form.linkToMaps === 'Ja' && this.dataProductPreselect.insights.length <= 0)
+        this.$root.VToast.show({message: 'Du kannst jetzt deine Insights auch auf Daten von Google Maps filtern (z.B. Postleitzahl)!', color: 'info', icon: 'mdi-mdiInformationBox'});
+    }
   },
   mounted() {
     this.preset();
