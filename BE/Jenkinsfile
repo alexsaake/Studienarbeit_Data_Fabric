@@ -40,7 +40,7 @@ pipeline {
         stage("Spring-Boot:Run") {
             steps {
                   dir('BE/') {
-                      sh 'mvn spring-boot:run -Drun.arguments=--serv.environment=prod'
+                      sh 'mvn spring-boot:run -Dspring-boot.run.arguments=--serv.environment=prod'
                   }
              }
          }
