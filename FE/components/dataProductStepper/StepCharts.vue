@@ -62,10 +62,11 @@
                   </v-row>
                   <v-row>
                     <v-col class="col">
-                      <v-select
-                        :ref="'yValueType'+chart.id"
-                        v-model="chart.yValueType"
-                        :items="[
+                      <div style="display: flex">
+                        <v-select
+                          :ref="'yValueType'+chart.id"
+                          v-model="chart.yValueType"
+                          :items="[
                           {
                             value: 'Werte einzeln',
                             key: 1,
@@ -79,11 +80,17 @@
                             key: 3,
                           }
                         ]"
-                        item-text="value"
-                        item-value="key"
-                        label="Typ"
-                        :disabled="chart.chartType===''"
-                      ></v-select>
+                          item-text="value"
+                          item-value="key"
+                          label="Typ"
+                          :disabled="chart.chartType===''"
+                        ></v-select>
+                        <v-icon
+                          v-if="chart.yValueType === 1 || chart.yValueType === 2"
+                          color="info"
+                          @click="$root.VToast.show({message: 'Mit diesem Typ sind nur nummerische Daten innerhalb der y-Achsen Spalte erlaubt!', color: 'info', icon: 'mdi-information'});"
+                        >mdi-information</v-icon>
+                      </div>
                     </v-col>
                     <v-col class="col">
                       <v-checkbox
@@ -180,8 +187,8 @@
                         :ref="'xAxisDataproductColumn'+dataset.yAxisDataproductColumn"
                         v-model="dataset.yAxisDataproductColumn"
                         label="Y-Achsen Spalte"
-                        :rules="form.createCharts==='Ja'?[rules.required, rules.validColumn]:[]"
-                        :items="getDataColumns()"
+                        :rules="form.createCharts==='Ja'?[rules.required, (chart.yValueType===3?rules.validColumn:rules.validNumericColumn)]:[]"
+                        :items="(chart.yValueType===3?getDataColumns():getNumericDataColumns())"
                         :disabled="chart.chartType==='' || dataset.displayName===''"
                       ></v-select>
                     </v-col>
