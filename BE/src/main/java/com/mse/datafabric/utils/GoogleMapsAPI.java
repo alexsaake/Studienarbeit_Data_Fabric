@@ -16,7 +16,7 @@ import static com.google.maps.model.AddressComponentType.POSTAL_CODE;
 public class GoogleMapsAPI {
 
     private static final String API_HOST = "https://maps.googleapis.com/maps/api/geocode/json?";
-    private static final String  API_KEY = "AIzaSyBsdnjk_X8Rb_kgJg26R7JTsJYWiRaoce0";
+    private static final String  API_KEY = "";
 
     GeoApiContext context;
     GeocodingResult[] results;
